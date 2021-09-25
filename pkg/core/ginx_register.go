@@ -4,9 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GinXTransfer interface {
+type GinXBinder interface {
 	BindVal(c *Context) (interface{}, error)
 	BindFn(c *Context) (interface{}, error)
+}
+
+type GinXTransfer interface {
+	Method() string
+	Url() string
+	Binder() GinXBinder
 }
 
 type GinX struct {
@@ -22,7 +28,7 @@ type GinX struct {
 	resultWrap []Option
 }
 
-func (g *GinX) BindTransfer(core *Context, ctx *gin.Context, i GinXTransfer) {
+func (g *GinX) BindTransfer(core *Context, ctx *gin.Context, i GinXBinder) {
 	defer g.result(core)
 	g.setCtx(ctx)
 
@@ -91,9 +97,12 @@ func (g *ginXRegister) Unset(c *Context) {
 	c.GinX = nil
 }
 
-func GinXHandlerRegister(t func() GinXTransfer, o ...Option) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...Option) {
+	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
 		core := GetCore().(*Context)
-		core.GinX.BindTransfer(core, c, t())
-	}
+		for _, f := range o {
+			f(core)
+		}
+		core.GinX.BindTransfer(core, c, transfer.Binder())
+	})
 }
