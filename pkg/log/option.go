@@ -1,7 +1,6 @@
 package log
 
 import (
-	otelsdk "go.opentelemetry.io/otel/sdk/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -9,9 +8,10 @@ import (
 
 type option struct {
 	traceLevel zapcore.Level
-	tp         *otelsdk.TracerProvider
-	logLevel   zapcore.Level
-	fileName   string
+	//tp         *otelsdk.TracerProvider
+	openTrace bool
+	logLevel  zapcore.Level
+	fileName  string
 	*zap.Logger
 }
 
@@ -53,10 +53,11 @@ func WithLogLevel(level zapcore.Level) Option {
 	}
 }
 
-func WithTrace(tp *otelsdk.TracerProvider, level zapcore.Level) Option {
+func WithTrace(level zapcore.Level) Option {
 	return func(o *option) {
 		o.traceLevel = level
-		o.tp = tp
+		//o.tp = tp
+		o.openTrace = true
 	}
 }
 
@@ -80,8 +81,10 @@ func NewXlog(fs ...Option) *Xlog {
 		xlog.Logger = o.Logger
 	}
 
-	xlog.traceLevel = o.traceLevel
-	xlog.tp = o.tp
+	if o.openTrace {
+		xlog.traceLevel = o.traceLevel
+		xlog.openTrace = o.openTrace
+	}
 
 	return xlog
 }

@@ -18,10 +18,10 @@ func WithWrap(ops ...Option) GinOption {
 	}
 }
 
-func GinResultWrap(c *Context) {
-	res := GinXResult{Data: c.GinX.bindData.res}
-	if c.GinX.bindData.err != nil {
-		res.Msg = c.GinX.bindData.err.Error()
+func GinXResultWrap(c *Context) {
+	res := GinXResult{Data: c.GinX.bindRes}
+	if c.GinX.bindErr != nil {
+		res.Msg = c.GinX.bindErr.Error()
 		res.Code = 5003
 		c.GinX.Context.JSON(http.StatusInternalServerError, res)
 		return
@@ -37,14 +37,17 @@ type GinXResult struct {
 	Data interface{} `json:"data"`
 }
 
-func GinTraceWrap(c *Context) {
-	l := c.Log.TraceLog(c.GinX.xkeys[_FnName])
-	defer l.End()
-	res, _ := json.Marshal(c.GinX.bindData.res)
-	val, _ := json.Marshal(c.GinX.bindData.val)
+func GinXTraceWrap(c *Context) {
+	if !c.Tracer.IsOpen() {
+		return
+	}
+	l := c.TraceLog("GinxTraceWrap")
+	defer l.Sync()
+	res, _ := json.Marshal(c.GinX.bindRes)
+	val, _ := json.Marshal(c.GinX.bindVal)
 	zf := []zap.Field{zap.String("val", string(val)), zap.String("res", string(res))}
-	if c.GinX.bindData.err != nil {
-		l.Error(c.GinX.bindData.err.Error(), zf...)
+	if c.GinX.bindErr != nil {
+		l.Error(c.GinX.bindErr.Error(), zf...)
 	} else {
 		l.Info("handler info", zf...)
 	}

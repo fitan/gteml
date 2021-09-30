@@ -4,29 +4,46 @@ import (
 	"sync"
 )
 
-func NewCore() *Context {
-	core := &Context{}
+var registerList []Register
 
-	core.Register(&logRegister{})
-	core.Register(&ginXRegister{})
-	core.releaseFn = PutCore
+func InsetRegister(os ...Register) {
+	registerList = append(registerList, os...)
+}
+
+func init() {
+	InsetRegister(&logRegister{})
+	InsetRegister((&ginXRegister{}).With())
+	InsetRegister(&Trace{})
+	InsetRegister(&ApisRegister{})
+}
+
+//func NewCore() *Context {
+//	core := &Context{}
+//
+//	core.Register(&logRegister{})
+//	core.Register((&ginXRegister{}).With())
+//	core.Register(&TraceRegister{})
+//	core.Register(&ApisRegister{})
+//	return core
+//}
+
+func NewPoolFn() interface{} {
+	core := &Context{}
+	for _, r := range registerList {
+		r.Set(core)
+	}
 	return core
+	//return NewCore().Init()
 }
 
 var corePool = sync.Pool{
 	New: NewPoolFn,
 }
 
-func GetCore() interface{} {
-	return corePool.Get()
+func GetCore() *Context {
+	return corePool.Get().(*Context).Init()
 }
 
 func PutCore(x interface{}) {
 	corePool.Put(x)
-}
-
-func NewPoolFn() interface{} {
-	c := NewCore()
-	c.Init()
-	return c
 }

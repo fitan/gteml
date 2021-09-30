@@ -62,13 +62,13 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tr := tp.Tracer("cmdb")
-	ctx, _ := context.WithCancel(context.Background())
-	ctx, span := tr.Start(ctx, "foo")
-	defer span.End()
-	tr = otel.Tracer("new-")
-	ctx, span = tr.Start(ctx, "bar")
-	defer span.End()
+	//tr := tp.Tracer("cmdb")
+	//ctx, _ := context.WithCancel(context.Background())
+	//ctx, span := tr.Start(ctx, "foo")
+	//defer span.Sync()
+	//tr = otel.Tracer("new-")
+	//ctx, span = tr.Start(ctx, "bar")
+	//defer span.Sync()
 }
 
 func GetTp() *trace.TracerProvider {

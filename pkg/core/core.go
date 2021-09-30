@@ -1,55 +1,48 @@
 package core
 
 import (
-	"context"
-	"github.com/fitan/gteml/pkg/log"
+	"github.com/fitan/gteml/pkg/common"
 )
 
 type Register interface {
+	With(o ...Option) Register
 	Set(c *Context)
 	Unset(c *Context)
 }
 
 type Option func(c *Context)
 
-func WithInitRegister(rs ...Register) Option {
-	return func(c *Context) {
-		for _, r := range rs {
-			c.Register(r)
-		}
-	}
-}
-
 type Context struct {
-	Log *CoreLog
+	*CoreLog
 
-	objRegister []Register
+	Log common.Logger
+
+	common.Tracer
 
 	//Log *log.Xlog
 
-	TraceLog *log.TraceLog
+	//TraceLog *log.TraceLog
 
 	GinX *GinX
 
-	Ctx context.Context
+	Apis
 
 	releaseFn func(x interface{})
 }
 
-func (c *Context) Register(register Register) {
-	c.objRegister = append(c.objRegister, register)
-}
-
-func (c *Context) Init() {
-	for _, m := range c.objRegister {
-		m.Set(c)
+func (c *Context) Init() *Context {
+	for _, r := range registerList {
+		r.Set(c)
 	}
+
+	return c
 }
 
 func (c *Context) Release() {
-	for _, m := range c.objRegister {
-		m.Unset(c)
+	c.Tracer.End()
+	for _, r := range registerList {
+		r.Unset(c)
 	}
 
-	c.releaseFn(c)
+	PutCore(c)
 }

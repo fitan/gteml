@@ -1,8 +1,8 @@
 package httpclient
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/go-resty/resty/v2"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/codes"
@@ -11,8 +11,12 @@ import (
 	"net/http"
 )
 
-func ErrorTrace(tr trace.Tracer) resty.ErrorHook {
+func AfterErrorTrace() resty.ErrorHook {
 	return func(request *resty.Request, err error) {
+		if request.Context().Value(_OffTrace).(bool) {
+			return
+		}
+		fmt.Println("执行after err")
 		traceInfo := new(TraceInfo)
 		if v, ok := err.(*resty.ResponseError); ok {
 			traceInfo.Response = SetResponse(v.Response)
@@ -20,32 +24,55 @@ func ErrorTrace(tr trace.Tracer) resty.ErrorHook {
 		traceInfo.Request = SetRequest(request)
 		traceInfo.Info = SetInfo(request.TraceInfo())
 		traceRaw, _ := json.Marshal(traceInfo)
-		subContext, span := tr.Start(request.Context(), "error_hook")
+		span := trace.SpanFromContext(request.Context())
 		span.AddEvent(semconv.ExceptionEventName, trace.WithAttributes(semconv.ExceptionTypeKey.String("info"), semconv.ExceptionMessageKey.String(string(traceRaw))))
 		span.SetStatus(codes.Error, "error_hook")
 		span.End()
-		context.WithValue(request.Context(), "sub_ctx", subContext)
+		span = trace.SpanFromContext(request.Context())
+	}
+}
+
+// 当没有触发error时不会触发span end。在这里处理
+func AfterErrorSpanEnd() resty.ResponseMiddleware {
+	return func(client *resty.Client, response *resty.Response) error {
+		if response.Request.Context().Value(_OffTrace).(bool) {
+			return nil
+		}
+		span := trace.SpanFromContext(response.Request.Context())
+		if span.IsRecording() {
+			span.End()
+		}
+		return nil
 	}
 }
 
 func BeforeTrace(tp trace.TracerProvider) resty.RequestMiddleware {
 	return func(client *resty.Client, request *resty.Request) error {
-		client.SetTransport(otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithTracerProvider(tp)))
+		client.SetTransport(otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithTracerProvider(tp), otelhttp.WithFilter(
+			func(request *http.Request) bool {
+				if request.Context().Value(_OffTrace).(bool) {
+					return false
+				}
+				return true
+			})))
 		return nil
 	}
 }
 
-func AfterTraceDebug(tr trace.Tracer) resty.ResponseMiddleware {
+func AfterTraceDebug() resty.ResponseMiddleware {
 	return func(client *resty.Client, response *resty.Response) error {
+		if response.Request.Context().Value(_OffTrace).(bool) {
+			return nil
+		}
 		traceInfo := new(TraceInfo)
 		traceInfo.Request = SetRequest(response.Request)
 		traceInfo.Response = SetResponse(response)
 		traceInfo.Info = SetInfo(response.Request.TraceInfo())
 		traceRaw, _ := json.Marshal(traceInfo)
-		subContext, span := tr.Start(response.Request.Context(), "trace_debug")
+		span := trace.SpanFromContext(response.Request.Context())
 		span.AddEvent(semconv.ExceptionEventName, trace.WithAttributes(semconv.ExceptionTypeKey.String("info"), semconv.ExceptionMessageKey.String(string(traceRaw))))
 		span.End()
-		context.WithValue(response.Request.Context(), "sub_ctx", subContext)
+		span = trace.SpanFromContext(response.Request.Context())
 		return nil
 	}
 }

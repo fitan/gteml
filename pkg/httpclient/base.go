@@ -40,9 +40,10 @@ func NewClient(fs ...Option) *resty.Client {
 		client = client.EnableTrace()
 		client = client.OnBeforeRequest(BeforeTrace(o.Tp))
 		if o.TraceDebug {
-			client = client.OnAfterResponse(AfterTraceDebug(o.Tp.Tracer(o.TraceName)))
+			client = client.OnAfterResponse(AfterTraceDebug())
 		} else {
-			client = client.OnError(ErrorTrace(o.Tp.Tracer(o.TraceName)))
+			client = client.OnError(AfterErrorTrace())
+			client = client.OnAfterResponse(AfterErrorSpanEnd())
 		}
 	}
 
