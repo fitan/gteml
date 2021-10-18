@@ -17,11 +17,11 @@ type CreateIn struct {
 func Create(c *core.Context, in *CreateIn) (string, error) {
 	c.Log.Info("这是 create的开始")
 
-	c.Apis.Baidu.GetRoot()
+	data, _ := c.Apis.Baidu.GetRoot()
 
-	res, ok := c.GinX.GetQuery("status")
+	_, ok := c.GinX.GetQuery("status")
 	if !ok {
 		return "", errors.New("not find query status")
 	}
-	return res, nil
+	return data.String(), nil
 }

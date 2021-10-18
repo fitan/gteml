@@ -10,7 +10,7 @@ func (t Trace) With(o ...Option) Register {
 }
 
 func (t Trace) Set(c *Context) {
-	c.Tracer = trace.NewTrace(trace.GetTp(), OpenTrace)
+	c.Tracer = trace.NewTrace(trace.GetTp(), c.Config.Trace.Open)
 }
 
 func (t Trace) Unset(c *Context) {

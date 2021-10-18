@@ -13,6 +13,8 @@ type Register interface {
 type Option func(c *Context)
 
 type Context struct {
+	Config *MyConf
+
 	*CoreLog
 
 	Log common.Logger

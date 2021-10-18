@@ -1,8 +1,8 @@
 package httpclient
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-resty/resty/v2"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/codes"
@@ -11,12 +11,15 @@ import (
 	"net/http"
 )
 
+func parseCtxValOpenTrace(ctx context.Context) bool {
+	return ctx.Value(_OpenTrace).(bool)
+}
+
 func AfterErrorTrace() resty.ErrorHook {
 	return func(request *resty.Request, err error) {
-		if request.Context().Value(_OffTrace).(bool) {
+		if !parseCtxValOpenTrace(request.Context()) {
 			return
 		}
-		fmt.Println("执行after err")
 		traceInfo := new(TraceInfo)
 		if v, ok := err.(*resty.ResponseError); ok {
 			traceInfo.Response = SetResponse(v.Response)
@@ -35,7 +38,7 @@ func AfterErrorTrace() resty.ErrorHook {
 // 当没有触发error时不会触发span end。在这里处理
 func AfterErrorSpanEnd() resty.ResponseMiddleware {
 	return func(client *resty.Client, response *resty.Response) error {
-		if response.Request.Context().Value(_OffTrace).(bool) {
+		if !parseCtxValOpenTrace(response.Request.Context()) {
 			return nil
 		}
 		span := trace.SpanFromContext(response.Request.Context())
@@ -50,7 +53,7 @@ func BeforeTrace(tp trace.TracerProvider) resty.RequestMiddleware {
 	return func(client *resty.Client, request *resty.Request) error {
 		client.SetTransport(otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithTracerProvider(tp), otelhttp.WithFilter(
 			func(request *http.Request) bool {
-				if request.Context().Value(_OffTrace).(bool) {
+				if !parseCtxValOpenTrace(request.Context()) {
 					return false
 				}
 				return true
@@ -61,7 +64,7 @@ func BeforeTrace(tp trace.TracerProvider) resty.RequestMiddleware {
 
 func AfterTraceDebug() resty.ResponseMiddleware {
 	return func(client *resty.Client, response *resty.Response) error {
-		if response.Request.Context().Value(_OffTrace).(bool) {
+		if !parseCtxValOpenTrace(response.Request.Context()) {
 			return nil
 		}
 		traceInfo := new(TraceInfo)

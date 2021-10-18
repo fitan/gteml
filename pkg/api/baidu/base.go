@@ -7,7 +7,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var client = httpclient.NewClient(httpclient.WithHost("http://www.baidu.c"), httpclient.WithTrace(trace.GetTp(), "baidu", false))
+var client = httpclient.NewClient(httpclient.WithHost("http://www.baidu.com"), httpclient.WithTrace(trace.GetTp(), "baidu", false))
 
 type BaiduApi struct {
 	Context common.Context
@@ -22,6 +22,6 @@ func NewBaiduApi(t common.Context) *BaiduApi {
 }
 
 func (b *BaiduApi) GetRoot() (*resty.Response, error) {
-	res, err := b.client.R().Get("/fsfds", "请求根目录")
+	res, err := b.client.R().Get("", "请求根目录")
 	return res, err
 }

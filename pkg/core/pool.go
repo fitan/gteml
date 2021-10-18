@@ -19,6 +19,7 @@ func InsetRegister(os ...Register) {
 }
 
 func init() {
+	InsetRegister(&Confer{})
 	InsetRegister(&logRegister{})
 	InsetRegister((&ginXRegister{}).With())
 	InsetRegister(&Trace{})

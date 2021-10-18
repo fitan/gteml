@@ -1,0 +1,14 @@
+trace:
+  open: true
+
+api:
+  baidu:
+    url: www.baidu.com
+  taobao:
+    url: www.taobao.com
+
+mysql:
+  url: root:pass@tcp(localhost:3306)/test
+
+redis:
+  url: localhost:6379

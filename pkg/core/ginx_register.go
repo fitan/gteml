@@ -25,6 +25,7 @@ type GinX struct {
 
 func (g *GinX) BindTransfer(core *Context, i GinXBinder) {
 	defer core.Release()
+	defer g.result(core)
 	if g.checkErr() {
 		return
 	}
@@ -35,11 +36,7 @@ func (g *GinX) BindTransfer(core *Context, i GinXBinder) {
 	}
 
 	g.setBindFn(i.BindFn(core))
-	if g.checkErr() {
-		return
-	}
 
-	g.result(core)
 }
 
 func (g *GinX) checkErr() bool {
