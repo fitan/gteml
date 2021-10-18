@@ -4,6 +4,14 @@ import (
 	"sync"
 )
 
+type ContextPool struct {
+	p            sync.Pool
+	registerList []Register
+}
+
+func ConfReloadHook() {
+}
+
 var registerList []Register
 
 func InsetRegister(os ...Register) {

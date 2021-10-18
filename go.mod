@@ -7,6 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1 // indirect

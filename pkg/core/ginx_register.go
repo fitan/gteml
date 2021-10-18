@@ -97,7 +97,10 @@ func (g *ginXRegister) Set(c *Context) {
 }
 
 func (g *ginXRegister) Unset(c *Context) {
-	c.GinX = nil
+	c.GinX.bindVal = nil
+	c.GinX.bindRes = nil
+	c.GinX.bindErr = nil
+	c.GinX.Context = nil
 }
 
 type GinXHandlerOption func(c *Context) error
@@ -105,8 +108,8 @@ type GinXHandlerOption func(c *Context) error
 func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerOption) {
 	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
 		core := GetCore()
-		// gin的request ctx放到core里
-		core.SetCtx(c.Request.Context())
+		//gin的request ctx放到trace里
+		//core.SetCtx(c.Request.Context())
 		// core包裹gin context
 		core.GinX.SetGinCtx(c)
 		// 加载中间件option
@@ -138,6 +141,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerO
 	})
 }
 
+// gin value 设置key
 func WithHandlerName(name string) GinXHandlerOption {
 	return func(c *Context) error {
 		c.GinX.Set(_FnName, name)

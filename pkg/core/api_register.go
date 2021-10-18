@@ -23,6 +23,6 @@ func (h *ApisRegister) Set(c *Context) {
 }
 
 func (h *ApisRegister) Unset(c *Context) {
-	c.Apis.Baidu = nil
-	c.Apis.Taobao = nil
+	//c.Apis.Baidu = nil
+	//c.Apis.Taobao = nil
 }

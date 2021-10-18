@@ -19,11 +19,9 @@ type Context struct {
 
 	common.Tracer
 
-	//Log *log.Xlog
-
-	//TraceLog *log.TraceLog
-
 	GinX *GinX
+
+	Store interface{}
 
 	Apis
 

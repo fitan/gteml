@@ -43,5 +43,5 @@ func (l *logRegister) Set(c *Context) {
 }
 
 func (l *logRegister) Unset(c *Context) {
-	c.CoreLog = nil
+	//c.CoreLog = nil
 }
