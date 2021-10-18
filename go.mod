@@ -3,6 +3,7 @@ module github.com/fitan/gteml
 go 1.16
 
 require (
+	entgo.io/ent v0.9.1
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
