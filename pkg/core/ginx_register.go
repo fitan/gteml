@@ -1,29 +1,35 @@
 package core
 
 import (
+	"github.com/fitan/gteml/pkg/types"
 	"github.com/gin-gonic/gin"
 )
 
-type GinXBinder interface {
-	BindVal(c *Context) (interface{}, error)
-	BindFn(c *Context) (interface{}, error)
-}
-
-type GinXTransfer interface {
-	Method() string
-	Url() string
-	Binder() GinXBinder
-}
-
 type GinX struct {
 	*gin.Context
-	bindVal    interface{}
+	bindReq    interface{}
 	bindRes    interface{}
 	bindErr    error
 	resultWrap []Option
 }
 
-func (g *GinX) BindTransfer(core *Context, i GinXBinder) {
+func (g *GinX) SetBindReq(i interface{}) {
+	panic("implement me")
+}
+
+func (g *GinX) SetBindRes(i interface{}) {
+	panic("implement me")
+}
+
+func (g *GinX) SetBindErr(err error) {
+	panic("implement me")
+}
+
+func NewGinX() types.GinXer {
+	return &GinX{}
+}
+
+func (g *GinX) BindTransfer(core *Context, i types.GinXBinder) {
 	defer core.Release()
 	defer g.result(core)
 	if g.checkErr() {
@@ -55,7 +61,7 @@ func (g *GinX) GinCtx() *gin.Context {
 }
 
 func (g *GinX) setBindVal(data interface{}, err error) {
-	g.bindVal = data
+	g.bindReq = data
 	g.bindErr = err
 }
 
@@ -84,6 +90,10 @@ type ginXRegister struct {
 	options []Option
 }
 
+func (g *ginXRegister) Reload(c *Context) {
+	panic("implement me")
+}
+
 func (g *ginXRegister) With(o ...Option) Register {
 	g.options = append(make([]Option, 0, len(o)), o...)
 	return g
@@ -94,15 +104,15 @@ func (g *ginXRegister) Set(c *Context) {
 }
 
 func (g *ginXRegister) Unset(c *Context) {
-	c.GinX.bindVal = nil
-	c.GinX.bindRes = nil
-	c.GinX.bindErr = nil
-	c.GinX.Context = nil
+	c.GinX.SetBindReq(nil)
+	c.GinX.SetBindRes(nil)
+	c.GinX.SetBindErr(nil)
+	c.GinX.SetGinCtx(nil)
 }
 
 type GinXHandlerOption func(c *Context) error
 
-func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerOption) {
+func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHandlerOption) {
 	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
 		core := GetCore()
 		//gin的request ctx放到trace里
@@ -113,7 +123,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerO
 		for _, f := range o {
 			err := f(core)
 			if err != nil {
-				core.GinX.bindErr = err
+				core.GinX.SetBindErr(err)
 				break
 			}
 		}
@@ -123,7 +133,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerO
 
 			if core.CoreLog.IsOpenTrace() {
 				// 设置tracelog
-				core.Log = core.CoreLog.TraceLog(core.GinX.GetString(_FnName))
+				core.Log = core.CoreLog.TraceLog(core.GinX.GinCtx().GetString(_FnName))
 				// 如果打开trace则end
 				defer core.Log.Sync()
 			} else {
@@ -141,7 +151,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer GinXTransfer, o ...GinXHandlerO
 // gin value 设置key
 func WithHandlerName(name string) GinXHandlerOption {
 	return func(c *Context) error {
-		c.GinX.Set(_FnName, name)
+		c.GinX.GinCtx().Set(_FnName, name)
 		return nil
 	}
 }

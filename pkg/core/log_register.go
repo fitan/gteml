@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/fitan/gteml/pkg/log"
+	"go.uber.org/zap"
 )
 
 var xlog *log.Xlog
@@ -17,18 +18,22 @@ func (c *CoreLog) IsOpenTrace() bool {
 }
 
 func (c *CoreLog) TraceLog(spanName string) *log.TraceLog {
-	return c.xlog.TraceLog(c.core.SpanCtx(spanName))
+	return c.xlog.TraceLog(c.core.Tracer.SpanCtx(spanName))
 }
 
 func NewXlog() *log.Xlog {
 	if xlog != nil {
 		return xlog
 	}
-	return log.NewXlog()
+	return log.NewXlog(log.WithLogLevel(zap.InfoLevel))
 	//return log.NewXlog(log.WithTrace(zap.InfoLevel))
 }
 
 type logRegister struct {
+}
+
+func (l *logRegister) Reload(c *Context) {
+	panic("implement me")
 }
 
 func (l *logRegister) With(o ...Option) Register {

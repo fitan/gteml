@@ -21,9 +21,10 @@ func InsetRegister(os ...Register) {
 func init() {
 	InsetRegister(&Confer{})
 	InsetRegister(&logRegister{})
-	InsetRegister((&ginXRegister{}).With())
+	InsetRegister(&ginXRegister{})
 	InsetRegister(&Trace{})
 	InsetRegister(&ApisRegister{})
+	InsetRegister(&VersionReg{})
 }
 
 //func NewCore() *Context {
@@ -41,6 +42,8 @@ func NewPoolFn() interface{} {
 	for _, r := range registerList {
 		r.Set(core)
 	}
+	// 初始化对象版本号
+	core.SetLocalVersion()
 	return core
 	//return NewCore().Init()
 }
@@ -50,7 +53,7 @@ var corePool = sync.Pool{
 }
 
 func GetCore() *Context {
-	return corePool.Get().(*Context).Init()
+	return corePool.Get().(*Context)
 }
 
 func PutCore(x interface{}) {

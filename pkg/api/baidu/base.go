@@ -1,22 +1,22 @@
 package baidu
 
 import (
-	"github.com/fitan/gteml/pkg/common"
 	"github.com/fitan/gteml/pkg/httpclient"
 	"github.com/fitan/gteml/pkg/trace"
+	"github.com/fitan/gteml/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 
 var client = httpclient.NewClient(httpclient.WithHost("http://www.baidu.com"), httpclient.WithTrace(trace.GetTp(), "baidu", false))
 
 type BaiduApi struct {
-	Context common.Context
+	Context types.Context
 	client  *httpclient.TraceClient
 }
 
-func NewBaiduApi(t common.Context) *BaiduApi {
+func NewBaiduApi(t types.Context) *BaiduApi {
 	return &BaiduApi{Context: t, client: &httpclient.TraceClient{
-		Tracer: t,
+		Tracer: t.Tracer,
 		Client: client,
 	}}
 }

@@ -1,11 +1,12 @@
 package core
 
 import (
-	"github.com/fitan/gteml/pkg/common"
+	"github.com/fitan/gteml/pkg/types"
 )
 
 type Register interface {
 	With(o ...Option) Register
+	Reload(c *Context)
 	Set(c *Context)
 	Unset(c *Context)
 }
@@ -13,19 +14,24 @@ type Register interface {
 type Option func(c *Context)
 
 type Context struct {
-	Config *MyConf
+	Config *types.MyConf
 
 	*CoreLog
 
-	Log common.Logger
+	Log types.Logger
 
-	common.Tracer
+	Tracer types.Tracer
 
-	GinX *GinX
+	GinX types.GinXer
 
-	Store interface{}
+	Storage types.Storage
 
-	Apis
+	Cache types.Cache
+
+	Apis Apis
+
+	Version      types.Version
+	localVersion int
 
 	releaseFn func(x interface{})
 }
@@ -38,10 +44,19 @@ func (c *Context) Init() *Context {
 	return c
 }
 
+func (c *Context) SetLocalVersion() {
+	c.localVersion = c.Version.Version()
+}
+
 func (c *Context) Release() {
 	c.Tracer.End()
 	for _, r := range registerList {
 		r.Unset(c)
+	}
+
+	// 如果配置文件reload 那么对象不放回pool中
+	if c.localVersion < c.Version.Version() {
+		return
 	}
 
 	PutCore(c)

@@ -2,23 +2,23 @@ package httpclient
 
 import (
 	"context"
-	"github.com/fitan/gteml/pkg/common"
+	"github.com/fitan/gteml/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 
 const _OpenTrace string = "_openTrace"
 
-func NewTraceClient(tracer common.Tracer, client *resty.Client) *TraceClient {
+func NewTraceClient(tracer types.Tracer, client *resty.Client) *TraceClient {
 	return &TraceClient{tracer, client}
 
 }
 
 type TraceClient struct {
-	common.Tracer
+	types.Tracer
 	*resty.Client
 }
 
-func (h *TraceClient) SetTracer(t common.Tracer) {
+func (h *TraceClient) SetTracer(t types.Tracer) {
 	h.Tracer = t
 }
 
@@ -31,7 +31,7 @@ func (h *TraceClient) R() *TraceRequest {
 }
 
 type TraceRequest struct {
-	common.Tracer
+	types.Tracer
 	*resty.Request
 }
 

@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/fitan/gteml/internal/api/service/user"
-	"github.com/fitan/gteml/pkg/core"
+	"github.com/fitan/gteml/pkg/types"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func (t *CreateTransfer) Url() string {
 	return "/user"
 }
 
-func (t *CreateTransfer) Binder() core.GinXBinder {
+func (t *CreateTransfer) Binder() types.GinXBinder {
 	return new(CreateBinder)
 }
 
@@ -26,12 +26,12 @@ type CreateBinder struct {
 	val user.CreateIn
 }
 
-func (b *CreateBinder) BindVal(core *core.Context) (interface{}, error) {
-	err := core.GinX.ShouldBindUri(&b.val.Uri)
+func (b *CreateBinder) BindVal(core *types.Context) (interface{}, error) {
+	err := core.GinX.GinCtx().ShouldBindUri(&b.val.Uri)
 	b.val.Body.Hello = "anbowei"
 	return b.val, err
 }
 
-func (b *CreateBinder) BindFn(core *core.Context) (interface{}, error) {
+func (b *CreateBinder) BindFn(core *types.Context) (interface{}, error) {
 	return user.Create(core, &b.val)
 }

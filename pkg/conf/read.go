@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func WatchFile(fileName string, paths []string, conf interface{}) (*Watch, error) {
+func WatchFile(fileName string, paths []string, conf interface{}, delayTime time.Duration) (*Watch, error) {
 	var v = viper.New()
 	v.SetConfigName(fileName)
 	for _, path := range paths {
@@ -23,13 +23,14 @@ func WatchFile(fileName string, paths []string, conf interface{}) (*Watch, error
 		return nil, err
 	}
 
-	w := new(Watch)
+	w := NewWatch(delayTime)
 
 	v.OnConfigChange(func(in fsnotify.Event) {
 		err := v.Unmarshal(conf)
 		if err != nil {
 			log.Println("[error] unable to unmarshal: %v", err)
 		} else {
+			log.Println("watch file reload: ", in.String())
 			w.Send()
 		}
 	})

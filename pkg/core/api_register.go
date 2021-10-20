@@ -13,6 +13,10 @@ type Apis struct {
 type ApisRegister struct {
 }
 
+func (h *ApisRegister) Reload(c *Context) {
+	panic("implement me")
+}
+
 func (h *ApisRegister) With(o ...Option) Register {
 	return h
 }

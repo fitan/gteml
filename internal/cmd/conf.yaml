@@ -1,3 +1,9 @@
+app:
+  name: gteml
+log:
+  lervel: 1
+  fileName: gtemllog
+
 trace:
   open: true
 
@@ -12,3 +18,4 @@ mysql:
 
 redis:
   url: localhost:6379
+
