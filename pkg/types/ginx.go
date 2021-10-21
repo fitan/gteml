@@ -7,8 +7,12 @@ type GinXer interface {
 	SetGinCtx(c *gin.Context)
 	GinCtx() *gin.Context
 	SetBindReq(interface{})
+	BindReq() interface{}
 	SetBindRes(interface{})
+	BindRes() interface{}
 	SetBindErr(error)
+	BindErr() error
+	Result(c *Context)
 }
 
 type GinXBinder interface {
@@ -21,3 +25,5 @@ type GinXTransfer interface {
 	Url() string
 	Binder() GinXBinder
 }
+
+type Option func(c *Context)

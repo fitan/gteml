@@ -29,24 +29,32 @@ func (v *Version) Version() int {
 	return v.v
 }
 
+func (v *Version) SetVersion(c *types.Context) {
+	c.LocalVersion = v.Version()
+}
+
+func (v *Version) CompareVersion(c *types.Context) bool {
+	return v.Version() == c.LocalVersion
+}
+
 type VersionReg struct {
 	version types.Version
 }
 
-func (v *VersionReg) Reload(c *Context) {
+func (v *VersionReg) Reload(c *types.Context) {
 	panic("implement me")
 }
 
-func (v *VersionReg) With(o ...Option) Register {
+func (v *VersionReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (v *VersionReg) Set(c *Context) {
+func (v *VersionReg) Set(c *types.Context) {
 	if v.version == nil {
 		v.version = NewVersion()
 	}
 	c.Version = v.version
 }
 
-func (v *VersionReg) Unset(c *Context) {
+func (v *VersionReg) Unset(c *types.Context) {
 }

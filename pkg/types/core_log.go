@@ -1,6 +1,7 @@
 package types
 
-type CoreLog interface {
+type CoreLoger interface {
 	IsOpenTrace() bool
 	TraceLog(spanName string) Logger
+	Log() Logger
 }

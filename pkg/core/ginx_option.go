@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"github.com/fitan/gteml/pkg/types"
 	"go.uber.org/zap"
 	"net/http"
 )
@@ -18,17 +19,17 @@ func WithWrap(ops ...Option) GinOption {
 	}
 }
 
-func GinXResultWrap(c *Context) {
-	res := GinXResult{Data: c.GinX.bindRes}
-	if c.GinX.bindErr != nil {
-		res.Msg = c.GinX.bindErr.Error()
+func GinXResultWrap(c *types.Context) {
+	res := GinXResult{Data: c.GinX.BindRes()}
+	if c.GinX.BindErr() != nil {
+		res.Msg = c.GinX.BindErr().Error()
 		res.Code = 5003
-		c.GinX.Context.JSON(http.StatusInternalServerError, res)
+		c.GinX.GinCtx().JSON(http.StatusInternalServerError, res)
 		return
 	}
 
 	res.Code = 2000
-	c.GinX.Context.JSON(http.StatusOK, res)
+	c.GinX.GinCtx().JSON(http.StatusOK, res)
 }
 
 type GinXResult struct {
@@ -37,17 +38,17 @@ type GinXResult struct {
 	Data interface{} `json:"data"`
 }
 
-func GinXTraceWrap(c *Context) {
+func GinXTraceWrap(c *types.Context) {
 	if !c.Tracer.IsOpen() {
 		return
 	}
-	l := c.TraceLog("GinxTraceWrap")
+	l := c.CoreLog.TraceLog("GinXTraceWrap")
 	defer l.Sync()
-	res, _ := json.Marshal(c.GinX.bindRes)
-	val, _ := json.Marshal(c.GinX.bindVal)
-	zf := []zap.Field{zap.String("val", string(val)), zap.String("res", string(res))}
-	if c.GinX.bindErr != nil {
-		l.Error(c.GinX.bindErr.Error(), zf...)
+	res, _ := json.Marshal(c.GinX.BindRes())
+	req, _ := json.Marshal(c.GinX.BindReq())
+	zf := []zap.Field{zap.String("req", string(req)), zap.String("res", string(res))}
+	if c.GinX.BindErr() != nil {
+		l.Error(c.GinX.BindErr().Error(), zf...)
 	} else {
 		l.Info("handler info", zf...)
 	}

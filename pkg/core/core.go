@@ -5,13 +5,11 @@ import (
 )
 
 type Register interface {
-	With(o ...Option) Register
+	With(o ...types.Option) Register
 	Reload(c *Context)
 	Set(c *Context)
 	Unset(c *Context)
 }
-
-type Option func(c *Context)
 
 type Context struct {
 	Config *types.MyConf

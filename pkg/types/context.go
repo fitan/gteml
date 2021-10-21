@@ -3,7 +3,7 @@ package types
 type Context struct {
 	Config *MyConf
 
-	CoreLog CoreLog
+	CoreLog CoreLoger
 
 	Log Logger
 
@@ -19,7 +19,7 @@ type Context struct {
 
 	Version Version
 
-	localVersion int
+	LocalVersion int
 
-	Reuse func(x interface{})
+	Pool Pooler
 }

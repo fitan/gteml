@@ -10,11 +10,11 @@ import (
 var client = httpclient.NewClient(httpclient.WithHost("http://www.baidu.com"), httpclient.WithTrace(trace.GetTp(), "baidu", false))
 
 type BaiduApi struct {
-	Context types.Context
+	Context *types.Context
 	client  *httpclient.TraceClient
 }
 
-func NewBaiduApi(t types.Context) *BaiduApi {
+func NewBaiduApi(t *types.Context) *BaiduApi {
 	return &BaiduApi{Context: t, client: &httpclient.TraceClient{
 		Tracer: t.Tracer,
 		Client: client,

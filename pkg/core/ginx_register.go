@@ -10,28 +10,40 @@ type GinX struct {
 	bindReq    interface{}
 	bindRes    interface{}
 	bindErr    error
-	resultWrap []Option
+	resultWrap []types.Option
+}
+
+func (g *GinX) BindReq() interface{} {
+	return g.bindReq
+}
+
+func (g *GinX) BindRes() interface{} {
+	return g.bindRes
+}
+
+func (g *GinX) BindErr() error {
+	return g.bindErr
 }
 
 func (g *GinX) SetBindReq(i interface{}) {
-	panic("implement me")
+	g.bindReq = i
 }
 
 func (g *GinX) SetBindRes(i interface{}) {
-	panic("implement me")
+	g.bindRes = i
 }
 
 func (g *GinX) SetBindErr(err error) {
-	panic("implement me")
+	g.bindErr = err
 }
 
 func NewGinX() types.GinXer {
 	return &GinX{}
 }
 
-func (g *GinX) BindTransfer(core *Context, i types.GinXBinder) {
-	defer core.Release()
-	defer g.result(core)
+func (g *GinX) BindTransfer(core *types.Context, i types.GinXBinder) {
+	defer core.Pool.ReUse(core)
+	defer g.Result(core)
 	if g.checkErr() {
 		return
 	}
@@ -70,7 +82,7 @@ func (g *GinX) setBindFn(data interface{}, err error) {
 	g.bindErr = err
 }
 
-func (g *GinX) result(c *Context) {
+func (g *GinX) Result(c *types.Context) {
 	for _, r := range g.resultWrap {
 		r(c)
 	}
@@ -87,34 +99,34 @@ func NewGin(fs ...GinOption) *GinX {
 }
 
 type ginXRegister struct {
-	options []Option
+	options []types.Option
 }
 
-func (g *ginXRegister) Reload(c *Context) {
+func (g *ginXRegister) Reload(c *types.Context) {
 	panic("implement me")
 }
 
-func (g *ginXRegister) With(o ...Option) Register {
-	g.options = append(make([]Option, 0, len(o)), o...)
+func (g *ginXRegister) With(o ...types.Option) types.Register {
+	g.options = append(make([]types.Option, 0, len(o)), o...)
 	return g
 }
 
-func (g *ginXRegister) Set(c *Context) {
+func (g *ginXRegister) Set(c *types.Context) {
 	c.GinX = NewGin(WithWrap(GinXResultWrap, GinXTraceWrap))
 }
 
-func (g *ginXRegister) Unset(c *Context) {
+func (g *ginXRegister) Unset(c *types.Context) {
 	c.GinX.SetBindReq(nil)
 	c.GinX.SetBindRes(nil)
 	c.GinX.SetBindErr(nil)
 	c.GinX.SetGinCtx(nil)
 }
 
-type GinXHandlerOption func(c *Context) error
+type GinXHandlerOption func(c *types.Context) error
 
 func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHandlerOption) {
 	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
-		core := GetCore()
+		core := GetCtxPool().GetObj()
 		//gin的request ctx放到trace里
 		//core.SetCtx(c.Request.Context())
 		// core包裹gin context
@@ -137,11 +149,11 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 				// 如果打开trace则end
 				defer core.Log.Sync()
 			} else {
-				core.Log = core.CoreLog.xlog
+				core.Log = core.CoreLog.Log()
 			}
 		} else {
 			// 普通log
-			core.Log = core.CoreLog.xlog
+			core.Log = core.CoreLog.Log()
 		}
 
 		core.GinX.BindTransfer(core, transfer.Binder())
@@ -150,7 +162,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 
 // gin value 设置key
 func WithHandlerName(name string) GinXHandlerOption {
-	return func(c *Context) error {
+	return func(c *types.Context) error {
 		c.GinX.GinCtx().Set(_FnName, name)
 		return nil
 	}

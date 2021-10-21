@@ -20,10 +20,10 @@ func init() {
 	go func() {
 		for {
 			<-c
-			GetCore().Version.AddVersion()
+			GetCtxPool().GetObj().Version.AddVersion()
 			//配置文件reload后 gc触发清理pool中的对象
 			runtime.GC()
-			log.Println("reload config version: ", GetCore().Version.Version())
+			log.Println("reload config version: ", GetCtxPool().GetObj().Version.Version())
 		}
 	}()
 }
@@ -31,16 +31,30 @@ func init() {
 type ConfReg struct {
 }
 
-func (c *ConfReg) With(o ...Option) Register {
-	panic("implement me")
+func (c *ConfReg) With(o ...types.Option) types.Register {
+	return c
 }
 
-func (c *ConfReg) Reload(ctx *Context) {
+func (c *ConfReg) Reload(ctx *types.Context) {
 }
 
-func (c *ConfReg) Set(ctx *Context) {
+func (c *ConfReg) Set(ctx *types.Context) {
 	ctx.Config = myConf
 }
 
-func (c *ConfReg) Unset(ctx *Context) {
+func (c *ConfReg) Unset(ctx *types.Context) {
 }
+
+//func (c *ConfReg) With(o ...types.Option) Register {
+//	panic("implement me")
+//}
+//
+//func (c *ConfReg) Reload(ctx *Context) {
+//}
+//
+//func (c *ConfReg) Set(ctx *Context) {
+//	ctx.Config = myConf
+//}
+//
+//func (c *ConfReg) Unset(ctx *Context) {
+//}

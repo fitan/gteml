@@ -8,7 +8,7 @@ import (
 
 var client = httpclient.NewClient(httpclient.WithHost("http://www.taobao.com"))
 
-func NewTaoBaoApi(t types.Context) *TaoBaoApi {
+func NewTaoBaoApi(t *types.Context) *TaoBaoApi {
 	return &TaoBaoApi{
 		Context: t,
 		TraceClient: &httpclient.TraceClient{
@@ -19,7 +19,7 @@ func NewTaoBaoApi(t types.Context) *TaoBaoApi {
 }
 
 type TaoBaoApi struct {
-	Context types.Context
+	Context *types.Context
 	*httpclient.TraceClient
 }
 

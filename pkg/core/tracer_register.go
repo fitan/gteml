@@ -1,22 +1,25 @@
 package core
 
-import "github.com/fitan/gteml/pkg/trace"
+import (
+	"github.com/fitan/gteml/pkg/trace"
+	"github.com/fitan/gteml/pkg/types"
+)
 
 type Trace struct {
 }
 
-func (t Trace) Reload(c *Context) {
+func (t Trace) Reload(c *types.Context) {
 	panic("implement me")
 }
 
-func (t Trace) With(o ...Option) Register {
+func (t Trace) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (t Trace) Set(c *Context) {
+func (t Trace) Set(c *types.Context) {
 	c.Tracer = trace.NewTrace(trace.GetTp(), c.Config.Trace.Open)
 }
 
-func (t Trace) Unset(c *Context) {
+func (t Trace) Unset(c *types.Context) {
 	c.Tracer = nil
 }
