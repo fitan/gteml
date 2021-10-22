@@ -5,6 +5,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+type CoreLoger interface {
+	IsOpenTrace() bool
+	TraceLog(spanName string) Logger
+	Log() Logger
+}
+
 type Logger interface {
 	Sugar() *zap.SugaredLogger
 	Named(s string) *zap.Logger

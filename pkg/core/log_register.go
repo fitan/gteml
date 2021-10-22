@@ -4,6 +4,7 @@ import (
 	"github.com/fitan/gteml/pkg/log"
 	"github.com/fitan/gteml/pkg/types"
 	"go.uber.org/zap"
+	"sync"
 )
 
 var xlog *log.Xlog
@@ -26,19 +27,24 @@ func (c *CoreLog) Log() types.Logger {
 	return c.xlog
 }
 
-func NewXlog() *log.Xlog {
-	if xlog != nil {
-		return xlog
-	}
-	return log.NewXlog(log.WithLogLevel(zap.InfoLevel))
-	//return log.NewXlog(log.WithTrace(zap.InfoLevel))
+type logRegister struct {
+	m    sync.Mutex
+	xlog *log.Xlog
 }
 
-type logRegister struct {
+func (l *logRegister) GetXlog() *log.Xlog {
+	l.m.Lock()
+	defer l.m.Unlock()
+	if l.xlog == nil {
+		l.xlog = log.NewXlog(log.WithLogLevel(zap.InfoLevel), log.WithTrace(zap.DebugLevel))
+	}
+	return l.xlog
 }
 
 func (l *logRegister) Reload(c *types.Context) {
-	panic("implement me")
+	l.m.Lock()
+	defer l.m.Unlock()
+	l.xlog = nil
 }
 
 func (l *logRegister) With(o ...types.Option) types.Register {
@@ -48,7 +54,7 @@ func (l *logRegister) With(o ...types.Option) types.Register {
 func (l *logRegister) Set(c *types.Context) {
 	c.CoreLog = &CoreLog{
 		core: c,
-		xlog: NewXlog(),
+		xlog: l.GetXlog(),
 	}
 }
 

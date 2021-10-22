@@ -44,6 +44,7 @@ func NewGinX() types.GinXer {
 func (g *GinX) BindTransfer(core *types.Context, i types.GinXBinder) {
 	defer core.Pool.ReUse(core)
 	defer g.Result(core)
+	defer core.Log.Sync()
 	if g.checkErr() {
 		return
 	}
@@ -54,11 +55,10 @@ func (g *GinX) BindTransfer(core *types.Context, i types.GinXBinder) {
 	}
 
 	g.setBindFn(i.BindFn(core))
-
 }
 
 func (g *GinX) checkErr() bool {
-	if g.bindErr != nil {
+	if g.BindErr() != nil {
 		return true
 	}
 	return false
@@ -103,7 +103,6 @@ type ginXRegister struct {
 }
 
 func (g *ginXRegister) Reload(c *types.Context) {
-	panic("implement me")
 }
 
 func (g *ginXRegister) With(o ...types.Option) types.Register {

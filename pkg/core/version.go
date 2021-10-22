@@ -42,7 +42,6 @@ type VersionReg struct {
 }
 
 func (v *VersionReg) Reload(c *types.Context) {
-	panic("implement me")
 }
 
 func (v *VersionReg) With(o ...types.Option) types.Register {

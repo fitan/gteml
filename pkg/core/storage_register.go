@@ -8,7 +8,7 @@ import (
 )
 
 type Storage struct {
-	core *Context
+	core *types.Context
 	*ent.Client
 }
 
@@ -20,7 +20,7 @@ func (s *Storage) GetByIds(ids []int) ([]*ent.User, error) {
 	return s.Client.User.Query().Where(user.IDIn(ids...)).All(s.core.Tracer.SpanCtx("GetByIds"))
 }
 
-func NewStorage(core *Context, client *ent.Client) types.Storage {
+func NewStorage(core *types.Context, client *ent.Client) types.Storage {
 	return &Storage{
 		core:   core,
 		Client: client,
@@ -32,11 +32,11 @@ type StorageReg struct {
 	client *ent.Client
 }
 
-func (s StorageReg) With(o ...Option) Register {
+func (s StorageReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (s StorageReg) Set(c *Context) {
+func (s StorageReg) Set(c *types.Context) {
 	if c.Config.Mysql.Url != s.url {
 		s.url = c.Config.Mysql.Url
 		client, err := ent.Open("mysql", c.Config.Mysql.Url)
@@ -49,6 +49,6 @@ func (s StorageReg) Set(c *Context) {
 	c.Storage = NewStorage(c, s.client)
 }
 
-func (s StorageReg) Unset(c *Context) {
+func (s StorageReg) Unset(c *types.Context) {
 
 }

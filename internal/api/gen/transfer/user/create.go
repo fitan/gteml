@@ -7,7 +7,6 @@ import (
 )
 
 type CreateTransfer struct {
-	val user.CreateIn
 }
 
 func (t *CreateTransfer) Method() string {

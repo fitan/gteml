@@ -9,8 +9,8 @@ import (
 
 const _FnName = "fn_name"
 
-func WithWrap(ops ...Option) GinOption {
-	wrap := make([]Option, 0, len(ops))
+func WithWrap(ops ...types.Option) GinOption {
+	wrap := make([]types.Option, 0, len(ops))
 	for _, o := range ops {
 		wrap = append(wrap, o)
 	}

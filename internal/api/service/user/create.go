@@ -16,12 +16,22 @@ type CreateIn struct {
 // @Router post /user
 func Create(c *types.Context, in *CreateIn) (string, error) {
 	c.Log.Info("这是 create的开始")
+	c.Log.Sync()
 
-	data, _ := c.Apis.Baidu().GetRoot()
+	log := c.CoreLog.TraceLog("nest 嵌套")
+	log.Info("嵌套info： fsfdf fsdfsd ")
+	defer log.Sync()
+
+	c.Apis.Baidu().GetSum()
+	//data, err := c.Apis.Baidu().GetRoot()
+	//if err != nil {
+	//	return "", err
+	//}
 
 	_, ok := c.GinX.GinCtx().GetQuery("status")
 	if !ok {
 		return "", errors.New("not find query status")
 	}
-	return data.String(), nil
+	return "create data", nil
+	//return data.String(), nil
 }

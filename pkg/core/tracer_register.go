@@ -8,18 +8,16 @@ import (
 type Trace struct {
 }
 
-func (t Trace) Reload(c *types.Context) {
-	panic("implement me")
+func (t *Trace) Reload(c *types.Context) {
 }
 
-func (t Trace) With(o ...types.Option) types.Register {
-	panic("implement me")
+func (t *Trace) With(o ...types.Option) types.Register {
+	return nil
 }
 
-func (t Trace) Set(c *types.Context) {
+func (t *Trace) Set(c *types.Context) {
 	c.Tracer = trace.NewTrace(trace.GetTp(), c.Config.Trace.Open)
 }
 
-func (t Trace) Unset(c *types.Context) {
-	c.Tracer = nil
+func (t *Trace) Unset(c *types.Context) {
 }

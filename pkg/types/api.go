@@ -9,6 +9,8 @@ type Apis interface {
 
 type BaiduApi interface {
 	GetRoot() (*resty.Response, error)
+	GetRootNest() (*resty.Response, error)
+	GetSum()
 }
 
 type TaobaoApi interface {

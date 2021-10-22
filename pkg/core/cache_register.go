@@ -9,7 +9,7 @@ import (
 )
 
 type Cache struct {
-	core   *Context
+	core   *types.Context
 	Client *redis.Client
 	option option
 }
@@ -19,7 +19,7 @@ type option struct {
 	setTime time.Duration
 }
 
-func NewCache(core *Context, client *redis.Client, option option) types.Cache {
+func NewCache(core *types.Context, client *redis.Client, option option) types.Cache {
 	return &Cache{core: core, Client: client, option: option}
 }
 
@@ -118,11 +118,11 @@ type CacheReg struct {
 	client *redis.Client
 }
 
-func (c *CacheReg) With(o ...Option) Register {
+func (c *CacheReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (c *CacheReg) Set(ctx *Context) {
+func (c *CacheReg) Set(ctx *types.Context) {
 	if ctx.Config.Redis.Url != c.url {
 		client := redis.NewClient(&redis.Options{Addr: ctx.Config.Redis.Url, Password: "", DB: 0})
 		c.url = ctx.Config.Redis.Url
@@ -132,6 +132,6 @@ func (c *CacheReg) Set(ctx *Context) {
 	ctx.Cache = NewCache(ctx, c.client, option{ctx.Config.App.Name, 5 * time.Second})
 }
 
-func (c *CacheReg) Unset(ctx *Context) {
+func (c *CacheReg) Unset(ctx *types.Context) {
 
 }

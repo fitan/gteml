@@ -9,8 +9,8 @@ var CtxPool *types.CtxPool
 
 func GetCtxPool() *types.CtxPool {
 	if CtxPool == nil {
-		CtxPool = &types.CtxPool{P: sync.Pool{New: NewObjFn(CtxPool)}}
-		return CtxPool
+		CtxPool = &types.CtxPool{}
+		CtxPool.P = sync.Pool{New: NewObjFn(CtxPool)}
 	}
 	return CtxPool
 }

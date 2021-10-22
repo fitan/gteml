@@ -1,6 +1,7 @@
 package types
 
 import (
+	"log"
 	"sync"
 )
 
@@ -14,6 +15,7 @@ func (c *CtxPool) RegisterList(l []Register) {
 }
 
 func (c *CtxPool) Set(ctx *Context) {
+	log.Println("ctx pool: ", c)
 	for _, v := range c.registerList {
 		v.Set(ctx)
 	}
@@ -52,7 +54,6 @@ func (c *CtxPool) ReUse(ctx *Context) {
 
 func (c *CtxPool) GetObj() *Context {
 	return c.P.Get().(*Context)
-
 }
 
 var registerList []Register
@@ -63,6 +64,7 @@ type Register interface {
 	Set(c *Context)
 	Unset(c *Context)
 }
+
 type Pooler interface {
 	RegisterList(l []Register)
 	Set(ctx *Context)
