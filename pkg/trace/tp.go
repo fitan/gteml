@@ -58,7 +58,7 @@ func TracerProvider(serviceName string, url string) (*trace.TracerProvider, erro
 
 func init() {
 	var err error
-	tp, err = TracerProvider("demo", "http://10.170.34.122:14268/api/traces")
+	tp, err = TracerProvider("demo", "http://localhost:14268/api/traces")
 	if err != nil {
 		log.Fatal(err)
 	}

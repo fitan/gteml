@@ -130,6 +130,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 		//core.SetCtx(c.Request.Context())
 		// core包裹gin context
 		core.GinX.SetGinCtx(c)
+		core.Tracer.SetCtx(c.Request.Context())
 		// 加载中间件option
 		for _, f := range o {
 			err := f(core)
@@ -140,7 +141,6 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 		}
 
 		if core.Tracer.IsOpen() {
-			core.Tracer.SetCtx(c.Request.Context())
 
 			if core.CoreLog.IsOpenTrace() {
 				// 设置tracelog

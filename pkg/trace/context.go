@@ -23,6 +23,11 @@ type Trace struct {
 	spans  []trace2.Span
 }
 
+func (t *Trace) UnSet() {
+	t.ctx = nil
+	t.spans = t.spans[0:0]
+}
+
 func (t *Trace) IsOpen() bool {
 	t.m.Lock()
 	defer t.m.Unlock()

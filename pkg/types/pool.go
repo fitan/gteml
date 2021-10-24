@@ -27,7 +27,8 @@ func (c *CtxPool) Unset(ctx *Context) {
 	}
 }
 
-func (c *CtxPool) Reload(ctx *Context) {
+func (c *CtxPool) Reload() {
+	ctx := c.GetObj()
 	for _, v := range c.registerList {
 		v.Reload(ctx)
 	}
@@ -69,7 +70,7 @@ type Pooler interface {
 	RegisterList(l []Register)
 	Set(ctx *Context)
 	Unset(ctx *Context)
-	Reload(ctx *Context)
+	Reload()
 	GetInit()
 	ReUse(ctx *Context)
 	GetObj() *Context

@@ -20,6 +20,7 @@ func init() {
 	go func() {
 		for {
 			<-c
+			GetCtxPool().Reload()
 			GetCtxPool().GetObj().Version.AddVersion()
 			//配置文件reload后 gc触发清理pool中的对象
 			runtime.GC()

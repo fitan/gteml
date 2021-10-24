@@ -9,9 +9,13 @@ trace:
 
 api:
   baidu:
-    url: www.baidu.com
+    url: http://www.baidu.com
+    traceDebug: true
+    restyDebug: true
   taobao:
-    url: www.taobao.com
+    url: http://www.taobao.com
+    traceDebug: true
+    restyDebug: true
 
 mysql:
   url: root:pass@tcp(localhost:3306)/test

@@ -6,23 +6,18 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var client = httpclient.NewClient(httpclient.WithHost("http://www.taobao.com"))
-
-func NewTaoBaoApi(t *types.Context) *TaoBaoApi {
+func NewTaoBaoApi(c *types.Context, client *resty.Client) *TaoBaoApi {
 	return &TaoBaoApi{
-		Context: t,
-		TraceClient: &httpclient.TraceClient{
-			Tracer: t.Tracer,
-			Client: client,
-		},
+		context: c,
+		client:  httpclient.NewTraceClient(c.Tracer, client),
 	}
 }
 
 type TaoBaoApi struct {
-	Context *types.Context
-	*httpclient.TraceClient
+	context *types.Context
+	client  *httpclient.TraceClient
 }
 
 func (t *TaoBaoApi) GetRoot() (*resty.Response, error) {
-	return t.R().Get("/", "淘宝根目录")
+	return t.client.R().Get("/", "淘宝根目录")
 }

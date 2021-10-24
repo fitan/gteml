@@ -8,4 +8,5 @@ type Tracer interface {
 	SpanCtx(name string) context.Context
 	IsOpen() bool
 	End()
+	UnSet()
 }

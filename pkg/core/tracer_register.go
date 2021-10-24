@@ -20,4 +20,5 @@ func (t *Trace) Set(c *types.Context) {
 }
 
 func (t *Trace) Unset(c *types.Context) {
+	c.Tracer.UnSet()
 }

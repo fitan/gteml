@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/fitan/gteml/pkg/api"
 	"github.com/fitan/gteml/pkg/types"
 )
 
@@ -24,7 +25,7 @@ func init() {
 		&logRegister{},
 		&ginXRegister{},
 		&Trace{},
-		&ApisRegister{},
+		&api.ApisRegister{},
 		&VersionReg{},
 		&PoolReg{},
 	})
