@@ -11,11 +11,11 @@ api:
   baidu:
     url: http://www.baidu.com
     traceDebug: true
-    restyDebug: true
+    restyDebug: false
   taobao:
     url: http://www.taobao.com
     traceDebug: true
-    restyDebug: true
+    restyDebug: false
 
 mysql:
   url: root:pass@tcp(localhost:3306)/test

@@ -28,27 +28,29 @@ func NewStorage(core *types.Context, client *ent.Client) types.Storage {
 }
 
 type StorageReg struct {
-	url    string
-	client *ent.Client
+	Client *ent.Client
 }
 
-func (s StorageReg) With(o ...types.Option) types.Register {
+func (s *StorageReg) GetClient(c *types.Context) *ent.Client {
+	if s.Client == nil {
+		client, err := ent.Open("mysql", c.Config.Mysql.Url)
+		if err != nil {
+			log.Println("mysql create client: ", err.Error())
+		} else {
+			s.Client = client
+		}
+	}
+	return s.Client
+}
+
+func (s *StorageReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (s StorageReg) Set(c *types.Context) {
-	if c.Config.Mysql.Url != s.url {
-		s.url = c.Config.Mysql.Url
-		client, err := ent.Open("mysql", c.Config.Mysql.Url)
-		if err != nil {
-			log.Println("ent mysql: ", err.Error())
-		}
-		s.client = client
-	}
-
-	c.Storage = NewStorage(c, s.client)
+func (s *StorageReg) Set(c *types.Context) {
+	c.Storage = NewStorage(c, s.Client)
 }
 
-func (s StorageReg) Unset(c *types.Context) {
+func (s *StorageReg) Unset(c *types.Context) {
 
 }
