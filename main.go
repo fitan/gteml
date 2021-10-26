@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/fitan/gteml/internal/api/router"
+	"github.com/fitan/gteml/pkg/core"
+	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 
 func main() {
@@ -14,6 +16,22 @@ func main() {
 	//span.RecordError(fmt.Errorf("this is error %s", "log1"))
 	//span.SetStatus(1, "statuso")
 	//span.Sync()
+	profiler.Start(profiler.Config{
+		ApplicationName: core.GetCtxPool().GetObj().Config.App.Name,
+
+		// replace this with the address of pyroscope server
+		ServerAddress: "http://localhost:4040",
+
+		// by default all profilers are enabled,
+		// but you can select the ones you want to use:
+		ProfileTypes: []profiler.ProfileType{
+			profiler.ProfileCPU,
+			profiler.ProfileAllocObjects,
+			profiler.ProfileAllocSpace,
+			profiler.ProfileInuseObjects,
+			profiler.ProfileInuseSpace,
+		},
+	})
 
 	router.Router().Run()
 }
