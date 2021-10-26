@@ -23,6 +23,10 @@ type Trace struct {
 	spans  []trace2.Span
 }
 
+func (t *Trace) Tp() *trace.TracerProvider {
+	return t.tp
+}
+
 func (t *Trace) UnSet() {
 	t.ctx = nil
 	t.spans = t.spans[0:0]

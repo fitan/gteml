@@ -8,10 +8,28 @@ import (
 	"time"
 )
 
-var myConf *types.MyConf
+//var myConf *types.MyConf
 
-func init() {
-	myConf = &types.MyConf{}
+//func init() {
+//	myConf = &types.MyConf{}
+//	w, err := conf.WatchFile("conf", []string{"./"}, myConf, 5*time.Second)
+//	if err != nil {
+//		panic(err)
+//	}
+//	c := w.GetSignal()
+//	go func() {
+//		for {
+//			<-c
+//			GetCtxPool().Reload()
+//			GetCtxPool().GetObj().Version.AddVersion()
+//			//配置文件reload后 gc触发清理pool中的对象
+//			runtime.GC()
+//			log.Println("reload config version: ", GetCtxPool().GetObj().Version.Version())
+//		}
+//	}()
+//}
+func NewConfReg() *ConfReg {
+	myConf := &types.MyConf{}
 	w, err := conf.WatchFile("conf", []string{"./"}, myConf, 5*time.Second)
 	if err != nil {
 		panic(err)
@@ -27,9 +45,12 @@ func init() {
 			log.Println("reload config version: ", GetCtxPool().GetObj().Version.Version())
 		}
 	}()
+	return &ConfReg{MyConf: myConf}
+
 }
 
 type ConfReg struct {
+	MyConf *types.MyConf
 }
 
 func (c *ConfReg) With(o ...types.Option) types.Register {
@@ -40,7 +61,7 @@ func (c *ConfReg) Reload(ctx *types.Context) {
 }
 
 func (c *ConfReg) Set(ctx *types.Context) {
-	ctx.Config = myConf
+	ctx.Config = c.MyConf
 }
 
 func (c *ConfReg) Unset(ctx *types.Context) {

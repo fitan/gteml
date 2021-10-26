@@ -1,21 +1,22 @@
 app:
-  name: gteml
+  name: gteml1
 log:
   lervel: 1
   fileName: gtemllog
 
 trace:
   open: true
+  tracerProviderAddr: http://10.170.34.122:14268/api/traces
 
 api:
   baidu:
     url: http://www.baidu.com
     traceDebug: true
-    restyDebug: true
+    restyDebug: false
   taobao:
     url: http://www.taobao.com
     traceDebug: true
-    restyDebug: true
+    restyDebug: false
 
 mysql:
   url: root:pass@tcp(localhost:3306)/test

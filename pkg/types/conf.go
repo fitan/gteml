@@ -38,7 +38,8 @@ type Taobao struct {
 }
 
 type Trace struct {
-	Open bool `yaml:"open"`
+	TracerProviderAddr string `yaml:"tracerProviderAddr"`
+	Open               bool   `yaml:"open"`
 }
 
 type Baidu struct {

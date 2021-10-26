@@ -20,11 +20,14 @@ import (
 //}
 
 func init() {
+
+	confReg := NewConfReg()
+
 	GetCtxPool().RegisterList([]types.Register{
-		&ConfReg{},
+		confReg,
+		&Trace{},
 		&logRegister{},
 		&ginXRegister{},
-		&Trace{},
 		&api.ApisRegister{},
 		&VersionReg{},
 		&PoolReg{},

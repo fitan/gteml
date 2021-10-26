@@ -3,7 +3,6 @@ package trace
 import (
 	"context"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
@@ -47,8 +46,6 @@ func TracerProvider(serviceName string, url string) (*trace.TracerProvider, erro
 		trace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String(serviceName),
-			attribute.String("environment", "fdsf"),
-			attribute.Int64("ID", 1),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -58,7 +55,7 @@ func TracerProvider(serviceName string, url string) (*trace.TracerProvider, erro
 
 func init() {
 	var err error
-	tp, err = TracerProvider("demo", "http://localhost:14268/api/traces")
+	tp, err = TracerProvider("demo", "http://10.170.34.122:14268/api/traces")
 	if err != nil {
 		log.Fatal(err)
 	}

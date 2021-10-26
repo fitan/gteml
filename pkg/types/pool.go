@@ -46,7 +46,7 @@ func (c *CtxPool) ReUse(ctx *Context) {
 	c.Unset(ctx)
 
 	// 如果配置文件reload 那么对象不放回pool中
-	if ctx.LocalVersion < ctx.Version.Version() {
+	if ctx.LocalVersion != ctx.Version.Version() {
 		return
 	}
 
@@ -54,7 +54,13 @@ func (c *CtxPool) ReUse(ctx *Context) {
 }
 
 func (c *CtxPool) GetObj() *Context {
-	return c.P.Get().(*Context)
+	for {
+		context := c.P.Get().(*Context)
+		if context.LocalVersion != context.Version.Version() {
+			continue
+		}
+		return context
+	}
 }
 
 var registerList []Register
