@@ -23,4 +23,7 @@ mysql:
 
 redis:
   url: localhost:6379
+  password: ""
+  db: 0
+  openTrace: true
 

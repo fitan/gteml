@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/fitan/gteml/pkg/ent"
+	"github.com/fitan/magic/pkg/ent"
 	// required by schema hooks.
-	_ "github.com/fitan/gteml/pkg/ent/runtime"
+	_ "github.com/fitan/magic/pkg/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

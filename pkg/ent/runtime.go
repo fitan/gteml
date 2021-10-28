@@ -5,8 +5,8 @@ package ent
 import (
 	"time"
 
-	"github.com/fitan/gteml/pkg/ent/schema"
-	"github.com/fitan/gteml/pkg/ent/user"
+	"github.com/fitan/magic/pkg/ent/schema"
+	"github.com/fitan/magic/pkg/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code

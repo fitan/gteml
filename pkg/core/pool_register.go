@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/types"
 	"sync"
 )
 

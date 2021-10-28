@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/fitan/gteml/pkg/ent/predicate"
-	"github.com/fitan/gteml/pkg/ent/user"
+	"github.com/fitan/magic/pkg/ent/predicate"
+	"github.com/fitan/magic/pkg/ent/user"
 )
 
 // UserQuery is the builder for querying User entities.

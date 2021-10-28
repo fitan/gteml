@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/fitan/gteml/internal/api/router"
-	"github.com/fitan/gteml/pkg/core"
+	"github.com/fitan/magic/internal/api/router"
+	"github.com/fitan/magic/pkg/core"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 

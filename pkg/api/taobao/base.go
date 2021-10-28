@@ -1,8 +1,8 @@
 package taobao
 
 import (
-	"github.com/fitan/gteml/pkg/httpclient"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/httpclient"
+	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 

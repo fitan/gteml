@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/fitan/gteml/pkg/api/baidu"
-	"github.com/fitan/gteml/pkg/api/taobao"
-	"github.com/fitan/gteml/pkg/httpclient"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/api/baidu"
+	"github.com/fitan/magic/pkg/api/taobao"
+	"github.com/fitan/magic/pkg/httpclient"
+	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 

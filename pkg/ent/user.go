@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/fitan/gteml/pkg/ent/user"
+	"github.com/fitan/magic/pkg/ent/user"
 )
 
 // User is the model entity for the User schema.

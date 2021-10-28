@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/fitan/gteml/pkg/ent/user"
+	"github.com/fitan/magic/pkg/ent/user"
 )
 
 // UserCreate is the builder for creating a User entity.

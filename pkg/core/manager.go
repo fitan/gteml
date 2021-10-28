@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/fitan/gteml/pkg/api"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/api"
+	"github.com/fitan/magic/pkg/types"
 )
 
 //type ContextPool struct {
@@ -19,14 +19,15 @@ import (
 //	registerList = append(registerList, os...)
 //}
 
+var Conf *ConfReg
+
 func init() {
-
-	confReg := NewConfReg()
-
+	Conf = NewConfReg()
 	GetCtxPool().RegisterList([]types.Register{
-		confReg,
+		Conf,
 		&Trace{},
 		&logRegister{},
+		&storageReg{},
 		&ginXRegister{},
 		&api.ApisRegister{},
 		&VersionReg{},

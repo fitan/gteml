@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fitan/gteml/pkg/ent/predicate"
-	"github.com/fitan/gteml/pkg/ent/user"
+	"github.com/fitan/magic/pkg/ent/predicate"
+	"github.com/fitan/magic/pkg/ent/user"
 
 	"entgo.io/ent"
 )

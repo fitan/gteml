@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/fitan/gteml/internal/api/service/user"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/internal/api/service/user"
+	"github.com/fitan/magic/pkg/types"
 	"net/http"
 )
 

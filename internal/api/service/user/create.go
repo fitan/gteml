@@ -2,7 +2,8 @@ package user
 
 import (
 	"errors"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/ent/user"
+	"github.com/fitan/magic/pkg/types"
 )
 
 type CreateIn struct {
@@ -22,6 +23,13 @@ func Create(c *types.Context, in *CreateIn) (string, error) {
 	log.Info("嵌套info： fsfdf fsdfsd ")
 	defer log.Sync()
 
+	back, err := c.Cache.GetCallBack(
+		func() (interface{}, error) {
+			return c.Storage.User().GetById(1)
+		}, user.Table, 1)
+	if err != nil {
+		return "", err
+	}
 	c.Apis.Baidu().GetSum()
 	//data, err := c.Apis.Baidu().GetRoot()
 	//if err != nil {

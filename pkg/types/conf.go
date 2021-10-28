@@ -1,29 +1,35 @@
 package types
 
 type MyConf struct {
-	Mysql Mysql `yaml:"mysql"`
-	Redis Redis `yaml:"redis"`
-	App   App   `yaml:"app"`
 	Log   Log   `yaml:"log"`
 	Trace Trace `yaml:"trace"`
 	Api   Api   `yaml:"api"`
+	Mysql Mysql `yaml:"mysql"`
+	Redis Redis `yaml:"redis"`
+	App   App   `yaml:"app"`
 }
 
-type Mysql struct {
-	Url string `yaml:"url"`
+type Baidu struct {
+	Url        string `yaml:"url"`
+	TraceDebug bool   `yaml:"traceDebug"`
+	RestyDebug bool   `yaml:"restyDebug"`
+}
+
+type Taobao struct {
+	Url        string `yaml:"url"`
+	TraceDebug bool   `yaml:"traceDebug"`
+	RestyDebug bool   `yaml:"restyDebug"`
 }
 
 type Redis struct {
-	Url string `yaml:"url"`
+	Db        int    `yaml:"db"`
+	OpenTrace bool   `yaml:"openTrace"`
+	Url       string `yaml:"url"`
+	Password  string `yaml:"password"`
 }
 
 type App struct {
 	Name string `yaml:"name"`
-}
-
-type Log struct {
-	Lervel   int    `yaml:"lervel"`
-	FileName string `yaml:"fileName"`
 }
 
 type Api struct {
@@ -31,19 +37,16 @@ type Api struct {
 	Taobao Taobao `yaml:"taobao"`
 }
 
-type Taobao struct {
-	TraceDebug bool   `yaml:"traceDebug"`
-	RestyDebug bool   `yaml:"restyDebug"`
-	Url        string `yaml:"url"`
+type Log struct {
+	Lervel   int    `yaml:"lervel"`
+	FileName string `yaml:"fileName"`
 }
 
 type Trace struct {
-	TracerProviderAddr string `yaml:"tracerProviderAddr"`
 	Open               bool   `yaml:"open"`
+	TracerProviderAddr string `yaml:"tracerProviderAddr"`
 }
 
-type Baidu struct {
-	Url        string `yaml:"url"`
-	TraceDebug bool   `yaml:"traceDebug"`
-	RestyDebug bool   `yaml:"restyDebug"`
+type Mysql struct {
+	Url string `yaml:"url"`
 }

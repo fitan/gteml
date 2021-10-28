@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/fitan/gteml/pkg/log"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/log"
+	"github.com/fitan/magic/pkg/types"
 	"go.uber.org/zap"
 )
 

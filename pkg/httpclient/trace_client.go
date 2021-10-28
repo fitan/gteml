@@ -2,7 +2,7 @@ package httpclient
 
 import (
 	"context"
-	"github.com/fitan/gteml/pkg/types"
+	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 

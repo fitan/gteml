@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/fitan/gteml/pkg/ent/predicate"
+	"github.com/fitan/magic/pkg/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
