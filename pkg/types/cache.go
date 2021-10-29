@@ -1,10 +1,14 @@
 package types
 
+import "time"
+
 type Cache interface {
-	Get(objStr string, id int) (interface{}, bool, error)
-	Put(objStr string, id int, val interface{}) error
-	Delete(objStr string, id int) (bool, error)
-	GetCallBack(callBack func() (interface{}, error), objStr string, id int) (interface{}, error)
-	PutCallBack(callBack func() (interface{}, error), objStr string, id int) error
-	DeleteCallBack(callBack func() (interface{}, error), objStr string, id int) error
+	Get(key string, data interface{}) (string, bool, error)
+	GetCallBack(
+		callBack func() (interface{}, error), key string, data interface{}, expiration time.Duration,
+	) (interface{}, error)
+	Put(key string, val interface{}, expiration time.Duration) error
+	PutCallBack(callBack func() (interface{}, error), key string) error
+	Delete(key string) (bool, error)
+	DeleteCallBack(callBack func() (interface{}, error), key string) error
 }
