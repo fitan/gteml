@@ -46,7 +46,7 @@ func (c *Cache) Get(key string, data interface{}) (string, bool, error) {
 
 func (c *Cache) GetCallBack(callBack func() (interface{}, error), key string, data interface{}, expiration time.Duration) (interface{}, error) {
 	log := c.core.Log.With(zap.String("funcName", "GetCallBack"), zap.String("redis key", c.genKey(key)))
-	val, has, err := c.Get(key, data)
+	_, has, err := c.Get(key, data)
 	if err != nil {
 		log.Error("redis err", zap.Error(err))
 		return callBack()
@@ -65,6 +65,7 @@ func (c *Cache) GetCallBack(callBack func() (interface{}, error), key string, da
 		}
 		return val, err
 	}
+
 	return data, nil
 }
 
