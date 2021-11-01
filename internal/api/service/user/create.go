@@ -2,8 +2,10 @@ package user
 
 import (
 	"errors"
+	"github.com/fitan/magic/pkg/ent"
 	"github.com/fitan/magic/pkg/ent/user"
 	"github.com/fitan/magic/pkg/types"
+	"time"
 )
 
 type CreateIn struct {
@@ -15,7 +17,7 @@ type CreateIn struct {
 }
 
 // @Router post /user
-func Create(c *types.Context, in *CreateIn) (string, error) {
+func Create(c *types.Context, in *CreateIn) (interface{}, error) {
 	c.Log.Info("这是 create的开始")
 	c.Log.Sync()
 
@@ -26,7 +28,7 @@ func Create(c *types.Context, in *CreateIn) (string, error) {
 	back, err := c.Cache.GetCallBack(
 		func() (interface{}, error) {
 			return c.Storage.User().GetById(1)
-		}, user.Table, 1)
+		}, user.Table, &ent.User{}, 10*time.Minute)
 	if err != nil {
 		return "", err
 	}
@@ -40,6 +42,6 @@ func Create(c *types.Context, in *CreateIn) (string, error) {
 	if !ok {
 		return "", errors.New("not find query status")
 	}
-	return "create data", nil
+	return back, nil
 	//return data.String(), nil
 }

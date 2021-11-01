@@ -9,7 +9,7 @@ import (
 )
 
 type Cache struct {
-	core   *types.Context
+	ctx    *types.Context
 	client *redis.Client
 	option Option
 }
@@ -18,8 +18,8 @@ type Option struct {
 	Prefix string
 }
 
-func NewCache(core *types.Context, client *redis.Client, option Option) types.Cache {
-	return &Cache{core: core, client: client, option: option}
+func NewCache(ctx *types.Context, client *redis.Client, option Option) types.Cache {
+	return &Cache{ctx: ctx, client: client, option: option}
 }
 
 func (c *Cache) genKey(key string) string {
@@ -28,8 +28,8 @@ func (c *Cache) genKey(key string) string {
 
 func (c *Cache) Get(key string, data interface{}) (string, bool, error) {
 	key = c.genKey(key)
-	log := c.core.Log.With(zap.String("funcName", "Get"), zap.String("redis key", key))
-	val, err := c.client.Get(c.core.Tracer.SpanCtx("redis get "+key), key).Result()
+	log := c.ctx.Log.With(zap.String("funcName", "Get"), zap.String("redis key", key))
+	val, err := c.client.Get(c.ctx.Tracer.SpanCtx("redis get "+key), key).Result()
 	if err != nil {
 		if err == redis.Nil {
 			return val, false, nil
@@ -45,14 +45,14 @@ func (c *Cache) Get(key string, data interface{}) (string, bool, error) {
 }
 
 func (c *Cache) GetCallBack(callBack func() (interface{}, error), key string, data interface{}, expiration time.Duration) (interface{}, error) {
-	log := c.core.Log.With(zap.String("funcName", "GetCallBack"), zap.String("redis key", c.genKey(key)))
+	log := c.ctx.Log.With(zap.String("funcName", "GetCallBack"), zap.String("redis key", c.genKey(key)))
 	_, has, err := c.Get(key, data)
 	if err != nil {
 		log.Error("redis err", zap.Error(err))
 		return callBack()
 	}
 	if !has {
-		c.core.Log.Info("redis key is null", zap.Error(err))
+		c.ctx.Log.Warn("redis key is null", zap.Error(err))
 		val, err := callBack()
 		if err != nil {
 			return val, err
@@ -71,8 +71,8 @@ func (c *Cache) GetCallBack(callBack func() (interface{}, error), key string, da
 
 func (c *Cache) Put(key string, val interface{}, expiration time.Duration) error {
 	key = c.genKey(key)
-	log := c.core.Log.With(zap.String("funcName", "Put"), zap.String("redis key", key))
-	_, err := c.client.Set(c.core.Tracer.SpanCtx("redis put "+key), key, val, expiration).Result()
+	log := c.ctx.Log.With(zap.String("funcName", "Put"), zap.String("redis key", key))
+	_, err := c.client.Set(c.ctx.Tracer.SpanCtx("redis put "+key), key, val, expiration).Result()
 	if err != nil {
 		log.Error("redis set error", zap.Error(err))
 	}
@@ -81,7 +81,7 @@ func (c *Cache) Put(key string, val interface{}, expiration time.Duration) error
 
 func (c *Cache) PutCallBack(callBack func() (interface{}, error), key string) error {
 	key = c.genKey(key)
-	log := c.core.Log.With(zap.String("funcName", "PutCallBack"), zap.String("redis key", key))
+	log := c.ctx.Log.With(zap.String("funcName", "PutCallBack"), zap.String("redis key", key))
 	_, err := callBack()
 	if err != nil {
 		log.Error("callBack error", zap.Error(err))
@@ -90,7 +90,7 @@ func (c *Cache) PutCallBack(callBack func() (interface{}, error), key string) er
 
 	_, err = c.Delete(key)
 	if err != nil {
-		c.core.Log.Error("redis delete error", zap.Error(err))
+		c.ctx.Log.Error("redis delete error", zap.Error(err))
 		return err
 	}
 	return nil
@@ -98,11 +98,11 @@ func (c *Cache) PutCallBack(callBack func() (interface{}, error), key string) er
 
 func (c *Cache) Delete(key string) (bool, error) {
 	key = c.genKey(key)
-	log := c.core.Log.With(zap.String("funcName", "Delete"), zap.String("redis key", key))
-	_, err := c.client.Del(c.core.Tracer.SpanCtx("redis del "+key), key).Result()
+	log := c.ctx.Log.With(zap.String("funcName", "Delete"), zap.String("redis key", key))
+	_, err := c.client.Del(c.ctx.Tracer.SpanCtx("redis del "+key), key).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return false, nil
+			return true, nil
 		}
 		log.Error("redis delete error", zap.Error(err))
 		return false, err
@@ -112,7 +112,7 @@ func (c *Cache) Delete(key string) (bool, error) {
 
 func (c *Cache) DeleteCallBack(callBack func() (interface{}, error), key string) error {
 	key = c.genKey(key)
-	log := c.core.Log.With(zap.String("funcName", "DeleteCallBack"), zap.String("redis key", key))
+	log := c.ctx.Log.With(zap.String("funcName", "DeleteCallBack"), zap.String("redis key", key))
 
 	_, err := callBack()
 	if err != nil {

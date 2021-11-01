@@ -1,4 +1,4 @@
-package core
+package context
 
 import (
 	"github.com/fitan/magic/pkg/api"

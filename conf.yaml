@@ -1,7 +1,9 @@
 app:
   name: gteml1
 log:
-  lervel: 1
+  # debug -1 info 0 warn 1 error 2 dpanic 3 panic 4 fatal 5
+  lervel: 0
+  traceLervel: 2
   fileName: gtemllog
 
 trace:

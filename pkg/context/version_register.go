@@ -1,31 +1,24 @@
-package core
+package context
 
 import (
 	"github.com/fitan/magic/pkg/types"
-	"sync"
 )
 
 type Version struct {
-	m sync.Mutex
 	v int
 }
 
 func NewVersion() types.Version {
 	return &Version{
-		m: sync.Mutex{},
 		v: 0,
 	}
 }
 
 func (v *Version) AddVersion() {
-	v.m.Lock()
-	defer v.m.Unlock()
 	v.v = v.v + 1
 }
 
 func (v *Version) Version() int {
-	v.m.Lock()
-	defer v.m.Unlock()
 	return v.v
 }
 

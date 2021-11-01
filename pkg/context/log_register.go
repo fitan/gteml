@@ -1,9 +1,9 @@
-package core
+package context
 
 import (
 	"github.com/fitan/magic/pkg/log"
 	"github.com/fitan/magic/pkg/types"
-	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var xlog *log.Xlog
@@ -32,7 +32,7 @@ type logRegister struct {
 
 func (l *logRegister) GetXlog() *log.Xlog {
 	if l.xlog == nil {
-		l.xlog = log.NewXlog(log.WithLogLevel(zap.InfoLevel), log.WithTrace(zap.DebugLevel))
+		l.xlog = log.NewXlog(log.WithLogLevel(zapcore.Level(Conf.MyConf.Log.Lervel)), log.WithTrace(zapcore.Level(Conf.MyConf.Log.TraceLervel)), log.WithLogFileName(Conf.MyConf.Log.FileName))
 	}
 	return l.xlog
 }

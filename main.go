@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/fitan/magic/internal/api/router"
-	"github.com/fitan/magic/pkg/core"
+	"github.com/fitan/magic/pkg/context"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 
@@ -17,7 +17,7 @@ func main() {
 	//span.SetStatus(1, "statuso")
 	//span.Sync()
 	profiler.Start(profiler.Config{
-		ApplicationName: core.GetCtxPool().GetObj().Config.App.Name,
+		ApplicationName: context.GetCtxPool().GetObj().Config.App.Name,
 
 		// replace this with the address of pyroscope server
 		ServerAddress: "http://localhost:4040",

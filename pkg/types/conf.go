@@ -9,6 +9,11 @@ type MyConf struct {
 	App   App   `yaml:"app"`
 }
 
+type Api struct {
+	Baidu  Baidu  `yaml:"baidu"`
+	Taobao Taobao `yaml:"taobao"`
+}
+
 type Baidu struct {
 	Url        string `yaml:"url"`
 	TraceDebug bool   `yaml:"traceDebug"`
@@ -21,25 +26,8 @@ type Taobao struct {
 	RestyDebug bool   `yaml:"restyDebug"`
 }
 
-type Redis struct {
-	Db        int    `yaml:"db"`
-	OpenTrace bool   `yaml:"openTrace"`
-	Url       string `yaml:"url"`
-	Password  string `yaml:"password"`
-}
-
-type App struct {
-	Name string `yaml:"name"`
-}
-
-type Api struct {
-	Baidu  Baidu  `yaml:"baidu"`
-	Taobao Taobao `yaml:"taobao"`
-}
-
-type Log struct {
-	Lervel   int    `yaml:"lervel"`
-	FileName string `yaml:"fileName"`
+type Mysql struct {
+	Url string `yaml:"url"`
 }
 
 type Trace struct {
@@ -47,6 +35,19 @@ type Trace struct {
 	TracerProviderAddr string `yaml:"tracerProviderAddr"`
 }
 
-type Mysql struct {
-	Url string `yaml:"url"`
+type Log struct {
+	Lervel      int    `yaml:"lervel"`
+	TraceLervel int    `yaml:"traceLervel"`
+	FileName    string `yaml:"fileName"`
+}
+
+type Redis struct {
+	Url       string `yaml:"url"`
+	Password  string `yaml:"password"`
+	Db        int    `yaml:"db"`
+	OpenTrace bool   `yaml:"openTrace"`
+}
+
+type App struct {
+	Name string `yaml:"name"`
 }
