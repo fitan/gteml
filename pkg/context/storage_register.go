@@ -1,10 +1,14 @@
 package context
 
 import (
-	"github.com/fitan/magic/pkg/ent"
+	"database/sql"
+	entsql "entgo.io/ent/dialect/sql"
+	"github.com/fitan/magic/ent"
 	"github.com/fitan/magic/pkg/storage"
 	"github.com/fitan/magic/pkg/types"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"time"
 )
 
 type storageReg struct {
@@ -17,12 +21,24 @@ func (s *storageReg) Reload(c *types.Context) {
 
 func (s *storageReg) GetClient(c *types.Context) *ent.Client {
 	if s.Client == nil {
-		client, err := ent.Open("mysql", c.Config.Mysql.Url)
+		db, err := sql.Open("mysql", c.Config.Mysql.Url)
 		if err != nil {
-			log.Println("mysql create client: ", err.Error())
-		} else {
-			s.Client = client
+			log.Panicf("mysql create db: %s", err.Error())
 		}
+		db.SetMaxIdleConns(Conf.MyConf.Mysql.MaxIdleConns)
+		db.SetMaxOpenConns(Conf.MyConf.Mysql.MaxOpenConns)
+		lt, err := time.ParseDuration(Conf.MyConf.Mysql.ConnMaxLifetime)
+		if err != nil {
+			log.Panicf("parse ConnMaxLifetime err: %s", err.Error())
+		}
+		it, err := time.ParseDuration(Conf.MyConf.Mysql.ConnMaxIdleTime)
+		if err != nil {
+			log.Panicf("parse ConnMaxIdleTime err: %s", err.Error())
+		}
+		db.SetConnMaxLifetime(lt)
+		db.SetConnMaxIdleTime(it)
+		s.Client = ent.NewClient(ent.Driver(entsql.OpenDB("mysql", db)))
+
 	}
 	return s.Client
 }
@@ -32,7 +48,7 @@ func (s *storageReg) With(o ...types.Option) types.Register {
 }
 
 func (s *storageReg) Set(c *types.Context) {
-	c.Storage = storage.NewStorage(c, s.Client)
+	c.Storage = storage.NewStorage(c, s.GetClient(c))
 }
 
 func (s *storageReg) Unset(c *types.Context) {

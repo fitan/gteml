@@ -2,10 +2,7 @@ package user
 
 import (
 	"errors"
-	"github.com/fitan/magic/pkg/ent"
-	"github.com/fitan/magic/pkg/ent/user"
 	"github.com/fitan/magic/pkg/types"
-	"time"
 )
 
 type CreateIn struct {
@@ -25,13 +22,11 @@ func Create(c *types.Context, in *CreateIn) (interface{}, error) {
 	log.Info("嵌套info： fsfdf fsdfsd ")
 	defer log.Sync()
 
-	back, err := c.Cache.GetCallBack(
-		func() (interface{}, error) {
-			return c.Storage.User().GetById(1)
-		}, user.Table, &ent.User{}, 10*time.Minute)
+	byId, err := c.Storage.User().GetByIds([]int{1, 9, 10, 13})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+
 	c.Apis.Baidu().GetSum()
 	//data, err := c.Apis.Baidu().GetRoot()
 	//if err != nil {
@@ -42,6 +37,6 @@ func Create(c *types.Context, in *CreateIn) (interface{}, error) {
 	if !ok {
 		return "", errors.New("not find query status")
 	}
-	return back, nil
+	return byId, nil
 	//return data.String(), nil
 }

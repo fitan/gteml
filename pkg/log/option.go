@@ -11,6 +11,7 @@ type option struct {
 	//tp         *otelsdk.TracerProvider
 	openTrace bool
 	logLevel  zapcore.Level
+	dir       string
 	fileName  string
 	*zap.Logger
 }
@@ -41,9 +42,10 @@ func WithLogger(logger *zap.Logger) Option {
 	}
 }
 
-func WithLogFileName(fileName string) Option {
+func WithLogFileName(fileName string, dir string) Option {
 	return func(o *option) {
 		o.fileName = fileName
+		o.dir = dir
 	}
 }
 
@@ -70,11 +72,17 @@ func NewXlog(fs ...Option) *Xlog {
 	if o.Logger == nil {
 		fileName := o.fileName
 		logLever := o.logLevel
+		dir := o.dir
 		if fileName == "" {
-			fileName = "./logs/xlog.log"
+			fileName = "xlog"
 		}
-		writer := getLogWriter(fileName)
-		core := zapcore.NewCore(getEncoder(), writer, logLever)
+		if dir == "" {
+			dir = "./logs"
+		}
+
+		core := DefaultZapCore(fileName, dir, logLever)
+		//writer := getLogWriter(fileName)
+		//core := zapcore.NewCore(getEncoder(), writer, logLever)
 		log := zap.New(core, zap.AddCaller())
 		xlog.Logger = log
 	} else {

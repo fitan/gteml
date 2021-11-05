@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/fitan/magic/pkg/ent/runtime.go
+// The schema-stitching logic is generated in github.com/fitan/magic/ent/runtime.go
 
 const (
 	Version = "v0.9.1"                                          // Version of ent codegen.

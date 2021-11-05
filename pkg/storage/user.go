@@ -1,25 +1,24 @@
 package storage
 
 import (
-	ent "github.com/fitan/magic/pkg/ent"
-	"github.com/fitan/magic/pkg/ent/user"
+	ent "github.com/fitan/magic/ent"
+	"github.com/fitan/magic/ent/user"
 	"github.com/fitan/magic/pkg/types"
 )
 
 type User struct {
-	ctx       *types.Context
-	client    *ent.Client
-	openCache bool
+	ctx    *types.Context
+	client *ent.Client
 }
 
-func NewUser(ctx *types.Context, client *ent.Client, openCache bool) *User {
-	return &User{ctx: ctx, client: client, openCache: openCache}
+func NewUser(ctx *types.Context, client *ent.Client) *User {
+	return &User{ctx: ctx, client: client}
 }
 
 func (s *User) GetById(id int) (res *ent.User, err error) {
 	return s.client.User.Get(s.ctx.Tracer.SpanCtx("GetById"), id)
 }
 
-func (s *User) GetByIds(ids []int) ([]*ent.User, error) {
+func (s *User) GetByIds(ids []int) (res []*ent.User, err error) {
 	return s.client.User.Query().Where(user.IDIn(ids...)).All(s.ctx.Tracer.SpanCtx("GetByIds"))
 }

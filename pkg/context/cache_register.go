@@ -11,6 +11,10 @@ type CacheReg struct {
 	client *redis.Client
 }
 
+func (c *CacheReg) Reload(ctx *types.Context) {
+	c.client = nil
+}
+
 func (c *CacheReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }

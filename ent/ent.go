@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/fitan/magic/pkg/ent/user"
+	"github.com/fitan/magic/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

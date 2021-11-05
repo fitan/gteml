@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fitan/magic/pkg/ent"
+	"github.com/fitan/magic/ent"
 )
 
 // The UserFunc type is an adapter to allow the use of ordinary

@@ -11,9 +11,10 @@ require (
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
-	github.com/mkideal/cli v0.2.7
+	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pyroscope-io/pyroscope v0.2.2
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect

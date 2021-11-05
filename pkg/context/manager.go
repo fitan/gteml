@@ -28,6 +28,7 @@ func init() {
 		&Trace{},
 		&logRegister{},
 		&storageReg{},
+		&CacheReg{},
 		&ginXRegister{},
 		&api.ApisRegister{},
 		&VersionReg{},

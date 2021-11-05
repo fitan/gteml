@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/fitan/magic/pkg/ent/migrate"
+	"github.com/fitan/magic/ent/migrate"
 
-	"github.com/fitan/magic/pkg/ent/user"
+	"github.com/fitan/magic/ent/user"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/fitan/magic/pkg/ent"
+	"github.com/fitan/magic/ent"
 	"github.com/fitan/magic/pkg/types"
 )
 

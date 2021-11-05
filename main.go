@@ -16,22 +16,26 @@ func main() {
 	//span.RecordError(fmt.Errorf("this is error %s", "log1"))
 	//span.SetStatus(1, "statuso")
 	//span.Sync()
-	profiler.Start(profiler.Config{
-		ApplicationName: context.GetCtxPool().GetObj().Config.App.Name,
+	if context.Conf.MyConf.Pyroscope.Open {
+		profiler.Start(
+			profiler.Config{
+				ApplicationName: context.GetCtxPool().GetObj().Config.App.Name,
 
-		// replace this with the address of pyroscope server
-		ServerAddress: "http://localhost:4040",
+				// replace this with the address of pyroscope server
+				ServerAddress: context.Conf.MyConf.Pyroscope.Url,
 
-		// by default all profilers are enabled,
-		// but you can select the ones you want to use:
-		ProfileTypes: []profiler.ProfileType{
-			profiler.ProfileCPU,
-			profiler.ProfileAllocObjects,
-			profiler.ProfileAllocSpace,
-			profiler.ProfileInuseObjects,
-			profiler.ProfileInuseSpace,
-		},
-	})
+				// by default all profilers are enabled,
+				// but you can select the ones you want to use:
+				ProfileTypes: []profiler.ProfileType{
+					profiler.ProfileCPU,
+					profiler.ProfileAllocObjects,
+					profiler.ProfileAllocSpace,
+					profiler.ProfileInuseObjects,
+					profiler.ProfileInuseSpace,
+				},
+			},
+		)
+	}
 
 	router.Router().Run()
 }

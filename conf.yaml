@@ -3,12 +3,16 @@ app:
 log:
   # debug -1 info 0 warn 1 error 2 dpanic 3 panic 4 fatal 5
   lervel: 0
+  dir: ./logs
   traceLervel: 2
-  fileName: gtemllog
+  fileName: gteml
 
 trace:
   open: true
   tracerProviderAddr: http://10.170.34.122:14268/api/traces
+pyroscope:
+  open: false
+  url: "http://localhost:4040"
 
 api:
   baidu:
@@ -21,7 +25,11 @@ api:
     restyDebug: false
 
 mysql:
-  url: root:pass@tcp(localhost:3306)/test
+  url: spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?parseTime=true
+  maxIdleConns: 10
+  maxOpenConns: 100
+  connMaxLifetime: 1h
+  ConnMaxIdleTime: 1h
 
 redis:
   url: localhost:6379
