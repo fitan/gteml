@@ -1,8 +1,12 @@
 package main
 
 import (
+	context2 "context"
+	"github.com/fitan/magic/ent"
+	"github.com/fitan/magic/pkg/core"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"log"
 	"os"
 	"strings"
 )
@@ -53,10 +57,26 @@ var genconf = &cobra.Command{
 var genConfSrc *string
 var genConfDest *string
 
+var migrate = &cobra.Command{
+	Use: "migrate",
+	Run: func(cmd *cobra.Command, args []string) {
+		conf := core.NewConfReg()
+		client, err := ent.Open("mysql", conf.MyConf.Mysql.Url)
+		if err != nil {
+			log.Fatalf("failed connecting to mysql: %v", err)
+		}
+		if err := client.Schema.Create(context2.Background()); err != nil {
+			log.Fatalf("failed creating schema resources: %v", err)
+			return
+		}
+	},
+}
+
 func main() {
 	genConfSrc = genconf.Flags().StringP("src", "s", "", "")
 	genConfDest = genconf.Flags().StringP("dest", "d", "", "")
 	var rootCmd = &cobra.Command{Use: "gen"}
 	rootCmd.AddCommand(genconf)
+	rootCmd.AddCommand(migrate)
 	rootCmd.Execute()
 }

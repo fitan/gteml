@@ -26,7 +26,7 @@ type ApisRegister struct {
 	taobaoClient *resty.Client
 }
 
-func (h *ApisRegister) getApis(c *types.Context) *Apis {
+func (h *ApisRegister) getApis(c *types.Core) *Apis {
 	if h.baiduClient == nil {
 		h.baiduClient = httpclient.NewClient(
 			httpclient.WithHost(c.Config.Api.Baidu.Url),
@@ -47,7 +47,7 @@ func (h *ApisRegister) getApis(c *types.Context) *Apis {
 	}
 }
 
-func (h *ApisRegister) Reload(c *types.Context) {
+func (h *ApisRegister) Reload(c *types.Core) {
 	h.taobaoClient = nil
 	h.baiduClient = nil
 }
@@ -56,9 +56,9 @@ func (h *ApisRegister) With(o ...types.Option) types.Register {
 	return h
 }
 
-func (h *ApisRegister) Set(c *types.Context) {
+func (h *ApisRegister) Set(c *types.Core) {
 	c.Apis = h.getApis(c)
 }
 
-func (h *ApisRegister) Unset(c *types.Context) {
+func (h *ApisRegister) Unset(c *types.Core) {
 }

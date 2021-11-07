@@ -9,7 +9,7 @@ import (
 )
 
 type Cache struct {
-	ctx    *types.Context
+	ctx    *types.Core
 	client *redis.Client
 	option Option
 }
@@ -18,7 +18,7 @@ type Option struct {
 	Prefix string
 }
 
-func NewCache(ctx *types.Context, client *redis.Client, option Option) types.Cache {
+func NewCache(ctx *types.Core, client *redis.Client, option Option) types.Cache {
 	return &Cache{ctx: ctx, client: client, option: option}
 }
 

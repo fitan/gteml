@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/fitan/magic/internal/api/router"
-	"github.com/fitan/magic/pkg/context"
+	"github.com/fitan/magic/pkg/core"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 
@@ -16,13 +16,13 @@ func main() {
 	//span.RecordError(fmt.Errorf("this is error %s", "log1"))
 	//span.SetStatus(1, "statuso")
 	//span.Sync()
-	if context.Conf.MyConf.Pyroscope.Open {
+	if core.Conf.MyConf.Pyroscope.Open {
 		profiler.Start(
 			profiler.Config{
-				ApplicationName: context.GetCtxPool().GetObj().Config.App.Name,
+				ApplicationName: core.GetCorePool().GetObj().Config.App.Name,
 
 				// replace this with the address of pyroscope server
-				ServerAddress: context.Conf.MyConf.Pyroscope.Url,
+				ServerAddress: core.Conf.MyConf.Pyroscope.Url,
 
 				// by default all profilers are enabled,
 				// but you can select the ones you want to use:

@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/trace"
@@ -11,7 +11,7 @@ type Trace struct {
 	tp *oteltrace.TracerProvider
 }
 
-func (t *Trace) getTp(c *types.Context) *oteltrace.TracerProvider {
+func (t *Trace) getTp(c *types.Core) *oteltrace.TracerProvider {
 	if t.tp == nil {
 		tp, err := trace.TracerProvider(c.Config.App.Name, c.Config.Trace.TracerProviderAddr)
 		if err != nil {
@@ -23,7 +23,7 @@ func (t *Trace) getTp(c *types.Context) *oteltrace.TracerProvider {
 	return t.tp
 }
 
-func (t *Trace) Reload(c *types.Context) {
+func (t *Trace) Reload(c *types.Core) {
 	t.tp = nil
 }
 
@@ -31,10 +31,10 @@ func (t *Trace) With(o ...types.Option) types.Register {
 	return nil
 }
 
-func (t *Trace) Set(c *types.Context) {
+func (t *Trace) Set(c *types.Core) {
 	c.Tracer = trace.NewTrace(t.getTp(c), c.Config.Trace.Open)
 }
 
-func (t *Trace) Unset(c *types.Context) {
+func (t *Trace) Unset(c *types.Core) {
 	c.Tracer.UnSet()
 }

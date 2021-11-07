@@ -1,23 +1,23 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/types"
 	"sync"
 )
 
-var CtxPool *types.CtxPool
+var CtxPool *types.CorePool
 
-func GetCtxPool() *types.CtxPool {
+func GetCorePool() *types.CorePool {
 	if CtxPool == nil {
-		CtxPool = &types.CtxPool{}
+		CtxPool = &types.CorePool{}
 		CtxPool.P = sync.Pool{New: NewObjFn(CtxPool)}
 	}
 	return CtxPool
 }
 
-func NewObjFn(p *types.CtxPool) func() interface{} {
+func NewObjFn(p *types.CorePool) func() interface{} {
 	return func() interface{} {
-		c := &types.Context{}
+		c := &types.Core{}
 		p.Set(c)
 		c.LocalVersion = c.Version.Version()
 		return c
@@ -31,12 +31,12 @@ func (p *PoolReg) With(o ...types.Option) types.Register {
 	return p
 }
 
-func (p *PoolReg) Reload(c *types.Context) {
+func (p *PoolReg) Reload(c *types.Core) {
 }
 
-func (p *PoolReg) Set(c *types.Context) {
-	c.Pool = GetCtxPool()
+func (p *PoolReg) Set(c *types.Core) {
+	c.Pool = GetCorePool()
 }
 
-func (p *PoolReg) Unset(c *types.Context) {
+func (p *PoolReg) Unset(c *types.Core) {
 }

@@ -5,29 +5,29 @@ import (
 	"sync"
 )
 
-type CtxPool struct {
+type CorePool struct {
 	P            sync.Pool
 	registerList []Register
 }
 
-func (c *CtxPool) RegisterList(l []Register) {
+func (c *CorePool) RegisterList(l []Register) {
 	c.registerList = l
 }
 
-func (c *CtxPool) Set(ctx *Context) {
+func (c *CorePool) Set(ctx *Core) {
 	log.Println("ctx pool: ", c)
 	for _, v := range c.registerList {
 		v.Set(ctx)
 	}
 }
 
-func (c *CtxPool) Unset(ctx *Context) {
+func (c *CorePool) Unset(ctx *Core) {
 	for _, v := range c.registerList {
 		v.Unset(ctx)
 	}
 }
 
-func (c *CtxPool) Reload() {
+func (c *CorePool) Reload() {
 	ctx := c.GetObj()
 	for _, v := range c.registerList {
 		v.Reload(ctx)
@@ -35,11 +35,11 @@ func (c *CtxPool) Reload() {
 }
 
 // 从pool获取对象后进行初始化
-func (c *CtxPool) GetInit() {
+func (c *CorePool) GetInit() {
 	// Todo 获取pool后的初始化
 }
 
-func (c *CtxPool) ReUse(ctx *Context) {
+func (c *CorePool) ReUse(ctx *Core) {
 	// tracer收尾 防止有的trace 没有end
 	ctx.Tracer.End()
 
@@ -53,9 +53,9 @@ func (c *CtxPool) ReUse(ctx *Context) {
 	c.P.Put(ctx)
 }
 
-func (c *CtxPool) GetObj() *Context {
+func (c *CorePool) GetObj() *Core {
 	for {
-		context := c.P.Get().(*Context)
+		context := c.P.Get().(*Core)
 		if context.LocalVersion != context.Version.Version() {
 			continue
 		}
@@ -67,17 +67,17 @@ var registerList []Register
 
 type Register interface {
 	With(o ...Option) Register
-	Reload(c *Context)
-	Set(c *Context)
-	Unset(c *Context)
+	Reload(c *Core)
+	Set(c *Core)
+	Unset(c *Core)
 }
 
 type Pooler interface {
 	RegisterList(l []Register)
-	Set(ctx *Context)
-	Unset(ctx *Context)
+	Set(c *Core)
+	Unset(c *Core)
 	Reload()
 	GetInit()
-	ReUse(ctx *Context)
-	GetObj() *Context
+	ReUse(c *Core)
+	GetObj() *Core
 }

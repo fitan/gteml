@@ -6,7 +6,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func NewTaoBaoApi(c *types.Context, client *resty.Client) *TaoBaoApi {
+func NewTaoBaoApi(c *types.Core, client *resty.Client) *TaoBaoApi {
 	return &TaoBaoApi{
 		context: c,
 		client:  httpclient.NewTraceClient(c.Tracer, client),
@@ -14,7 +14,7 @@ func NewTaoBaoApi(c *types.Context, client *resty.Client) *TaoBaoApi {
 }
 
 type TaoBaoApi struct {
-	context *types.Context
+	context *types.Core
 	client  *httpclient.TraceClient
 }
 

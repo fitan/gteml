@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"database/sql"
@@ -15,11 +15,11 @@ type storageReg struct {
 	Client *ent.Client
 }
 
-func (s *storageReg) Reload(c *types.Context) {
+func (s *storageReg) Reload(c *types.Core) {
 	s.Client = nil
 }
 
-func (s *storageReg) GetClient(c *types.Context) *ent.Client {
+func (s *storageReg) GetClient(c *types.Core) *ent.Client {
 	if s.Client == nil {
 		db, err := sql.Open("mysql", c.Config.Mysql.Url)
 		if err != nil {
@@ -47,10 +47,10 @@ func (s *storageReg) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (s *storageReg) Set(c *types.Context) {
+func (s *storageReg) Set(c *types.Core) {
 	c.Storage = storage.NewStorage(c, s.GetClient(c))
 }
 
-func (s *storageReg) Unset(c *types.Context) {
+func (s *storageReg) Unset(c *types.Core) {
 
 }

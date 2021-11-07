@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/log"
@@ -9,7 +9,7 @@ import (
 var xlog *log.Xlog
 
 type CoreLog struct {
-	core *types.Context
+	core *types.Core
 	xlog *log.Xlog
 	//traceLog *log.TraceLog
 }
@@ -37,7 +37,7 @@ func (l *logRegister) GetXlog() *log.Xlog {
 	return l.xlog
 }
 
-func (l *logRegister) Reload(c *types.Context) {
+func (l *logRegister) Reload(c *types.Core) {
 	l.xlog = nil
 }
 
@@ -45,13 +45,13 @@ func (l *logRegister) With(o ...types.Option) types.Register {
 	return l
 }
 
-func (l *logRegister) Set(c *types.Context) {
+func (l *logRegister) Set(c *types.Core) {
 	c.CoreLog = &CoreLog{
 		core: c,
 		xlog: l.GetXlog(),
 	}
 }
 
-func (l *logRegister) Unset(c *types.Context) {
+func (l *logRegister) Unset(c *types.Core) {
 	//c.CoreLog = nil
 }

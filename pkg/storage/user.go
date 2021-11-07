@@ -7,11 +7,11 @@ import (
 )
 
 type User struct {
-	ctx    *types.Context
+	ctx    *types.Core
 	client *ent.Client
 }
 
-func NewUser(ctx *types.Context, client *ent.Client) *User {
+func NewUser(ctx *types.Core, client *ent.Client) *User {
 	return &User{ctx: ctx, client: client}
 }
 

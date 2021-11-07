@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/conf"
@@ -20,11 +20,11 @@ import (
 //	go func() {
 //		for {
 //			<-c
-//			GetCtxPool().Reload()
-//			GetCtxPool().GetObj().Version.AddVersion()
+//			GetCorePool().Reload()
+//			GetCorePool().GetObj().Version.AddVersion()
 //			//配置文件reload后 gc触发清理pool中的对象
 //			runtime.GC()
-//			log.Println("reload config version: ", GetCtxPool().GetObj().Version.Version())
+//			log.Println("reload config version: ", GetCorePool().GetObj().Version.Version())
 //		}
 //	}()
 //}
@@ -38,11 +38,11 @@ func NewConfReg() *ConfReg {
 	go func() {
 		for {
 			<-c
-			GetCtxPool().Reload()
-			GetCtxPool().GetObj().Version.AddVersion()
+			GetCorePool().Reload()
+			GetCorePool().GetObj().Version.AddVersion()
 			//配置文件reload后 gc触发清理pool中的对象
 			runtime.GC()
-			log.Println("reload config version: ", GetCtxPool().GetObj().Version.Version())
+			log.Println("reload config version: ", GetCorePool().GetObj().Version.Version())
 		}
 	}()
 	return &ConfReg{MyConf: myConf}
@@ -57,26 +57,26 @@ func (c *ConfReg) With(o ...types.Option) types.Register {
 	return c
 }
 
-func (c *ConfReg) Reload(ctx *types.Context) {
+func (c *ConfReg) Reload(ctx *types.Core) {
 }
 
-func (c *ConfReg) Set(ctx *types.Context) {
+func (c *ConfReg) Set(ctx *types.Core) {
 	ctx.Config = c.MyConf
 }
 
-func (c *ConfReg) Unset(ctx *types.Context) {
+func (c *ConfReg) Unset(ctx *types.Core) {
 }
 
 //func (c *ConfReg) With(o ...types.Option) Register {
 //	panic("implement me")
 //}
 //
-//func (c *ConfReg) Reload(ctx *Context) {
+//func (c *ConfReg) Reload(ctx *Core) {
 //}
 //
-//func (c *ConfReg) Set(ctx *Context) {
+//func (c *ConfReg) Set(ctx *Core) {
 //	ctx.Config = myConf
 //}
 //
-//func (c *ConfReg) Unset(ctx *Context) {
+//func (c *ConfReg) Unset(ctx *Core) {
 //}

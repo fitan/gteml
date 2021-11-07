@@ -25,12 +25,12 @@ type CreateBinder struct {
 	val user.CreateIn
 }
 
-func (b *CreateBinder) BindVal(core *types.Context) (interface{}, error) {
+func (b *CreateBinder) BindVal(core *types.Core) (interface{}, error) {
 	err := core.GinX.GinCtx().ShouldBindUri(&b.val.Uri)
 	b.val.Body.Hello = "anbowei"
 	return b.val, err
 }
 
-func (b *CreateBinder) BindFn(core *types.Context) (interface{}, error) {
+func (b *CreateBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.Create(core, &b.val)
 }

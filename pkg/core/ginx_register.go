@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/ginx"
@@ -8,9 +8,9 @@ import (
 
 func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.GinXHandlerOption) {
 	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
-		core := GetCtxPool().GetObj()
+		core := GetCorePool().GetObj()
 		//gin的request ctx放到trace里
-		//core.SetCtx(c.Request.Context())
+		//core.SetCtx(c.Request.Core())
 		// core包裹gin context
 		core.GinX.SetGinCtx(c)
 		core.Tracer.SetCtx(c.Request.Context())
@@ -46,7 +46,7 @@ type ginXRegister struct {
 	options []types.Option
 }
 
-func (g *ginXRegister) Reload(c *types.Context) {
+func (g *ginXRegister) Reload(c *types.Core) {
 }
 
 func (g *ginXRegister) With(o ...types.Option) types.Register {
@@ -54,11 +54,11 @@ func (g *ginXRegister) With(o ...types.Option) types.Register {
 	return g
 }
 
-func (g *ginXRegister) Set(c *types.Context) {
+func (g *ginXRegister) Set(c *types.Core) {
 	c.GinX = ginx.NewGin(ginx.WithWrap(ginx.GinXResultWrap, ginx.GinXTraceWrap))
 }
 
-func (g *ginXRegister) Unset(c *types.Context) {
+func (g *ginXRegister) Unset(c *types.Core) {
 	c.GinX.SetBindReq(nil)
 	c.GinX.SetBindRes(nil)
 	c.GinX.SetBindErr(nil)

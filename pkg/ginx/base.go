@@ -37,7 +37,7 @@ func (g *GinX) SetBindErr(err error) {
 	g.bindErr = err
 }
 
-func (g *GinX) BindTransfer(core *types.Context, i types.GinXBinder) {
+func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 	defer core.Pool.ReUse(core)
 	defer g.Result(core)
 	defer core.Log.Sync()
@@ -78,7 +78,7 @@ func (g *GinX) setBindFn(data interface{}, err error) {
 	g.bindErr = err
 }
 
-func (g *GinX) Result(c *types.Context) {
+func (g *GinX) Result(c *types.Core) {
 	for _, r := range g.resultWrap {
 		r(c)
 	}
@@ -94,11 +94,11 @@ func NewGin(fs ...GinOption) *GinX {
 	return g
 }
 
-type GinXHandlerOption func(c *types.Context) error
+type GinXHandlerOption func(c *types.Core) error
 
 // gin value 设置key
 func WithHandlerName(name string) GinXHandlerOption {
-	return func(c *types.Context) error {
+	return func(c *types.Core) error {
 		c.GinX.GinCtx().Set(FnName, name)
 		return nil
 	}

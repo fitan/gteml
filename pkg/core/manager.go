@@ -1,4 +1,4 @@
-package context
+package core
 
 import (
 	"github.com/fitan/magic/pkg/api"
@@ -23,7 +23,7 @@ var Conf *ConfReg
 
 func init() {
 	Conf = NewConfReg()
-	GetCtxPool().RegisterList([]types.Register{
+	GetCorePool().RegisterList([]types.Register{
 		Conf,
 		&Trace{},
 		&logRegister{},
@@ -36,8 +36,8 @@ func init() {
 	})
 }
 
-//func NewCore() *Context {
-//	core := &Context{}
+//func NewCore() *Core {
+//	core := &Core{}
 //
 //	core.Register(&logRegister{})
 //	core.Register((&ginXRegister{}).With())

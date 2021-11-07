@@ -1,6 +1,6 @@
 package types
 
-type Context struct {
+type Core struct {
 	Config *MyConf
 
 	CoreLog CoreLoger

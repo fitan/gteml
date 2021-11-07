@@ -5,7 +5,7 @@ import (
 	"github.com/fitan/magic/pkg/types"
 )
 
-func NewStorage(ctx *types.Context, client *ent.Client) types.Storage {
+func NewStorage(ctx *types.Core, client *ent.Client) types.Storage {
 	return &Storage{
 		NewUser(ctx, client),
 	}

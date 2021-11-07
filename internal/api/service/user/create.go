@@ -14,7 +14,7 @@ type CreateIn struct {
 }
 
 // @Router post /user
-func Create(c *types.Context, in *CreateIn) (interface{}, error) {
+func Create(c *types.Core, in *CreateIn) (interface{}, error) {
 	c.Log.Info("这是 create的开始")
 	c.Log.Sync()
 

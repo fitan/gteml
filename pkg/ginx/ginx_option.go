@@ -19,7 +19,7 @@ func WithWrap(ops ...types.Option) GinOption {
 	}
 }
 
-func GinXResultWrap(c *types.Context) {
+func GinXResultWrap(c *types.Core) {
 	res := GinXResult{Data: c.GinX.BindRes()}
 	if c.GinX.BindErr() != nil {
 		res.Msg = c.GinX.BindErr().Error()
@@ -38,7 +38,7 @@ type GinXResult struct {
 	Data interface{} `json:"data"`
 }
 
-func GinXTraceWrap(c *types.Context) {
+func GinXTraceWrap(c *types.Core) {
 	if !c.Tracer.IsOpen() {
 		return
 	}
