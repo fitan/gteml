@@ -1,0 +1,98 @@
+BaseConf:
+  WrapResult:
+    ImportPath: |
+      "cmdb/public"
+    WrapFunc: "public.GinResult"
+    WrapResultType: "public.Result"
+Plugin:
+  CallBack:
+    -
+      TagName: "redis"
+      Cover:
+        -
+          Match:
+            Param:
+              - "1=get"
+            OutInterfaceName:
+            InInterfaceName: ["RedisKeyer"]
+          ImportPath: |
+            "cmdb/public"
+          Template: |
+            return public.GetRedisAdapter().GetValue(func() (interface{}, error) {return {{$.PkgName}}.{{$.FuncName}}(c,in)},in.GetRedisKey())
+        -
+          Match:
+            Param:
+              - "1=update"
+            OutInterfaceName:
+            InInterfaceName: ["RedisKeyer"]
+          ImportPath: |
+            "cmdb/public"
+          Template: |
+            return public.GetRedisAdapter().UpdateValue(func() (interface{}, error) {return {{$.PkgName}}.{{$.FuncName}}(c, in)}, in.GetRedisKey())
+        -
+          Match:
+            Param:
+              - "1=delete"
+            OutInterfaceName:
+            InInterfaceName: ["RedisKeyer"]
+          ImportPath: |
+            "cmdb/public"
+          Template: |
+            return public.GetRedisAdapter().DeleteValue(func() (interface{}, error) {return {{$.PkgName}}.{{$.FuncName}}(c, in)}, in.GetRedisKey())
+  Point:
+    -
+      TagName: "Casbin"
+      Mount:
+        -
+          Match:
+            InInterfaceName: ["CasbinListKeyser"]
+            OutInterfaceName: []
+          MountBindAfter:
+            ImportPath: |
+              "cmdb/public"
+            Template: |
+              data,err = public.CheckListKeysCasbin(c,"{{.key}}",in.GetCasbinKeys())
+              if err != nil {return data, err}
+          MountBindBefor:
+            ImportPath:
+            Template:
+        -
+          Match:
+            InInterfaceName: ["CasbinKeyser"]
+            OutInterfaceName: []
+          MountBindAfter:
+            ImportPath: |
+              "cmdb/public"
+            Template: |
+              data,err = public.CheckKeysCasbin(c,"{{.key}}",in.GetCasbinKeys())
+              if err != nil {return data, err}
+          MountBindBefor:
+            ImportPath:
+            Template:
+
+Gen:
+  Ent:
+    -
+      Name: "ent"
+      Src: "./ent/schema"
+      Dest: "./gen/entrest"
+  Api:
+    -
+      Name: "logicapi"
+      Src: "./logic"
+      Dest: "./gen/handler/logic"
+    -
+      Name: "entapi"
+      Src: "./gen/entrest"
+      Dest: "./gen/handler/ent"
+  Ts:
+    -
+      Name: "logic"
+      Src: "./logic"
+      Dest: "/mnt/e/project/my-project/src/app/gen/service/logic"
+      Prefix: "cmdb"
+    -
+      Name: "ent"
+      Src: "./gen/entrest"
+      Dest: "/mnt/e/project/my-project/src/app/gen/service/ent"
+      Prefix: "cmdb"

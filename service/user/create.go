@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/fitan/magic/ent"
 	"github.com/fitan/magic/pkg/types"
 )
 
@@ -14,7 +15,7 @@ type CreateIn struct {
 }
 
 // @Router post /user
-func Create(c *types.Core, in *CreateIn) (interface{}, error) {
+func Create(c *types.Core, in *CreateIn) ([]*ent.User, error) {
 	c.Log.Info("这是 create的开始")
 	c.Log.Sync()
 
@@ -35,8 +36,21 @@ func Create(c *types.Core, in *CreateIn) (interface{}, error) {
 
 	_, ok := c.GinX.GinCtx().GetQuery("status")
 	if !ok {
-		return "", errors.New("not find query status")
+		return nil, errors.New("not find query status")
 	}
 	return byId, nil
 	//return data.String(), nil
+}
+
+type SayHelloIn struct {
+	Query struct {
+		Say string `json:"say" form:"say" binding:"required"`
+	} `json:"query"`
+}
+
+// @Router get /say
+func SayHello(core *types.Core, in *SayHelloIn) (interface{}, error) {
+	defer core.Log.Sync()
+	core.Log.Info("start Say hello")
+	return in, nil
 }

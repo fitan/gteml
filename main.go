@@ -1,12 +1,29 @@
 package main
 
 import (
-	"github.com/fitan/magic/internal/api/router"
+	"fmt"
 	"github.com/fitan/magic/pkg/core"
+	router2 "github.com/fitan/magic/router"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
+	"os"
+)
+
+var (
+	gitHash   string
+	gitTag    string
+	buildTime string
+	goVersion string
 )
 
 func main() {
+	args := os.Args
+	if len(args) == 2 && (args[1] == "--version" || args[1] == "-v") {
+		fmt.Printf("Git Tag: %s \n", gitTag)
+		fmt.Printf("Git Commit hash: %s \n", gitHash)
+		fmt.Printf("Build TimeStamp: %s \n", buildTime)
+		fmt.Printf("GoLang Version: %s \n", goVersion)
+		return
+	}
 	//tp := trace.GetTp()
 	//tr := tp.Tracer("tracer")
 	//ctx := context.Background()
@@ -37,5 +54,5 @@ func main() {
 		)
 	}
 
-	router.Router().Run()
+	router2.Router().Run()
 }

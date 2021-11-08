@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 type GinXer interface {
 	BindTransfer(core *Core, i GinXBinder)
-	SetGinCtx(c *gin.Context)
+	SetGinCtx(ctx *gin.Context)
 	GinCtx() *gin.Context
 	SetBindReq(interface{})
 	BindReq() interface{}
@@ -12,12 +12,12 @@ type GinXer interface {
 	BindRes() interface{}
 	SetBindErr(error)
 	BindErr() error
-	Result(c *Core)
+	Result(core *Core)
 }
 
 type GinXBinder interface {
-	BindVal(c *Core) (interface{}, error)
-	BindFn(c *Core) (interface{}, error)
+	BindVal(core *Core) (interface{}, error)
+	BindFn(core *Core) (interface{}, error)
 }
 
 type GinXTransfer interface {
@@ -26,4 +26,4 @@ type GinXTransfer interface {
 	Binder() GinXBinder
 }
 
-type Option func(c *Core)
+type Option func(core *Core)

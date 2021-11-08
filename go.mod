@@ -5,9 +5,11 @@ go 1.16
 require (
 	entgo.io/ent v0.9.1
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
+	github.com/ekyoung/gin-nice-recovery v0.0.0-20160510022553-1654dca486db
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-errors/errors v1.4.1 // indirect
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0

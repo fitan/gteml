@@ -1,7 +1,10 @@
+build:
+	go build -ldflags "-X main.GitCommitId=`git rev-parse HEAD` -X 'main.goVersion=$(go version)' -X 'main.gitHash=$(git show -s --format=%H)' -X 'main.buildTime=$(git show -s --format=%cd)'"  -mod vendor -o output/main main.go
+
 run:
 	go run main.go
 
-genconf:
+gen-conf:
 	go run tools/gen/main.go genconf -s ./conf.yaml -d ./pkg/types/conf.go
 
 ent:
