@@ -8,6 +8,6 @@ import (
 )
 
 func userRoute(r gin.IRouter) {
-	core.GinXHandlerRegister(r, &user.CreateTransfer{}, ginx.WithHandlerName("get user"))
+	core.GinXHandlerRegister(r, &user.CreateTransfer{}, ginx.WithHandlerName("get user"), ginx.WithHandlerMid(&ginx.TestMid{}))
 	core.GinXHandlerRegister(r, &user.SayHelloTransfer{}, ginx.WithHandlerName("say hello"))
 }

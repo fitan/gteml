@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"github.com/fitan/magic/pkg/ginx"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.G
 		for _, f := range o {
 			err := f(core)
 			if err != nil {
-				core.GinX.SetBindErr(err)
+				core.GinX.SetBindErr(fmt.Errorf("load option err: %w", err))
 				break
 			}
 		}
@@ -43,24 +44,24 @@ func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.G
 }
 
 type ginXRegister struct {
-	options []types.Option
+	EntryMid []types.Middleware
 }
 
 func (g *ginXRegister) Reload(c *types.Core) {
 }
 
 func (g *ginXRegister) With(o ...types.Option) types.Register {
-	g.options = append(make([]types.Option, 0, len(o)), o...)
 	return g
 }
 
 func (g *ginXRegister) Set(c *types.Core) {
-	c.GinX = ginx.NewGin(ginx.WithWrap(ginx.GinXResultWrap, ginx.GinXTraceWrap))
+	c.GinX = ginx.NewGin(ginx.WithEntryMid(&g.EntryMid))
 }
 
 func (g *ginXRegister) Unset(c *types.Core) {
 	c.GinX.SetBindReq(nil)
 	c.GinX.SetBindRes(nil)
 	c.GinX.SetBindErr(nil)
+	c.GinX.SetHandlerMid(nil)
 	c.GinX.SetGinCtx(nil)
 }

@@ -12,7 +12,8 @@ type GinXer interface {
 	BindRes() interface{}
 	SetBindErr(error)
 	BindErr() error
-	Result(core *Core)
+	SetEntryMid(m *[]Middleware)
+	SetHandlerMid(m *[]Middleware)
 }
 
 type GinXBinder interface {
@@ -27,3 +28,10 @@ type GinXTransfer interface {
 }
 
 type Option func(core *Core)
+
+type Middleware interface {
+	BindValBefor(core *Core) bool
+	BindValAfter(core *Core) bool
+	BindFnAfter(core *Core) bool
+	Forever(core *Core)
+}

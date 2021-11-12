@@ -3,6 +3,7 @@ package ginx
 import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 )
 
 type GinX struct {
@@ -11,6 +12,18 @@ type GinX struct {
 	bindRes    interface{}
 	bindErr    error
 	resultWrap []types.Option
+
+	entryMiddleware *[]types.Middleware
+
+	handlerMiddleware *[]types.Middleware
+}
+
+func (g *GinX) SetEntryMid(m *[]types.Middleware) {
+	g.entryMiddleware = m
+}
+
+func (g *GinX) SetHandlerMid(m *[]types.Middleware) {
+	g.handlerMiddleware = m
 }
 
 func (g *GinX) BindReq() interface{} {
@@ -34,30 +47,85 @@ func (g *GinX) SetBindRes(i interface{}) {
 }
 
 func (g *GinX) SetBindErr(err error) {
-	g.bindErr = err
+	if err == nil {
+		return
+	}
+	if g.bindErr == nil {
+		g.bindErr = err
+		return
+	}
+
+	g.bindErr = errors.Wrapf(g.bindErr, "%s :", err.Error())
 }
 
 func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
-	defer core.Pool.ReUse(core)
-	defer g.Result(core)
-	defer core.Log.Sync()
-	if g.checkErr() {
-		return
+	defer func() {
+		if g.entryMiddleware != nil {
+			for _, fn := range *g.entryMiddleware {
+				fn.Forever(core)
+			}
+		}
+
+		if g.handlerMiddleware != nil {
+			for _, fn := range *g.handlerMiddleware {
+				fn.Forever(core)
+			}
+		}
+		core.Log.Sync()
+		core.Pool.ReUse(core)
+	}()
+
+	if g.entryMiddleware != nil {
+		for _, fn := range *g.entryMiddleware {
+			if !fn.BindValBefor(core) {
+				return
+			}
+		}
+	}
+
+	if g.handlerMiddleware != nil {
+		for _, fn := range *g.handlerMiddleware {
+			if !fn.BindValBefor(core) {
+				return
+			}
+		}
 	}
 
 	g.setBindVal(i.BindVal(core))
-	if g.checkErr() {
-		return
+
+	if g.entryMiddleware != nil {
+		for _, fn := range *g.entryMiddleware {
+			if !fn.BindValAfter(core) {
+				return
+			}
+		}
+	}
+
+	if g.handlerMiddleware != nil {
+		for _, fn := range *g.handlerMiddleware {
+			if !fn.BindValAfter(core) {
+				return
+			}
+		}
 	}
 
 	g.setBindFn(i.BindFn(core))
-}
 
-func (g *GinX) checkErr() bool {
-	if g.BindErr() != nil {
-		return true
+	if g.entryMiddleware != nil {
+		for _, fn := range *g.entryMiddleware {
+			if !fn.BindFnAfter(core) {
+				return
+			}
+		}
 	}
-	return false
+
+	if g.handlerMiddleware != nil {
+		for _, fn := range *g.handlerMiddleware {
+			if !fn.BindFnAfter(core) {
+				return
+			}
+		}
+	}
 }
 
 func (g *GinX) SetGinCtx(c *gin.Context) {
@@ -70,23 +138,17 @@ func (g *GinX) GinCtx() *gin.Context {
 
 func (g *GinX) setBindVal(data interface{}, err error) {
 	g.bindReq = data
-	g.bindErr = err
+	g.SetBindErr(err)
 }
 
 func (g *GinX) setBindFn(data interface{}, err error) {
 	g.bindRes = data
-	g.bindErr = err
+	g.SetBindErr(err)
 }
 
-func (g *GinX) Result(c *types.Core) {
-	for _, r := range g.resultWrap {
-		r(c)
-	}
-}
+type GinXOption func(g *GinX)
 
-type GinOption func(g *GinX)
-
-func NewGin(fs ...GinOption) *GinX {
+func NewGin(fs ...GinXOption) *GinX {
 	g := new(GinX)
 	for _, f := range fs {
 		f(g)

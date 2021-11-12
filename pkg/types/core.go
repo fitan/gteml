@@ -17,6 +17,8 @@ type Core struct {
 
 	Apis Apis
 
+	Prom Promer
+
 	Version Version
 
 	LocalVersion int
