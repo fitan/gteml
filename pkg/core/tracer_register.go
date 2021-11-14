@@ -13,7 +13,7 @@ type Trace struct {
 
 func (t *Trace) getTp(c *types.Core) *oteltrace.TracerProvider {
 	if t.tp == nil {
-		tp, err := trace.TracerProvider(c.Config.App.Name, c.Config.Trace.TracerProviderAddr)
+		tp, err := trace.TracerProvider(ConfReg.Confer.GetMyConf().App.Name, ConfReg.Confer.GetMyConf().Trace.TracerProviderAddr)
 		if err != nil {
 			log.Println(err)
 			return nil
@@ -32,7 +32,7 @@ func (t *Trace) With(o ...types.Option) types.Register {
 }
 
 func (t *Trace) Set(c *types.Core) {
-	c.Tracer = trace.NewTrace(t.getTp(c), c.Config.Trace.Open)
+	c.Tracer = trace.NewTrace(t.getTp(c), ConfReg.Confer.GetMyConf().Trace.Open)
 }
 
 func (t *Trace) Unset(c *types.Core) {

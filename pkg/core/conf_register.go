@@ -8,27 +8,15 @@ import (
 	"time"
 )
 
-//var myConf *types.MyConf
+type Conf struct {
+	myConf *types.MyConf
+}
 
-//func init() {
-//	myConf = &types.MyConf{}
-//	w, err := conf.WatchFile("conf", []string{"./"}, myConf, 5*time.Second)
-//	if err != nil {
-//		panic(err)
-//	}
-//	c := w.GetSignal()
-//	go func() {
-//		for {
-//			<-c
-//			GetCorePool().Reload()
-//			GetCorePool().GetObj().Version.AddVersion()
-//			//配置文件reload后 gc触发清理pool中的对象
-//			runtime.GC()
-//			log.Println("reload config version: ", GetCorePool().GetObj().Version.Version())
-//		}
-//	}()
-//}
-func NewConfReg() *ConfReg {
+func (c *Conf) GetMyConf() *types.MyConf {
+	return c.myConf
+}
+
+func NewConfReg() *ConfRegister {
 	myConf := &types.MyConf{}
 	w, err := conf.WatchFile("conf", []string{"./"}, myConf, 5*time.Second)
 	if err != nil {
@@ -45,26 +33,26 @@ func NewConfReg() *ConfReg {
 			log.Println("reload config version: ", GetCorePool().GetObj().Version.Version())
 		}
 	}()
-	return &ConfReg{MyConf: myConf}
+	return &ConfRegister{Confer: &Conf{myConf}}
 
 }
 
-type ConfReg struct {
-	MyConf *types.MyConf
+type ConfRegister struct {
+	Confer types.Confer
 }
 
-func (c *ConfReg) With(o ...types.Option) types.Register {
+func (c *ConfRegister) With(o ...types.Option) types.Register {
 	return c
 }
 
-func (c *ConfReg) Reload(ctx *types.Core) {
+func (c *ConfRegister) Reload(ctx *types.Core) {
 }
 
-func (c *ConfReg) Set(ctx *types.Core) {
-	ctx.Config = c.MyConf
+func (c *ConfRegister) Set(ctx *types.Core) {
+	ctx.Config = c.Confer
 }
 
-func (c *ConfReg) Unset(ctx *types.Core) {
+func (c *ConfRegister) Unset(ctx *types.Core) {
 }
 
 //func (c *ConfReg) With(o ...types.Option) Register {

@@ -5,7 +5,7 @@ run:
 	go run main.go
 
 gen-conf:
-	go run tools/gen/main.go genconf -s ./conf.yaml -d ./pkg/types/conf.go
+	go run tools/gen/main.go genconf -s ./conf.yaml -d ./pkg/types/conf_gen.go
 
 ent:
 	go run -mod=mod entgo.io/ent/cmd/ent generate ./pkg/ent/schema

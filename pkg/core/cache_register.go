@@ -21,11 +21,11 @@ func (c *CacheReg) With(o ...types.Option) types.Register {
 
 func (c *CacheReg) Set(ctx *types.Core) {
 	if c.client == nil {
-		c.client = redis.NewClient(&redis.Options{Addr: ctx.Config.Redis.Url, Password: ctx.Config.Redis.Password, DB: ctx.Config.Redis.Db})
+		c.client = redis.NewClient(&redis.Options{Addr: ctx.Config.GetMyConf().Redis.Url, Password: ctx.Config.GetMyConf().Redis.Password, DB: ctx.Config.GetMyConf().Redis.Db})
 		c.client.AddHook(redisotel.NewTracingHook())
 	}
 
-	ctx.Cache = cache.NewCache(ctx, c.client, cache.Option{Prefix: ctx.Config.App.Name})
+	ctx.Cache = cache.NewCache(ctx, c.client, cache.Option{Prefix: ctx.Config.GetMyConf().App.Name})
 }
 
 func (c *CacheReg) Unset(ctx *types.Core) {

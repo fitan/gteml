@@ -44,7 +44,7 @@ func Create(c *types.Core, in *CreateIn) ([]*ent.User, error) {
 
 type SayHelloIn struct {
 	Query struct {
-		Say string `json:"say" form:"say" binding:"required"`
+		Say string `json:"say" form:"say"`
 	} `json:"query"`
 }
 
@@ -52,5 +52,10 @@ type SayHelloIn struct {
 func SayHello(core *types.Core, in *SayHelloIn) (interface{}, error) {
 	defer core.Log.Sync()
 	core.Log.Info("start Say hello")
-	return in, nil
+
+	if in.Query.Say != "" {
+		return in.Query.Say, nil
+	}
+
+	return core.GetServices().User().Read(), nil
 }

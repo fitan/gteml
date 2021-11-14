@@ -32,7 +32,7 @@ type logRegister struct {
 
 func (l *logRegister) GetXlog() *log.Xlog {
 	if l.xlog == nil {
-		l.xlog = log.NewXlog(log.WithLogLevel(zapcore.Level(Conf.MyConf.Log.Lervel)), log.WithTrace(zapcore.Level(Conf.MyConf.Log.TraceLervel)), log.WithLogFileName(Conf.MyConf.Log.FileName, Conf.MyConf.Log.Dir))
+		l.xlog = log.NewXlog(log.WithLogLevel(zapcore.Level(ConfReg.Confer.GetMyConf().Log.Lervel)), log.WithTrace(zapcore.Level(ConfReg.Confer.GetMyConf().Log.TraceLervel)), log.WithLogFileName(ConfReg.Confer.GetMyConf().Log.FileName, ConfReg.Confer.GetMyConf().Log.Dir))
 	}
 	return l.xlog
 }

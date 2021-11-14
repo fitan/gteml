@@ -21,17 +21,17 @@ func (s *storageReg) Reload(c *types.Core) {
 
 func (s *storageReg) GetClient(c *types.Core) *ent.Client {
 	if s.Client == nil {
-		db, err := sql.Open("mysql", c.Config.Mysql.Url)
+		db, err := sql.Open("mysql", ConfReg.Confer.GetMyConf().Mysql.Url)
 		if err != nil {
 			log.Panicf("mysql create db: %s", err.Error())
 		}
-		db.SetMaxIdleConns(Conf.MyConf.Mysql.MaxIdleConns)
-		db.SetMaxOpenConns(Conf.MyConf.Mysql.MaxOpenConns)
-		lt, err := time.ParseDuration(Conf.MyConf.Mysql.ConnMaxLifetime)
+		db.SetMaxIdleConns(ConfReg.Confer.GetMyConf().Mysql.MaxIdleConns)
+		db.SetMaxOpenConns(ConfReg.Confer.GetMyConf().Mysql.MaxOpenConns)
+		lt, err := time.ParseDuration(ConfReg.Confer.GetMyConf().Mysql.ConnMaxLifetime)
 		if err != nil {
 			log.Panicf("parse ConnMaxLifetime err: %s", err.Error())
 		}
-		it, err := time.ParseDuration(Conf.MyConf.Mysql.ConnMaxIdleTime)
+		it, err := time.ParseDuration(ConfReg.Confer.GetMyConf().Mysql.ConnMaxIdleTime)
 		if err != nil {
 			log.Panicf("parse ConnMaxIdleTime err: %s", err.Error())
 		}

@@ -33,13 +33,13 @@ func main() {
 	//span.RecordError(fmt.Errorf("this is error %s", "log1"))
 	//span.SetStatus(1, "statuso")
 	//span.Sync()
-	if core.Conf.MyConf.Pyroscope.Open {
+	if core.ConfReg.Confer.GetMyConf().Pyroscope.Open {
 		profiler.Start(
 			profiler.Config{
-				ApplicationName: core.GetCorePool().GetObj().Config.App.Name,
+				ApplicationName: core.ConfReg.Confer.GetMyConf().App.Name,
 
 				// replace this with the address of pyroscope server
-				ServerAddress: core.Conf.MyConf.Pyroscope.Url,
+				ServerAddress: core.ConfReg.Confer.GetMyConf().Pyroscope.Url,
 
 				// by default all profilers are enabled,
 				// but you can select the ones you want to use:

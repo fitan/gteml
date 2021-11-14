@@ -29,16 +29,16 @@ type ApisRegister struct {
 func (h *ApisRegister) getApis(c *types.Core) *Apis {
 	if h.baiduClient == nil {
 		h.baiduClient = httpclient.NewClient(
-			httpclient.WithHost(c.Config.Api.Baidu.Url),
-			httpclient.WithTrace(c.Tracer.Tp(), "baidu", c.Config.Api.Baidu.TraceDebug),
-			httpclient.WithDebug(c.Config.Api.Baidu.RestyDebug))
+			httpclient.WithHost(c.GetConfig().GetMyConf().Api.Baidu.Url),
+			httpclient.WithTrace(c.Tracer.Tp(), "baidu", c.GetConfig().GetMyConf().Api.Baidu.TraceDebug),
+			httpclient.WithDebug(c.GetConfig().GetMyConf().Api.Baidu.RestyDebug))
 	}
 
 	if h.taobaoClient == nil {
 		h.taobaoClient = httpclient.NewClient(
-			httpclient.WithHost(c.Config.Api.Taobao.Url),
-			httpclient.WithTrace(c.Tracer.Tp(), "taobao", c.Config.Api.Taobao.TraceDebug),
-			httpclient.WithDebug(c.Config.Api.Taobao.RestyDebug))
+			httpclient.WithHost(c.GetConfig().GetMyConf().Api.Taobao.Url),
+			httpclient.WithTrace(c.Tracer.Tp(), "taobao", c.GetConfig().GetMyConf().Api.Taobao.TraceDebug),
+			httpclient.WithDebug(c.GetConfig().GetMyConf().Api.Taobao.RestyDebug))
 	}
 
 	return &Apis{

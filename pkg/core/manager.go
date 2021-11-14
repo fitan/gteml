@@ -21,14 +21,14 @@ import (
 //	registerList = append(registerList, os...)
 //}
 
-var Conf *ConfReg
-var Prom *PromRegister
+var ConfReg *ConfRegister
+var PromReg *PromRegister
 
 func init() {
-	Conf = NewConfReg()
-	Prom = NewPromRegister()
+	ConfReg = NewConfReg()
+	PromReg = NewPromRegister()
 	GetCorePool().RegisterList([]types.Register{
-		Conf,
+		ConfReg,
 		&Trace{},
 		&logRegister{},
 		&storageReg{},
@@ -39,7 +39,8 @@ func init() {
 				&ginx.TraceMid{},
 			},
 		},
-		Prom,
+		PromReg,
+		&ServiceRegister{},
 		&api.ApisRegister{},
 		&VersionReg{},
 		&PoolReg{},
@@ -87,11 +88,11 @@ func (c *CorePool) ReUse(ctx *types.Core) {
 
 	// 如果配置文件reload 那么对象不放回pool中
 	if ctx.LocalVersion != ctx.Version.Version() {
-		Prom.Get().CorePool("!Put:Version")
+		PromReg.Get().CorePool("!Put:Version")
 		return
 	}
 
-	Prom.Get().CorePool("Put")
+	PromReg.Get().CorePool("Put")
 	c.P.Put(ctx)
 }
 
@@ -99,10 +100,10 @@ func (c *CorePool) GetObj() *types.Core {
 	for {
 		context := c.P.Get().(*types.Core)
 		if context.LocalVersion != context.Version.Version() {
-			Prom.Get().CorePool("!Get:Version")
+			PromReg.Get().CorePool("!Get:Version")
 			continue
 		}
-		Prom.Get().CorePool("Get")
+		PromReg.Get().CorePool("Get")
 		return context
 	}
 }
@@ -122,7 +123,7 @@ func NewObjFn(p *CorePool) func() interface{} {
 		c := &types.Core{}
 		p.Set(c)
 		c.LocalVersion = c.Version.Version()
-		Prom.Get().CorePool("Create")
+		PromReg.Get().CorePool("Create")
 		return c
 	}
 }

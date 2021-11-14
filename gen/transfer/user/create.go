@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/fitan/magic/pkg/types"
-	user2 "github.com/fitan/magic/service/user"
+	user2 "github.com/fitan/magic/services/user"
 	"net/http"
 )
 
