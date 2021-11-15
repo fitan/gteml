@@ -25,8 +25,8 @@ type SysUser struct {
 	Role           int       `gorm:"column:role"`
 	UpdatedAt      time.Time `gorm:"column:updated_at"` // 删除时间
 
-	SysRoles       []SysRole        `gorm:"many2many:sys_user_roles;foreignkey:id;association_foreignkey:id;association_jointable_foreignkey:role_id;jointable_foreignkey:sys_user_id;" json:"sys_roles"`
-	SysServicetree []TblServicetree `gorm:"many2many:sys_user_servicetree;foreignkey:id;association_foreignkey:id;association_jointable_foreignkey:servicetree_id;jointable_foreignkey:sys_user_id;" json:"sys_servicetree"`
+	SysRoles       *[]SysRole        `gorm:"many2many:sys_user_roles;foreignKey:id;association_foreignkey:id;association_jointable_foreignkey:role_id;joinForeignKey:sys_user_id;" json:"sys_roles"`
+	SysServicetree *[]TblServicetree `gorm:"many2many:sys_user_servicetree;foreignKey:id;association_foreignkey:id;association_jointable_foreignkey:servicetree_id;joinForeignKey:sys_user_id;" json:"sys_servicetree"`
 }
 
 // TableName set table

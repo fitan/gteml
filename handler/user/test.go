@@ -14,7 +14,7 @@ type CreateIn struct {
 	Header struct{}
 }
 
-// @Router post /user
+// @GenApi /user [post]
 func Create(c *types.Core, in *CreateIn) ([]*ent.User, error) {
 	c.Log.Info("这是 create的开始")
 	c.Log.Sync()
@@ -48,8 +48,8 @@ type SayHelloIn struct {
 	} `json:"query"`
 }
 
-// @Router get /say
-func SayHello(core *types.Core, in *SayHelloIn) (interface{}, error) {
+// @GenApi /say [get]
+func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 	defer core.Log.Sync()
 	core.Log.Info("start Say hello")
 

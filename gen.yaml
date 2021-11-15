@@ -78,9 +78,9 @@ Gen:
       Dest: "./gen/entrest"
   Api:
     -
-      Name: "logicapi"
-      Src: "./logic"
-      Dest: "./gen/handler/logic"
+      Name: "handler"
+      Src: "./handler"
+      Dest: "./gen/transfer"
     -
       Name: "entapi"
       Src: "./gen/entrest"

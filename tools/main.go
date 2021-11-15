@@ -61,7 +61,7 @@ var migrate = &cobra.Command{
 	Use: "migrate",
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := core.NewConfReg()
-		client, err := ent.Open("mysql", conf.MyConf.Mysql.Url)
+		client, err := ent.Open("mysql", conf.Confer.GetMyConf().Mysql.Url)
 		if err != nil {
 			log.Fatalf("failed connecting to mysql: %v", err)
 		}

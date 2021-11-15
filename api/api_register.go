@@ -1,16 +1,16 @@
 package api
 
 import (
-	"github.com/fitan/magic/pkg/api/baidu"
-	"github.com/fitan/magic/pkg/api/taobao"
+	baidu2 "github.com/fitan/magic/api/baidu"
+	taobao2 "github.com/fitan/magic/api/taobao"
 	"github.com/fitan/magic/pkg/httpclient"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
 
 type Apis struct {
-	BaiduApi  *baidu.BaiduApi
-	TaobaoApi *taobao.TaoBaoApi
+	BaiduApi  *baidu2.BaiduApi
+	TaobaoApi *taobao2.TaoBaoApi
 }
 
 func (a *Apis) Baidu() types.BaiduApi {
@@ -42,8 +42,8 @@ func (h *ApisRegister) getApis(c *types.Core) *Apis {
 	}
 
 	return &Apis{
-		BaiduApi:  baidu.NewBaiduApi(c, h.baiduClient),
-		TaobaoApi: taobao.NewTaoBaoApi(c, h.taobaoClient),
+		BaiduApi:  baidu2.NewBaiduApi(c, h.baiduClient),
+		TaobaoApi: taobao2.NewTaoBaoApi(c, h.taobaoClient),
 	}
 }
 

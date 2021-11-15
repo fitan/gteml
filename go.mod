@@ -27,7 +27,9 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.0
 	go.opentelemetry.io/otel/trace v1.0.0
 	go.uber.org/zap v1.19.1
+	golang.org/x/sys v0.0.0-20211113001501-0c823b97ae02 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gorm.io/gen v0.1.19
-	gorm.io/gorm v1.22.3-0.20211109115547-33bc56cbb591 // indirect
+	gorm.io/driver/mysql v1.2.0 // indirect
+	gorm.io/gen v0.1.20
+	gorm.io/gorm v1.22.3 // indirect
 )

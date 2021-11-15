@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fitan/magic/model"
-	"github.com/fitan/magic/tools/gen/dal/query"
+	"github.com/fitan/magic/tools/dal/query"
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
-	"gorm.io/gen/field"
 	"gorm.io/gorm"
 )
 
@@ -38,8 +37,8 @@ func main() {
 	// GenerateModel/GenerateModelAs. And generator will generate table models' code when calling Excute.
 	q := query.Use(db)
 	user := q.SysUser
-	_ = q.TblServicetree
-	first, err := user.WithContext(context.TODO()).Preload(field.Associations).Where(user.Id.Eq(1)).First()
+	//_ = q.TblServicetree
+	first, err := user.WithContext(context.TODO()).Where(user.Id.Eq(1)).Preload(user.SysRoles).Preload(user.SysServicetree).First()
 	if err != nil {
 		return
 	}
