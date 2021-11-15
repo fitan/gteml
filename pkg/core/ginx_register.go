@@ -7,9 +7,38 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GinXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.GinXHandlerOption) {
+const CoreKey = "CoreKey"
+
+func SetCore() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Set(CoreKey, GetCorePool().GetObj())
+	}
+}
+
+type GinXHandlerRegister struct {
+	options []ginx.GinXHandlerOption
+}
+
+func NewGinXHandlerRegister(options ...ginx.GinXHandlerOption) *GinXHandlerRegister {
+	return &GinXHandlerRegister{options: options}
+}
+
+func (g *GinXHandlerRegister) Register(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.GinXHandlerOption) {
+	option := make([]ginx.GinXHandlerOption, 0, len(g.options)+len(o))
+	option = append(option, g.options...)
+	option = append(option, o...)
+	ginXHandlerRegister(i, transfer, option...)
+
+}
+
+func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...ginx.GinXHandlerOption) {
 	i.Handle(transfer.Method(), transfer.Url(), func(c *gin.Context) {
-		core := GetCorePool().GetObj()
+		var core *types.Core
+		if value, ok := c.Get(CoreKey); ok {
+			core = value.(*types.Core)
+		} else {
+			core = GetCorePool().GetObj()
+		}
 		//gin的request ctx放到trace里
 		//core.SetCtx(c.Request.Core())
 		// core包裹gin context

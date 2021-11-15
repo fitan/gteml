@@ -6,10 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Register(r gin.IRouter) {
+func Register(r gin.IRouter, reg *core.GinXHandlerRegister) {
 
-	core.GinXHandlerRegister(r, &CreateTransfer{}, ginx.WithHandlerName("Create"))
-
-	core.GinXHandlerRegister(r, &SayHelloTransfer{}, ginx.WithHandlerName("SayHello"))
+	reg.Register(r, &CreateTransfer{}, ginx.WithHandlerName("Create"))
+	reg.Register(r, &SayHelloTransfer{}, ginx.WithHandlerName("SayHello"))
 
 }

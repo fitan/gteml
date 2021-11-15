@@ -67,7 +67,7 @@ type SayHelloTransfer struct {
 }
 
 func (t *SayHelloTransfer) Method() string {
-	return http.MethodGET
+	return http.MethodGet
 }
 
 func (t *SayHelloTransfer) Url() string {
