@@ -50,8 +50,6 @@ type SayHelloIn struct {
 
 // @GenApi /say [get]
 func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
-	defer core.Log.Sync()
-	core.Log.Info("start Say hello")
 
 	if in.Query.Say != "" {
 		return in.Query.Say, nil

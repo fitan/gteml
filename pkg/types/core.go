@@ -13,9 +13,11 @@ type Core struct {
 
 	Storage Storage
 
+	Dao DAOer
+
 	Cache Cache
 
-	Services ServicesI
+	Services Serviceser
 
 	Apis Apis
 
@@ -44,7 +46,7 @@ func (c *Core) GetCache() Cache {
 	return c.Cache
 }
 
-func (c *Core) GetServices() ServicesI {
+func (c *Core) GetServices() Serviceser {
 	return c.Services
 }
 
@@ -56,12 +58,22 @@ func (c *Core) GetProm() Promer {
 	return c.Prom
 }
 
+func (c *Core) GetDao() DAOer {
+	return c.Dao
+}
+
+func (c *Core) GetTrace() Tracer {
+	return c.Tracer
+}
+
 type ServiceCore interface {
+	GetTrace() Tracer
 	GetConfig() Confer
 	GetCoreLog() CoreLoger
 	GetStorage() Storage
 	GetCache() Cache
-	GetServices() ServicesI
+	GetServices() Serviceser
 	GetApis() Apis
 	GetProm() Promer
+	GetDao() DAOer
 }

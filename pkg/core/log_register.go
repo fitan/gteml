@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/fitan/magic/pkg/log"
 	"github.com/fitan/magic/pkg/types"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -16,6 +17,10 @@ type CoreLog struct {
 
 func (c *CoreLog) IsOpenTrace() bool {
 	return c.xlog.IsOpenTrace()
+}
+
+func (c *CoreLog) ApmLog(spanName string) *zap.Logger {
+	return c.xlog.ApmLog(c.core.Tracer.SpanCtx(spanName))
 }
 
 func (c *CoreLog) TraceLog(spanName string) types.Logger {

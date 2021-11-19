@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"go.elastic.co/apm/module/apmzap"
 	"go.opentelemetry.io/otel/codes"
 	//otelsdk "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
@@ -19,6 +20,10 @@ type Xlog struct {
 
 func (x *Xlog) IsOpenTrace() bool {
 	return x.openTrace
+}
+
+func (x *Xlog) ApmLog(ctx context.Context) *zap.Logger {
+	return x.Logger.WithOptions(zap.WrapCore((&apmzap.Core{}).WrapCore)).With(apmzap.TraceContext(ctx)...)
 }
 
 func (x *Xlog) TraceLog(ctx context.Context) *TraceLog {

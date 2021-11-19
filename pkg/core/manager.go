@@ -39,6 +39,7 @@ func init() {
 				&ginx.TraceMid{},
 			},
 		},
+		&daoReg{},
 		PromReg,
 		&ServiceRegister{},
 		&api2.ApisRegister{},

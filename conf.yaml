@@ -26,8 +26,8 @@ api:
     restyDebug: false
 
 mysql:
-#  url: spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?parseTime=true
-  url: root:123456@tcp(localhost:3306)/spider_dev?parseTime=true
+  url: spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?parseTime=true
+#  url: root:123456@tcp(localhost:3306)/spider_dev?parseTime=true
   maxIdleConns: 10
   maxOpenConns: 100
   connMaxLifetime: 1h
@@ -38,4 +38,16 @@ redis:
   password: ""
   db: 0
   openTrace: true
+
+jwt:
+  realm: gtemp
+  identityKey: id
+  secretKey: HelloWord
+  timeout: 100000h
+  maxRefresh: 100000h
+  tokenHeadName: token
+
+rbac:
+  model: ./rbac_model.conf
+
 

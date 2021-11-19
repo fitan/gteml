@@ -1,9 +1,10 @@
 package user
 
 import (
+	"net/http"
+
 	"github.com/fitan/magic/handler/user"
 	"github.com/fitan/magic/pkg/types"
-	"net/http"
 )
 
 type SwagCreateBody struct {

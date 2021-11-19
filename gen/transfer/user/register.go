@@ -9,6 +9,7 @@ import (
 func Register(r gin.IRouter, reg *core.GinXHandlerRegister) {
 
 	reg.Register(r, &CreateTransfer{}, ginx.WithHandlerName("Create"))
+
 	reg.Register(r, &SayHelloTransfer{}, ginx.WithHandlerName("SayHello"))
 
 }
