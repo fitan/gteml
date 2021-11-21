@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+	"go.elastic.co/apm"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/trace"
 	trace2 "go.opentelemetry.io/otel/trace"
@@ -16,11 +17,12 @@ func NewTrace(tp *trace.TracerProvider, open bool) *Trace {
 }
 
 type Trace struct {
-	tp     *trace.TracerProvider
-	ctx    context.Context
-	m      sync.Mutex
-	isOpen bool
-	spans  []trace2.Span
+	tp       *trace.TracerProvider
+	ctx      context.Context
+	m        sync.Mutex
+	isOpen   bool
+	spans    []trace2.Span
+	apmSpans []*apm.Span
 }
 
 func (t *Trace) Tp() *trace.TracerProvider {
@@ -60,6 +62,13 @@ func (t *Trace) SpanCtx(name string) context.Context {
 	t.spans = append(t.spans, span)
 	t.ctx = spanCtx
 	return spanCtx
+}
+
+func (t *Trace) ApmSpanCtx(name string) context.Context {
+	span, nextCtx := apm.StartSpan(t.ctx, name, "method")
+	t.apmSpans = append(t.apmSpans, span)
+	t.ctx = nextCtx
+	return t.ctx
 }
 
 func (t *Trace) End() {

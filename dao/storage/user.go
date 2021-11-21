@@ -18,7 +18,7 @@ type User struct {
 func (u *User) CheckPassword(ctx context.Context, userName string, password string) (*model.User, error) {
 	db := u.db
 	res := &model.User{}
-	err := db.WithContext(ctx).Where("email = ? And password = ?", userName, password).First(res).Error
+	err := db.WithContext(ctx).Where("email = ? AND password = ?", userName, password).First(res).Error
 	return res, err
 }
 

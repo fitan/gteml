@@ -1,6 +1,7 @@
 package ginmid
 
 import (
+	"fmt"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/core"
@@ -51,8 +52,10 @@ func NewAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if err := c.ShouldBindJSON(&login); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
+			fmt.Println(login)
 
 			user, err := core.GetServices().User().Login(login.UserName, login.Password)
+			fmt.Println(user)
 			return user, err
 
 		},

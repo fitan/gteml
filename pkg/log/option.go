@@ -13,6 +13,7 @@ type option struct {
 	logLevel  zapcore.Level
 	dir       string
 	fileName  string
+	filter    map[string]struct{}
 	*zap.Logger
 }
 
@@ -55,11 +56,14 @@ func WithLogLevel(level zapcore.Level) Option {
 	}
 }
 
-func WithTrace(level zapcore.Level) Option {
+func WithTrace(level zapcore.Level, filter map[string]struct{}) Option {
 	return func(o *option) {
 		o.traceLevel = level
 		//o.tp = tp
 		o.openTrace = true
+
+		o.filter = filter
+
 	}
 }
 
@@ -92,6 +96,7 @@ func NewXlog(fs ...Option) *Xlog {
 	if o.openTrace {
 		xlog.traceLevel = o.traceLevel
 		xlog.openTrace = o.openTrace
+		xlog.filter = o.filter
 	}
 
 	return xlog

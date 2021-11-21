@@ -3,6 +3,7 @@ package httpclient
 import (
 	"context"
 	"encoding/json"
+	"github.com/fitan/magic/pkg/apm/apmhttp"
 	"github.com/go-resty/resty/v2"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/codes"
@@ -45,6 +46,19 @@ func AfterErrorSpanEnd() resty.ResponseMiddleware {
 		if span.IsRecording() {
 			span.End()
 		}
+		return nil
+	}
+}
+
+func ApmBeforeTrace() resty.RequestMiddleware {
+	return func(client *resty.Client, request *resty.Request) error {
+		client.SetTransport(apmhttp.WrapRoundTripper(
+			http.DefaultClient.Transport,
+			apmhttp.WithClientRequestName(func(request *http.Request) string {
+				return request.Context().Value(_SpanName).(string)
+			}),
+			apmhttp.WithClientTrace(),
+		))
 		return nil
 	}
 }

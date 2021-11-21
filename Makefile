@@ -1,5 +1,5 @@
 export ELASTIC_APM_SERVICE_NAME=gteml
-export ELASTIC_APM_SERVER_URL=http://10.170.34.151:8200
+export ELASTIC_APM_SERVER_URL=http://localhost:8200
 
 build:
 	go build -ldflags "-X main.GitCommitId=`git rev-parse HEAD` -X 'main.goVersion=$(go version)' -X 'main.gitHash=$(git show -s --format=%H)' -X 'main.buildTime=$(git show -s --format=%cd)'"  -mod vendor -o output/main main.go

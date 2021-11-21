@@ -9,7 +9,7 @@ type CoreLoger interface {
 	IsOpenTrace() bool
 	TraceLog(spanName string) Logger
 	Log() Logger
-	ApmLog(spanName string) *zap.Logger
+	ApmLog(spanName string) Logger
 	//ApmLog(spanName string) Logger
 }
 

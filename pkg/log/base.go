@@ -2,7 +2,8 @@ package log
 
 import (
 	"context"
-	"go.elastic.co/apm/module/apmzap"
+	"github.com/fitan/magic/pkg/apm/apmzap"
+	"go.elastic.co/apm"
 	"go.opentelemetry.io/otel/codes"
 	//otelsdk "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
@@ -16,14 +17,19 @@ type Xlog struct {
 	openTrace  bool
 	//tp         *otelsdk.TracerProvider
 	*zap.Logger
+	filter map[string]struct{}
 }
 
 func (x *Xlog) IsOpenTrace() bool {
 	return x.openTrace
 }
 
-func (x *Xlog) ApmLog(ctx context.Context) *zap.Logger {
-	return x.Logger.WithOptions(zap.WrapCore((&apmzap.Core{}).WrapCore)).With(apmzap.TraceContext(ctx)...)
+func (x *Xlog) ApmLog(ctx context.Context) *ApmLog {
+	span := apm.SpanFromContext(ctx)
+	return &ApmLog{
+		Logger: x.Logger.WithOptions(zap.WrapCore((&apmzap.Core{Filter: x.filter}).WrapCore)).With(apmzap.TraceContext(ctx)...),
+		Span:   span,
+	}
 }
 
 func (x *Xlog) TraceLog(ctx context.Context) *TraceLog {

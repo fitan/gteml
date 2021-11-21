@@ -3,7 +3,6 @@ package core
 import (
 	"github.com/fitan/magic/pkg/log"
 	"github.com/fitan/magic/pkg/types"
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -19,8 +18,8 @@ func (c *CoreLog) IsOpenTrace() bool {
 	return c.xlog.IsOpenTrace()
 }
 
-func (c *CoreLog) ApmLog(spanName string) *zap.Logger {
-	return c.xlog.ApmLog(c.core.Tracer.SpanCtx(spanName))
+func (c *CoreLog) ApmLog(spanName string) types.Logger {
+	return c.xlog.ApmLog(c.core.Tracer.ApmSpanCtx(spanName))
 }
 
 func (c *CoreLog) TraceLog(spanName string) types.Logger {
@@ -37,7 +36,10 @@ type logRegister struct {
 
 func (l *logRegister) GetXlog() *log.Xlog {
 	if l.xlog == nil {
-		l.xlog = log.NewXlog(log.WithLogLevel(zapcore.Level(ConfReg.Confer.GetMyConf().Log.Lervel)), log.WithTrace(zapcore.Level(ConfReg.Confer.GetMyConf().Log.TraceLervel)), log.WithLogFileName(ConfReg.Confer.GetMyConf().Log.FileName, ConfReg.Confer.GetMyConf().Log.Dir))
+		l.xlog = log.NewXlog(
+			log.WithLogLevel(zapcore.Level(ConfReg.Confer.GetMyConf().Log.Lervel)),
+			log.WithTrace(zapcore.Level(ConfReg.Confer.GetMyConf().Log.TraceLervel), map[string]struct{}{"carry": {}}),
+			log.WithLogFileName(ConfReg.Confer.GetMyConf().Log.FileName, ConfReg.Confer.GetMyConf().Log.Dir))
 	}
 	return l.xlog
 }

@@ -7,6 +7,7 @@ import (
 )
 
 const _OpenTrace string = "_openTrace"
+const _SpanName string = "_spanName"
 
 func NewTraceClient(tracer types.Tracer, client *resty.Client) *TraceClient {
 	return &TraceClient{tracer, client}
@@ -45,7 +46,10 @@ func (r *TraceRequest) offTraceCtx() context.Context {
 
 func (r *TraceRequest) Get(url string, name string) (*resty.Response, error) {
 	if r.Tracer.IsOpen() {
-		return r.Request.SetContext(r.openTraceCtx(name)).Get(url)
+		ctx := context.WithValue(r.Ctx(), _OpenTrace, true)
+		ctx = context.WithValue(ctx, _SpanName, name)
+		return r.Request.SetContext(ctx).Get(url)
+		//return r.Request.SetContext(r.openTraceCtx(name)).Get(url)
 	}
 	return r.Request.SetContext(r.offTraceCtx()).Get(url)
 }

@@ -7,6 +7,6 @@ import (
 
 func LoginRoute(r gin.IRouter, jwtMid *jwt.GinJWTMiddleware) {
 	r.POST("/login", jwtMid.LoginHandler)
-	r.POST("logout", jwtMid.LogoutHandler)
+	r.POST("/logout", jwtMid.LogoutHandler)
 	r.GET("/refresh_token", jwtMid.RefreshHandler)
 }

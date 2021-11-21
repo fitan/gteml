@@ -7,8 +7,7 @@ require (
 	github.com/Depado/ginprom v1.7.2
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.7.0
-	github.com/casbin/casbin/v2 v2.37.4 // indirect
-	github.com/casbin/gorm-adapter/v3 v3.4.5
+	github.com/casbin/casbin/v2 v2.37.4
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.4
@@ -23,9 +22,10 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
-	go.elastic.co/apm v1.14.0 // indirect
+	go.elastic.co/apm v1.14.0
 	go.elastic.co/apm/module/apmgin v1.14.0
 	go.elastic.co/apm/module/apmgormv2 v1.14.0
+	go.elastic.co/apm/module/apmhttp v1.14.0 // indirect
 	go.elastic.co/apm/module/apmzap v1.14.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.24.0
 	go.opentelemetry.io/otel v1.0.0
