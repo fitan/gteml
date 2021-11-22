@@ -24,7 +24,7 @@ func (b *BaiduApi) GetSum() {
 }
 
 func (b *BaiduApi) GetRoot() (*resty.Response, error) {
-	res, err := b.client.R().Get("/hello", "请求根目录")
+	res, err := b.client.R().Get("", "请求根目录")
 	return res, err
 }
 

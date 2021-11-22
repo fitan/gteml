@@ -37,18 +37,18 @@ type TraceRequest struct {
 }
 
 func (r *TraceRequest) openTraceCtx(name string) context.Context {
-	return context.WithValue(r.SpanCtx(name), _OpenTrace, true)
+	ctx := context.WithValue(r.Ctx(), _OpenTrace, true)
+	ctx = context.WithValue(ctx, _SpanName, name)
+	return ctx
 }
 
 func (r *TraceRequest) offTraceCtx() context.Context {
-	return context.WithValue(r.Request.Context(), _OpenTrace, false)
+	return context.WithValue(r.Ctx(), _OpenTrace, false)
 }
 
 func (r *TraceRequest) Get(url string, name string) (*resty.Response, error) {
 	if r.Tracer.IsOpen() {
-		ctx := context.WithValue(r.Ctx(), _OpenTrace, true)
-		ctx = context.WithValue(ctx, _SpanName, name)
-		return r.Request.SetContext(ctx).Get(url)
+		return r.Request.SetContext(r.openTraceCtx(name)).Get(url)
 		//return r.Request.SetContext(r.openTraceCtx(name)).Get(url)
 	}
 	return r.Request.SetContext(r.offTraceCtx()).Get(url)

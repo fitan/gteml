@@ -1,13 +1,12 @@
 package types
 
 import (
-	"github.com/casbin/casbin/v2"
 	"github.com/fitan/magic/model"
 )
 
 type Serviceser interface {
 	User() Userer
-	RABC() casbin.IEnforcer
+	RABC() RBAC
 }
 
 type Userer interface {

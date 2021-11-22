@@ -3,8 +3,8 @@ package httpclient
 import (
 	"context"
 	"encoding/json"
-	"github.com/fitan/magic/pkg/apm/apmhttp"
 	"github.com/go-resty/resty/v2"
+	"go.elastic.co/apm/module/apmhttp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"

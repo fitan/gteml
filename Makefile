@@ -18,3 +18,6 @@ migrate:
 
 watch:
 	gin.exe -i run main.go
+
+gorm-gen:
+	go run tools/gorm.go

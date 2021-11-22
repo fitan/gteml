@@ -13,7 +13,6 @@ type AddPermissionsIn struct {
 }
 
 func AddPermissions(core *types.Core, in *AddPermissionsIn) (string, error) {
-	panic("")
 }
 
 type GetRolesForUserInDomainIn struct {

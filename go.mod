@@ -37,6 +37,6 @@ require (
 	golang.org/x/sys v0.0.0-20211113001501-0c823b97ae02 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.2.0
-	gorm.io/gen v0.1.20
+	gorm.io/gen v0.1.25
 	gorm.io/gorm v1.22.3
 )

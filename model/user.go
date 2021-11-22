@@ -12,10 +12,13 @@ type User struct {
 	Id   int64
 	Name string
 	//唯一
-	Email    string `gorm:"<-:create"`
+	Email    string
 	PassWord string
 	Token    string
 	Enable   bool
+
+	Roles       []SysRole
+	Servicetree []Service
 }
 
 // TableName set table

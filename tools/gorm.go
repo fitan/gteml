@@ -1,14 +1,8 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/fitan/magic/model"
-	"github.com/fitan/magic/tools/dal/query"
-	"gorm.io/driver/mysql"
 	"gorm.io/gen"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -29,22 +23,23 @@ func main() {
 
 	// reuse the database connection in Project or create a connection here
 	// if you want to use GenerateModel/GenerateModelAs, UseDB is necessray or it will panic
-	db, _ := gorm.Open(mysql.Open("spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?charset=utf8mb4&parseTime=True&loc=Local"))
-	db = db.Debug()
-	g.UseDB(db)
+	//db, _ := gorm.Open(mysql.Open("spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?charset=utf8mb4&parseTime=True&loc=Local"))
+	//db = db.Debug()
 
-	// apply basic crud api on structs or table models which is specified by table name with function
-	// GenerateModel/GenerateModelAs. And generator will generate table models' code when calling Excute.
-	q := query.Use(db)
-	user := q.SysUser
-	//_ = q.TblServicetree
-	first, err := user.WithContext(context.TODO()).Where(user.Id.Eq(1)).Preload(user.SysRoles).Preload(user.SysServicetree).First()
-	if err != nil {
-		return
-	}
-	b, _ := json.Marshal(first)
-	fmt.Println(string(b))
-	return
+	//g.UseDB(db)
+	//
+	//// apply basic crud api on structs or table models which is specified by table name with function
+	//// GenerateModel/GenerateModelAs. And generator will generate table models' code when calling Excute.
+	//q := query.Use(db)
+	//user := q.SysUser
+	////_ = q.TblServicetree
+	//first, err := user.WithContext(context.TODO()).Where(user.Id.Eq(1)).Preload(user.SysRoles).Preload(user.SysServicetree).First()
+	//if err != nil {
+	//	return
+	//}
+	//b, _ := json.Marshal(first)
+	//fmt.Println(string(b))
+	//return
 
 	// apply diy interfaces on structs or table models
 	//g.ApplyInterface(func(method model.Method) {}, model.User{}, g.GenerateModel("company"))
