@@ -9,10 +9,10 @@ import (
 
 type Services struct {
 	user types.Userer
-	rabc casbin.IEnforcer
+	rabc types.RBAC
 }
 
-func (s *Services) RABC() casbin.IEnforcer {
+func (s *Services) RABC() types.RBAC {
 	return s.rabc
 }
 
@@ -23,6 +23,6 @@ func (s *Services) User() types.Userer {
 func NewServices(core types.ServiceCore, enforcer *casbin.Enforcer) types.Serviceser {
 	return &Services{
 		user.NewUser(core),
-		rbac.NewRBAC(enforcer),
+		rbac.NewRBAC(enforcer, core),
 	}
 }

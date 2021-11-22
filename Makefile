@@ -21,3 +21,6 @@ watch:
 
 gorm-gen:
 	go run tools/gorm.go
+
+gorm-migrate:
+	go run tools/main.go gorm-migrate

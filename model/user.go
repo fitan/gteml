@@ -17,11 +17,6 @@ type User struct {
 	Token    string
 	Enable   bool
 
-	Roles       []SysRole
-	Servicetree []Service
-}
-
-// TableName set table
-func (u *User) TableName() string {
-	return "user"
+	Roles    []Role    `gorm:"many2many:user_roles"`
+	Services []Service `gorm:"many2many:user_services"`
 }

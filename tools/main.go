@@ -3,9 +3,12 @@ package main
 import (
 	context2 "context"
 	"github.com/fitan/magic/ent"
+	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/core"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 	"os"
 	"strings"
@@ -65,9 +68,26 @@ var migrate = &cobra.Command{
 		if err != nil {
 			log.Fatalf("failed connecting to mysql: %v", err)
 		}
+
 		if err := client.Schema.Create(context2.Background()); err != nil {
 			log.Fatalf("failed creating schema resources: %v", err)
 			return
+		}
+	},
+}
+
+var gormMigrate = &cobra.Command{
+	Use: "gorm-migrate",
+	Run: func(cmd *cobra.Command, args []string) {
+		conf := core.NewConfReg()
+		client, err := gorm.Open(mysql.Open(conf.Confer.GetMyConf().Mysql.Url))
+		if err != nil {
+			log.Fatalf("failed connecting to mysql: %v", err)
+		}
+
+		err = client.AutoMigrate(&model.User{}, &model.Role{}, &model.Service{}, &model.Permission{})
+		if err != nil {
+			log.Fatalf("failed AutoMigrate %v", err)
 		}
 	},
 }
@@ -78,5 +98,6 @@ func main() {
 	var rootCmd = &cobra.Command{Use: "gen"}
 	rootCmd.AddCommand(genconf)
 	rootCmd.AddCommand(migrate)
+	rootCmd.AddCommand(gormMigrate)
 	rootCmd.Execute()
 }
