@@ -31,7 +31,7 @@ func init() {
 		ConfReg,
 		&Trace{},
 		&logRegister{},
-		&storageReg{},
+		//&storageReg{},
 		&CacheReg{},
 		&ginXRegister{
 			EntryMid: []types.Middleware{

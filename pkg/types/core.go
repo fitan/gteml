@@ -11,7 +11,7 @@ type Core struct {
 
 	GinX GinXer
 
-	Storage Storage
+	//Storage Storage
 
 	Dao DAOer
 
@@ -38,9 +38,9 @@ func (c *Core) GetCoreLog() CoreLoger {
 	return c.CoreLog
 }
 
-func (c *Core) GetStorage() Storage {
-	return c.Storage
-}
+//func (c *Core) GetStorage() Storage {
+//	return c.Storage
+//}
 
 func (c *Core) GetCache() Cache {
 	return c.Cache
@@ -74,7 +74,7 @@ type ServiceCore interface {
 	GetTrace() Tracer
 	GetConfig() Confer
 	GetCoreLog() CoreLoger
-	GetStorage() Storage
+	//GetStorage() Storage
 	GetCache() Cache
 	GetServices() Serviceser
 	GetApis() Apis
