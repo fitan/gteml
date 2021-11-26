@@ -27,11 +27,12 @@ func (t *CreateTransfer) Binder() types.GinXBinder {
 }
 
 type CreateBinder struct {
-	val user.CreateIn
+	val *user.CreateIn
 }
 
 func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 	in := &user.CreateIn{}
+	b.val = in
 
 	err = core.GinX.GinCtx().ShouldBindJSON(&in.Body)
 	if err != nil {
@@ -57,7 +58,7 @@ func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 // @Success 200 {object} public.Result{data=[]ent.User}
 // @Router /user [post]
 func (b *CreateBinder) BindFn(core *types.Core) (interface{}, error) {
-	return user.Create(core, &b.val)
+	return user.Create(core, b.val)
 }
 
 type SwagSayHelloQuery struct {
@@ -80,11 +81,12 @@ func (t *SayHelloTransfer) Binder() types.GinXBinder {
 }
 
 type SayHelloBinder struct {
-	val user.SayHelloIn
+	val *user.SayHelloIn
 }
 
 func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) {
 	in := &user.SayHelloIn{}
+	b.val = in
 
 	err = core.GinX.GinCtx().ShouldBindQuery(&in.Query)
 	if err != nil {
@@ -100,5 +102,5 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 // @Success 200 {object} public.Result{data=string}
 // @Router /say [get]
 func (b *SayHelloBinder) BindFn(core *types.Core) (interface{}, error) {
-	return user.SayHello(core, &b.val)
+	return user.SayHello(core, b.val)
 }

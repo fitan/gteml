@@ -7,9 +7,13 @@
 
 package model
 
+import (
+	"gorm.io/gorm"
+)
+
 type User struct {
 	//gorm.Model
-	Id   int64
+	gorm.Model
 	Name string
 	//唯一
 	Email    string

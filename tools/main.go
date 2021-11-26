@@ -80,12 +80,14 @@ var gormMigrate = &cobra.Command{
 	Use: "gorm-migrate",
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := core.NewConfReg()
-		client, err := gorm.Open(mysql.Open(conf.Confer.GetMyConf().Mysql.Url))
+		client, err := gorm.Open(mysql.Open(conf.Confer.GetMyConf().Mysql.Url), &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: true,
+		})
 		if err != nil {
 			log.Fatalf("failed connecting to mysql: %v", err)
 		}
 
-		err = client.AutoMigrate(&model.User{}, &model.Role{}, &model.Service{}, &model.Permission{})
+		err = client.AutoMigrate(&model.User{}, &model.Role{}, &model.Service{}, &model.Permission{}, &model.CasbinRule{})
 		if err != nil {
 			log.Fatalf("failed AutoMigrate %v", err)
 		}

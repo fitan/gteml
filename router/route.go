@@ -1,6 +1,9 @@
 package router
 
 import (
+	"github.com/fitan/magic/gen/transfer/permission"
+	"github.com/fitan/magic/gen/transfer/role"
+	"github.com/fitan/magic/gen/transfer/user"
 	"github.com/fitan/magic/pkg/core"
 	"github.com/fitan/magic/pkg/ginmid"
 	"github.com/fitan/magic/pkg/prometheus"
@@ -34,5 +37,9 @@ func Router() *gin.Engine {
 // 注册路由
 func registerRouter(r gin.IRouter) {
 	gReg := core.NewGinXHandlerRegister()
-	userRoute(r, gReg)
+	//userRoute(r, gReg)
+	//roleRoute(r, gReg)
+	role.Register(r, gReg)
+	user.Register(r, gReg)
+	permission.Register(r, gReg)
 }

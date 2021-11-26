@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
+	"gorm.io/driver/mysql"
 	"gorm.io/gen"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -23,7 +28,17 @@ func main() {
 
 	// reuse the database connection in Project or create a connection here
 	// if you want to use GenerateModel/GenerateModelAs, UseDB is necessray or it will panic
-	//db, _ := gorm.Open(mysql.Open("spider_dev:spider_dev123@tcp(10.170.34.22:3307)/spider_dev?charset=utf8mb4&parseTime=True&loc=Local"))
+	db, _ := gorm.Open(mysql.Open("spider_dev:spider_dev123@tcp(10.170.34.22:3307)/gteml?parseTime=true"))
+	q := query.Use(db)
+	u := q.User
+	first, err := u.WithContext(context.Background()).Where(u.ID.Eq(1)).Preload(u.Roles).First()
+	if err != nil {
+		return
+	}
+
+	fmt.Println(first)
+	return
+
 	//db = db.Debug()
 
 	//g.UseDB(db)
@@ -45,7 +60,7 @@ func main() {
 	//g.ApplyInterface(func(method model.Method) {}, model.User{}, g.GenerateModel("company"))
 
 	// execute the action of code generation
-	g.ApplyBasic(model.SysUser{}, model.TblServicetree{}, model.SysRole{})
+	g.ApplyBasic(model.User{}, model.Service{}, model.Role{}, model.Permission{})
 
 	g.Execute()
 }

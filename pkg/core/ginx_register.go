@@ -88,9 +88,5 @@ func (g *ginXRegister) Set(c *types.Core) {
 }
 
 func (g *ginXRegister) Unset(c *types.Core) {
-	c.GinX.SetBindReq(nil)
-	c.GinX.SetBindRes(nil)
-	c.GinX.SetBindErr(nil)
-	c.GinX.SetHandlerMid(nil)
-	c.GinX.SetGinCtx(nil)
+	c.GinX.Reset()
 }

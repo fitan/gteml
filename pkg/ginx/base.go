@@ -8,10 +8,9 @@ import (
 
 type GinX struct {
 	*gin.Context
-	bindReq    interface{}
-	bindRes    interface{}
-	bindErr    error
-	resultWrap []types.Option
+	bindReq interface{}
+	bindRes interface{}
+	bindErr error
 
 	entryMiddleware *[]types.Middleware
 
@@ -44,6 +43,14 @@ func (g *GinX) SetBindReq(i interface{}) {
 
 func (g *GinX) SetBindRes(i interface{}) {
 	g.bindRes = i
+}
+
+func (g *GinX) Reset() {
+	g.bindReq = nil
+	g.bindErr = nil
+	g.bindRes = nil
+	g.handlerMiddleware = nil
+	g.Context = nil
 }
 
 func (g *GinX) SetBindErr(err error) {

@@ -1,0 +1,8 @@
+p,1,/permission/:id,GET
+p,1,/say,GET
+g,1,1,1/*
+
+
+p, admin, /say, GET
+p, admin, /permission/:id, GET
+g, boweian, admin, 1/*

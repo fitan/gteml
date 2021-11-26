@@ -16,5 +16,5 @@ type Role struct {
 	Enabled     bool
 	Description string
 	Level       int
-	Permissions []Permission `gorm:"foreignKey:id"`
+	Permissions []Permission `gorm:"many2many:role_permissions"`
 }

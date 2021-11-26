@@ -7,6 +7,6 @@ type Service struct {
 	Name        string
 	Alias       string
 	Description string
-	ParentId    int64
-	Services    []Service `gorm:"foreignkey:ParentId"`
+	ParentId    uint
+	Services    []Service `gorm:"foreignKey:ParentId"`
 }

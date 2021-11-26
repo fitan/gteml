@@ -12,6 +12,7 @@ type GinXer interface {
 	BindRes() interface{}
 	SetBindErr(error)
 	BindErr() error
+	Reset()
 	SetEntryMid(m *[]Middleware)
 	SetHandlerMid(m *[]Middleware)
 }

@@ -48,6 +48,10 @@ type SayHelloIn struct {
 	} `json:"query"`
 }
 
+func (s *SayHelloIn) ServiceID() (serviceID uint) {
+	return 1
+}
+
 // @GenApi /say [get]
 func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 

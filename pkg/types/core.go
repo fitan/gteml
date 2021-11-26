@@ -66,6 +66,10 @@ func (c *Core) GetTrace() Tracer {
 	return c.Tracer
 }
 
+func (c *Core) GetGinX() GinXer {
+	return c.GinX
+}
+
 type ServiceCore interface {
 	GetTrace() Tracer
 	GetConfig() Confer
@@ -76,4 +80,11 @@ type ServiceCore interface {
 	GetApis() Apis
 	GetProm() Promer
 	GetDao() DAOer
+}
+
+type DaoCore interface {
+	GetDao() DAOer
+	GetTrace() Tracer
+	GetConfig() Confer
+	GetCoreLog() CoreLoger
 }

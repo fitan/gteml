@@ -1,10 +1,10 @@
 package ginmid
 
 import (
-	"fmt"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/core"
+	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -52,26 +52,24 @@ func NewAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if err := c.ShouldBindJSON(&login); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			fmt.Println(login)
 
 			user, err := core.GetServices().User().Login(login.UserName, login.Password)
-			fmt.Println(user)
 			return user, err
 
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			c.Set("userID", data.(float64))
+			c.Set(types.JwtUserIDKey, uint(data.(float64)))
 			return true
 		},
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*model.User); ok {
-				return jwt.MapClaims{"userID": v.Id}
+				return jwt.MapClaims{types.JwtUserIDKey: v.ID}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			userID := claims["userID"].(float64)
+			userID := claims[types.JwtUserIDKey].(float64)
 			return userID
 		},
 		IdentityKey:   identityKey,
