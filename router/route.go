@@ -30,6 +30,7 @@ func Router() *gin.Engine {
 	authorized := r.Group("/", jwtMid.MiddlewareFunc())
 	registerRouter(authorized)
 	LoginRoute(r, jwtMid)
+	SwagRoute(r)
 
 	return r
 }
@@ -37,8 +38,6 @@ func Router() *gin.Engine {
 // 注册路由
 func registerRouter(r gin.IRouter) {
 	gReg := core.NewGinXHandlerRegister()
-	//userRoute(r, gReg)
-	//roleRoute(r, gReg)
 	role.Register(r, gReg)
 	user.Register(r, gReg)
 	permission.Register(r, gReg)

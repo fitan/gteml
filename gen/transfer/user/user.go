@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/fitan/magic/handler/user"
+	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
 )
 
@@ -48,11 +49,14 @@ func (b *BindUserPermissionBinder) BindVal(core *types.Core) (res interface{}, e
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param body body SwagBindUserPermissionBody true " "
 // @Param user_id path string true " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description 给用户绑定角色和服务
 // @Router /user/:user_id/permission [post]
 func (b *BindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.BindUserPermission(core, b.val)
@@ -99,12 +103,58 @@ func (b *UnBindUserPermissionBinder) BindVal(core *types.Core) (res interface{},
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param body body SwagUnBindUserPermissionBody true " "
 // @Param user_id path string true " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description 用户解除绑定
 // @Router /user/:user_id/permission [delete]
 func (b *UnBindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.UnBindUserPermission(core, b.val)
+}
+
+type GetUserByIDTransfer struct {
+}
+
+func (t *GetUserByIDTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *GetUserByIDTransfer) Url() string {
+	return "/user/:id"
+}
+
+func (t *GetUserByIDTransfer) Binder() types.GinXBinder {
+	return new(GetUserByIDBinder)
+}
+
+type GetUserByIDBinder struct {
+	val *user.GetUserByIDIn
+}
+
+func (b *GetUserByIDBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &user.GetUserByIDIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+type _ = model.User
+
+// @Accept  json
+// @Produce  json
+// @Param id path string true " "
+// @Success 200 {object} ginx.GinXResult{data=model.User}
+// @Description get user by id
+// @Router /user/:id [get]
+func (b *GetUserByIDBinder) BindFn(core *types.Core) (interface{}, error) {
+	return user.GetUserByID(core, b.val)
 }

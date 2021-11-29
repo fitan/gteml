@@ -50,4 +50,7 @@ jwt:
 rbac:
   model: ./rbac_model.conf
 
+swagger:
+  enable: true
+
 

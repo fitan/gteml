@@ -1,31 +1,30 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/casbin/casbin/v2"
+	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
+	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"path"
 	"path/filepath"
 	"strconv"
 )
 
-func NewUser(daoCore types.DaoCore, enforcer *casbin.Enforcer) types.User {
-	return &User{core: daoCore, enforcer: enforcer}
+func NewUser(query *query.WrapQuery, daoCore types.DaoCore, enforcer *casbin.Enforcer) types.User {
+	return &User{query: query, core: daoCore, enforcer: enforcer}
 }
 
 type User struct {
+	query    *query.WrapQuery
 	core     types.DaoCore
 	enforcer *casbin.Enforcer
 }
 
 func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method string) (err error) {
-	fmt.Println(userID, serviceID, path, method)
-	db := u.core.GetDao().Storage().DB()
-	service := &model.Service{}
-	err = db.First(service, serviceID).Error
+	service, err := u.query.WrapQuery().Service.Where(u.query.Service.Where(u.query.Service.ID.Eq(serviceID))).First()
 	if err != nil {
 		return errors.WithMessage(err, "service not found")
 	}
@@ -40,7 +39,6 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 	user := userID2CasbinKey(userID)
 	ok, err := u.enforcer.Enforce(user, domain, path, method)
 	//ok, err := u.enforcer.Enforce(strconv.Itoa(int(userID)), domain, path, method)
-	fmt.Println(user, domain, path, method, ok, err)
 	if err != nil {
 		return err
 	}
@@ -51,46 +49,35 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 }
 
 func (u *User) CheckPassword(userName string, password string) (*model.User, error) {
-	db := u.core.GetDao().Storage().DB()
-	res := &model.User{}
-	err := db.Where("email = ? AND pass_word = ?", userName, password).First(res).Error
-	return res, err
+	return u.query.WrapQuery().User.Where(u.query.User.Email.Eq(userName)).Where(u.query.User.PassWord.Eq(password)).First()
 }
 
-func (u *User) ById(id uint, preload ...string) (*model.User, error) {
-	db := u.core.GetDao().Storage().DB()
+func (u *User) ById(id uint, preload ...field.RelationField) (*model.User, error) {
+	do := u.query.WrapQuery().User.Where(u.query.User.ID.Eq(id))
 	if len(preload) != 0 {
 		for _, v := range preload {
-			db.Preload(v)
+			do = do.Preload(v)
 		}
 	}
-
-	res := model.User{}
-	return &res, db.First(&res, id).Error
+	return do.First()
 }
 
 func (u *User) Create(user *model.User) error {
-	db := u.core.GetDao().Storage().DB()
-
-	return db.Create(user).Error
+	return u.query.WrapQuery().User.Create(user)
 }
 
-func (u *User) Update(user *model.User) error {
-	db := u.core.GetDao().Storage().DB()
-
-	return db.Save(user).Error
+func (u *User) Update(id uint, user *model.User) error {
+	_, err := u.query.WrapQuery().User.Where(u.query.User.ID.Eq(id)).Updates(user)
+	return err
 }
 
 func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
-	db := u.core.GetDao().Storage().DB()
-
 	var domain string
 	var serviceType string
 
-	err = db.Transaction(
-		func(tx *gorm.DB) error {
-			service := &model.Service{}
-			err = db.First(service, serviceID).Error
+	err = u.query.Transaction(
+		func(tx *query.Query) error {
+			service, err := tx.Service.Where(tx.Service.ID.Eq(serviceID)).First()
 			if err != nil {
 				return err
 			}
@@ -135,43 +122,44 @@ func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
 			}
 
 			user := &model.User{Model: gorm.Model{ID: userID}}
-			err = tx.Model(user).Association("Roles").Delete(&model.Role{Model: gorm.Model{ID: roleID}})
+			err = tx.User.Roles.Model(user).Delete(&model.Role{Model: gorm.Model{ID: roleID}})
+			//err = tx.Model(user).Association("Roles").Delete(&model.Role{Model: gorm.Model{ID: roleID}})
 			if err != nil {
 				return err
 			}
 
-			err = tx.Model(user).Association("Services").Delete(&model.Service{Model: gorm.Model{ID: serviceID}})
+			//err = tx.Model(user).Association("Services").Delete(&model.Service{Model: gorm.Model{ID: serviceID}})
+			err = tx.User.Services.Model(user).Delete(&model.Service{Model: gorm.Model{ID: serviceID}})
 
 			if err != nil {
 				return err
 			}
 
 			return nil
+
 		})
+
 	return
 }
 
 func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
-	db := u.core.GetDao().Storage().DB()
 	userIDStr := userID2CasbinKey(userID)
 	roleIDStr := roleID2CasbinKey(roleID)
 
 	var domain string
 	var serviceType string
 
-	err = db.Transaction(
-		func(tx *gorm.DB) error {
-			service := &model.Service{}
+	err = u.query.Transaction(
+		func(tx *query.Query) error {
 
-			err = db.First(service, serviceID).Error
+			service, err := tx.Service.Where(tx.Service.ID.Eq(serviceID)).First()
 			if err != nil {
 				return err
 			}
 
 			if service.ParentId != 0 {
 				serviceType = "service"
-				parentService := &model.Service{}
-				err = db.First(parentService, service.ParentId).Error
+				parentService, err := tx.Service.Where(tx.Service.ID.Eq(service.ParentId)).First()
 				if err != nil {
 					return err
 				}
@@ -214,12 +202,12 @@ func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
 				}
 			}
 			user := &model.User{Model: gorm.Model{ID: userID}}
-			err = tx.Model(user).Association("Roles").Append(&model.Role{Model: gorm.Model{ID: roleID}})
+			err = tx.User.Roles.Model(user).Append(&model.Role{Model: gorm.Model{ID: roleID}})
 			if err != nil {
 				return err
 			}
 
-			err = tx.Model(user).Association("Services").Append(&model.Service{Model: gorm.Model{ID: serviceID}})
+			err = tx.User.Services.Model(user).Append(&model.Service{Model: gorm.Model{ID: serviceID}})
 
 			if err != nil {
 				return err
@@ -227,5 +215,6 @@ func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
 
 			return nil
 		})
+
 	return
 }

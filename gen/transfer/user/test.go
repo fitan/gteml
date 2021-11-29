@@ -52,10 +52,12 @@ func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 	return b.val, err
 }
 
+type _ = interface{}
+
 // @Accept  json
 // @Produce  json
 // @Param body body SwagCreateBody true " "
-// @Success 200 {object} public.Result{data=[]ent.User}
+// @Success 200 {object} ginx.GinXResult{data=interface{}}
 // @Router /user [post]
 func (b *CreateBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.Create(core, b.val)
@@ -96,10 +98,12 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param query query SwagSayHelloQuery false " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
 // @Router /say [get]
 func (b *SayHelloBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.SayHello(core, b.val)

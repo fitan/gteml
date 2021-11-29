@@ -2,6 +2,7 @@ package storage
 
 import (
 	"github.com/casbin/casbin/v2"
+	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/pkg/types"
 	"gorm.io/gorm"
 )
@@ -30,11 +31,11 @@ func (s *Storage) User() types.User {
 	return s.user
 }
 
-func NewStorage(db *gorm.DB, enforcer *casbin.Enforcer, core types.DaoCore) types.Storager {
+func NewStorage(db *gorm.DB, query *query.WrapQuery, enforcer *casbin.Enforcer, core types.DaoCore) types.Storager {
 	return &Storage{
 		db:         db,
 		core:       core,
-		user:       NewUser(core, enforcer),
+		user:       NewUser(query, core, enforcer),
 		role:       NewRole(core, enforcer),
 		permission: NewPermission(core),
 	}

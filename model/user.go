@@ -8,6 +8,7 @@
 package model
 
 import (
+	"gorm.io/gen"
 	"gorm.io/gorm"
 )
 
@@ -23,4 +24,9 @@ type User struct {
 
 	Roles    []Role    `gorm:"many2many:user_roles"`
 	Services []Service `gorm:"many2many:user_services"`
+}
+
+type Method interface {
+	// Where("id=@id")
+	GetByID(id uint) (gen.T, error)
 }

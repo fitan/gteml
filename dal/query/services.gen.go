@@ -49,7 +49,7 @@ func newService(db *gorm.DB) service {
 }
 
 type service struct {
-	serviceDo serviceDo
+	serviceDo
 
 	ALL         field.Field
 	ID          field.Uint
@@ -82,10 +82,6 @@ func (s service) As(alias string) *service {
 
 	return &s
 }
-
-func (s *service) WithContext(ctx context.Context) *serviceDo { return s.serviceDo.WithContext(ctx) }
-
-func (s service) TableName() string { return s.serviceDo.TableName() }
 
 func (s *service) GetFieldByName(fieldName string) (field.Expr, bool) {
 	field, ok := s.fieldMap[fieldName]
@@ -181,6 +177,20 @@ func (a serviceServicesTx) Count() int64 {
 }
 
 type serviceDo struct{ gen.DO }
+
+//Where("id=@id")
+func (s serviceDo) GetByID(id uint) (result *model.Service, err error) {
+	params := map[string]interface{}{
+		"id": id,
+	}
+
+	var generateSQL string
+	generateSQL += "id=@id"
+
+	executeSQL := s.UnderlyingDB().Where(generateSQL, params).Take(&result)
+	err = executeSQL.Error
+	return
+}
 
 func (s serviceDo) Debug() *serviceDo {
 	return s.withDO(s.DO.Debug())

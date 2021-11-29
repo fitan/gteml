@@ -45,7 +45,7 @@ func newRole(db *gorm.DB) role {
 }
 
 type role struct {
-	roleDo roleDo
+	roleDo
 
 	ALL         field.Field
 	ID          field.Uint
@@ -80,10 +80,6 @@ func (r role) As(alias string) *role {
 
 	return &r
 }
-
-func (r *role) WithContext(ctx context.Context) *roleDo { return r.roleDo.WithContext(ctx) }
-
-func (r role) TableName() string { return r.roleDo.TableName() }
 
 func (r *role) GetFieldByName(fieldName string) (field.Expr, bool) {
 	field, ok := r.fieldMap[fieldName]
@@ -176,6 +172,20 @@ func (a rolePermissionsTx) Count() int64 {
 }
 
 type roleDo struct{ gen.DO }
+
+//Where("id=@id")
+func (r roleDo) GetByID(id uint) (result *model.Role, err error) {
+	params := map[string]interface{}{
+		"id": id,
+	}
+
+	var generateSQL string
+	generateSQL += "id=@id"
+
+	executeSQL := r.UnderlyingDB().Where(generateSQL, params).Take(&result)
+	err = executeSQL.Error
+	return
+}
 
 func (r roleDo) Debug() *roleDo {
 	return r.withDO(r.DO.Debug())

@@ -1,0 +1,491 @@
+basePath: /
+definitions:
+  ginx.GinXResult:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  model.Permission:
+    properties:
+      alias:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      menu:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: integer
+      path:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Role:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+      onlyKey:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/model.Permission'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  model.Service:
+    properties:
+      alias:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parentId:
+        type: integer
+      services:
+        items:
+          $ref: '#/definitions/model.Service'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  model.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        description: 唯一
+        type: string
+      enable:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      passWord:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.Role'
+        type: array
+      services:
+        items:
+          $ref: '#/definitions/model.Service'
+        type: array
+      token:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  permission.SwagCreatePermissionBody:
+    properties:
+      alias:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      menu:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: integer
+      path:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  permission.SwagUpdatePermissionBody:
+    properties:
+      alias:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      menu:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: integer
+      path:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  role.SwagBindRolePermissionBody:
+    properties:
+      permission_id:
+        type: integer
+    type: object
+  role.SwagUnBindRolePermissionBody:
+    properties:
+      permission_id:
+        type: integer
+    type: object
+  user.SwagBindUserPermissionBody:
+    properties:
+      domain_id:
+        type: integer
+      role_id:
+        type: integer
+    type: object
+  user.SwagCreateBody:
+    properties:
+      hello:
+        type: string
+    type: object
+  user.SwagUnBindUserPermissionBody:
+    properties:
+      domain_id:
+        type: integer
+      role_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /permission:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/permission.SwagCreatePermissionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/permission.SwagUpdatePermissionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+  /permission/:id:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Permission'
+              type: object
+  /permisssion/:id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+  /role/:role_id/permission:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/role.SwagUnBindRolePermissionBody'
+      - description: ' '
+        in: path
+        name: role_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/role.SwagBindRolePermissionBody'
+      - description: ' '
+        in: path
+        name: role_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+  /say:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: say
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+  /user:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.SwagCreateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: object
+              type: object
+  /user/:id:
+    get:
+      consumes:
+      - application/json
+      description: get user by id
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+  /user/:user_id/permission:
+    delete:
+      consumes:
+      - application/json
+      description: 用户解除绑定
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.SwagUnBindUserPermissionBody'
+      - description: ' '
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+    post:
+      consumes:
+      - application/json
+      description: 给用户绑定角色和服务
+      parameters:
+      - description: ' '
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.SwagBindUserPermissionBody'
+      - description: ' '
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ginx.GinXResult'
+            - properties:
+                data:
+                  type: string
+              type: object
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

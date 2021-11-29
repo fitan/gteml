@@ -5,6 +5,7 @@ import (
 	log2 "github.com/casbin/casbin/v2/log"
 	"github.com/casbin/casbin/v2/util"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/dao"
 	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
@@ -17,6 +18,7 @@ import (
 type daoReg struct {
 	db       *gorm.DB
 	enforcer *casbin.Enforcer
+	query    *query.Query
 }
 
 func (s *daoReg) Reload(c *types.Core) {
@@ -49,6 +51,8 @@ func (s *daoReg) GetObj() *daoReg {
 		s.enforcer = e
 		//s.enforcer.EnableEnforce(true)
 		s.enforcer.AddNamedDomainMatchingFunc("g", "keyMatch", util.KeyMatch)
+
+		s.query = query.Use(db)
 		//s.enforcer.SetRoleManager(s.enforcer.GetRoleManager())
 	}
 	return s
@@ -60,7 +64,8 @@ func (s *daoReg) With(o ...types.Option) types.Register {
 
 func (s *daoReg) Set(c *types.Core) {
 	obj := s.GetObj()
-	c.Dao = dao.NewDAO(obj.db, obj.enforcer, c)
+	wrapQuery := &query.WrapQuery{c, obj.query}
+	c.Dao = dao.NewDAO(obj.db, wrapQuery, obj.enforcer, c)
 }
 
 func (s *daoReg) Unset(c *types.Core) {

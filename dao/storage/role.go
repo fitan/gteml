@@ -16,6 +16,14 @@ func NewRole(core types.DaoCore, enforcer *casbin.Enforcer) *Role {
 	return &Role{core: core, enforcer: enforcer}
 }
 
+//
+//  UnBindPermission
+//  @Description: 接触角色的绑定
+//  @receiver r
+//  @param roleID
+//  @param permissionID
+//  @return err
+//
 func (r *Role) UnBindPermission(roleID uint, permissionID uint) (err error) {
 	db := r.core.GetDao().Storage().DB()
 
@@ -99,7 +107,7 @@ func (r *Role) Create(role *model.Role) error {
 
 func (r *Role) DeleteById(id uint) (err error) {
 	db := r.core.GetDao().Storage().DB()
-	db.Transaction(
+	err = db.Transaction(
 		func(tx *gorm.DB) error {
 			role := &model.Role{}
 			role.ID = id

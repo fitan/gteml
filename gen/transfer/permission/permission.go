@@ -41,10 +41,12 @@ func (b *CreatePermissionBinder) BindVal(core *types.Core) (res interface{}, err
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param body body SwagCreatePermissionBody true " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
 // @Router /permission [post]
 func (b *CreatePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.CreatePermission(core, b.val)
@@ -81,10 +83,12 @@ func (b *GetPermissionByIdBinder) BindVal(core *types.Core) (res interface{}, er
 	return b.val, err
 }
 
+type _ = model.Permission
+
 // @Accept  json
 // @Produce  json
 // @Param id path string true " "
-// @Success 200 {object} public.Result{data=model.Permission}
+// @Success 200 {object} ginx.GinXResult{data=model.Permission}
 // @Router /permission/:id [get]
 func (b *GetPermissionByIdBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.GetPermissionById(core, b.val)
@@ -121,10 +125,12 @@ func (b *DeletePermissionByIdBinder) BindVal(core *types.Core) (res interface{},
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param id path string true " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
 // @Router /permisssion/:id [delete]
 func (b *DeletePermissionByIdBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.DeletePermissionById(core, b.val)
@@ -163,10 +169,12 @@ func (b *UpdatePermissionBinder) BindVal(core *types.Core) (res interface{}, err
 	return b.val, err
 }
 
+type _ = string
+
 // @Accept  json
 // @Produce  json
 // @Param body body SwagUpdatePermissionBody true " "
-// @Success 200 {object} public.Result{data=string}
+// @Success 200 {object} ginx.GinXResult{data=string}
 // @Router /permission [put]
 func (b *UpdatePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.UpdatePermission(core, b.val)

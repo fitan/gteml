@@ -3,6 +3,13 @@ package types
 import "github.com/fitan/magic/model"
 
 type Role interface {
+	//
+	//  UnBindPermission
+	//  @Description: 接触绑定
+	//  @param roleID
+	//  @param permissionID
+	//  @return err
+	//
 	UnBindPermission(roleID uint, permissionID uint) (err error)
 	BindPermission(roleID uint, permissionID uint) (err error)
 	Get() (res []model.Role, err error)

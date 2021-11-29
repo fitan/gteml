@@ -10,7 +10,7 @@ func Register(r gin.IRouter, reg *core.GinXHandlerRegister) {
 
 	reg.Register(r, &CreatePermissionTransfer{}, ginx.WithHandlerName("CreatePermission"))
 
-	reg.Register(r, &GetPermissionByIdTransfer{}, ginx.WithHandlerName("GetPermissionById"), ginx.WithHandlerMid(&ginx.CasbinVerifyMid{}))
+	reg.Register(r, &GetPermissionByIdTransfer{}, ginx.WithHandlerName("GetPermissionById"))
 
 	reg.Register(r, &DeletePermissionByIdTransfer{}, ginx.WithHandlerName("DeletePermissionById"))
 

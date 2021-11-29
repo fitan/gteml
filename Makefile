@@ -24,3 +24,6 @@ gorm-gen:
 
 gorm-migrate:
 	go run tools/main.go gorm-migrate
+
+swag:
+	swag init  --parseDependency

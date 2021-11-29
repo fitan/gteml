@@ -43,7 +43,7 @@ func newPermission(db *gorm.DB) permission {
 }
 
 type permission struct {
-	permissionDo permissionDo
+	permissionDo
 
 	ALL         field.Field
 	ID          field.Uint
@@ -84,12 +84,6 @@ func (p permission) As(alias string) *permission {
 	return &p
 }
 
-func (p *permission) WithContext(ctx context.Context) *permissionDo {
-	return p.permissionDo.WithContext(ctx)
-}
-
-func (p permission) TableName() string { return p.permissionDo.TableName() }
-
 func (p *permission) GetFieldByName(fieldName string) (field.Expr, bool) {
 	field, ok := p.fieldMap[fieldName]
 	return field, ok
@@ -117,6 +111,20 @@ func (p permission) clone(db *gorm.DB) permission {
 }
 
 type permissionDo struct{ gen.DO }
+
+//Where("id=@id")
+func (p permissionDo) GetByID(id uint) (result *model.Permission, err error) {
+	params := map[string]interface{}{
+		"id": id,
+	}
+
+	var generateSQL string
+	generateSQL += "id=@id"
+
+	executeSQL := p.UnderlyingDB().Where(generateSQL, params).Take(&result)
+	err = executeSQL.Error
+	return
+}
 
 func (p permissionDo) Debug() *permissionDo {
 	return p.withDO(p.DO.Debug())

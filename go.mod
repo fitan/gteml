@@ -3,8 +3,6 @@ module github.com/fitan/magic
 go 1.16
 
 require (
-	ariga.io/entimport v0.0.0-20211024085919-20c40b8b2009 // indirect
-	entgo.io/ent v0.9.2-0.20211011110952-058e40abcf61
 	github.com/Depado/ginprom v1.7.2
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.7.0
@@ -13,17 +11,21 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.4
-	github.com/go-bindata/go-bindata v1.0.1-0.20190711162640-ee3c2418e368 // indirect
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/lib/pq v1.10.3 // indirect
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pyroscope-io/pyroscope v0.2.2
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
+	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
+	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2
+	github.com/swaggo/gin-swagger v1.3.3
+	github.com/swaggo/swag v1.7.4 // indirect
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.elastic.co/apm v1.14.0
