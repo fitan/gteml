@@ -13,6 +13,7 @@ type Storage struct {
 	permission types.Permission
 	core       types.DaoCore
 	db         *gorm.DB
+	query      *query.WrapQuery
 }
 
 func (s *Storage) Permission() types.Permission {
@@ -21,6 +22,10 @@ func (s *Storage) Permission() types.Permission {
 
 func (s *Storage) Role() types.Role {
 	return s.role
+}
+
+func (s *Storage) Query() *query.WrapQuery {
+	return s.query
 }
 
 func (s *Storage) DB() *gorm.DB {
@@ -34,9 +39,10 @@ func (s *Storage) User() types.User {
 func NewStorage(db *gorm.DB, query *query.WrapQuery, enforcer *casbin.Enforcer, core types.DaoCore) types.Storager {
 	return &Storage{
 		db:         db,
+		query:      query,
 		core:       core,
 		user:       NewUser(query, core, enforcer),
-		role:       NewRole(core, enforcer),
-		permission: NewPermission(core),
+		role:       NewRole(query, core, enforcer),
+		permission: NewPermission(query, core),
 	}
 }

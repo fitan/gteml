@@ -2,132 +2,115 @@ package storage
 
 import (
 	"github.com/casbin/casbin/v2"
+	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
-	"gorm.io/gorm"
 )
 
 type Role struct {
 	core     types.DaoCore
+	query    *query.WrapQuery
 	enforcer *casbin.Enforcer
 }
 
-func NewRole(core types.DaoCore, enforcer *casbin.Enforcer) *Role {
-	return &Role{core: core, enforcer: enforcer}
+func NewRole(query *query.WrapQuery, core types.DaoCore, enforcer *casbin.Enforcer) *Role {
+	return &Role{query: query, core: core, enforcer: enforcer}
 }
 
-//
-//  UnBindPermission
-//  @Description: 接触角色的绑定
-//  @receiver r
-//  @param roleID
-//  @param permissionID
-//  @return err
-//
 func (r *Role) UnBindPermission(roleID uint, permissionID uint) (err error) {
-	db := r.core.GetDao().Storage().DB()
 
-	err = db.Transaction(
-		func(tx *gorm.DB) error {
-			role := &model.Role{}
-			err = tx.First(role, roleID).Error
-			if err != nil {
-				return err
-			}
+	err = r.query.Transaction(func(tx *query.Query) error {
+		role, err := tx.Role.Where(tx.Role.ID.Eq(roleID)).First()
+		if err != nil {
+			return err
+		}
 
-			permission := &model.Permission{}
-			err = tx.First(permission, permissionID).Error
-			if err != nil {
-				return err
-			}
+		permission, err := tx.Permission.Where(tx.Permission.ID.Eq(permissionID)).First()
+		if err != nil {
+			return err
+		}
+		_, err = r.enforcer.RemovePolicy(roleID2CasbinKey(roleID), permission.Path, permission.Method)
+		if err != nil {
+			return err
+		}
 
-			_, err = r.enforcer.RemovePolicy(roleID2CasbinKey(roleID), permission.Path, permission.Method)
-			if err != nil {
-				return err
-			}
+		err = tx.Role.Permissions.Model(role).Delete(permission)
+		if err != nil {
+			return err
+		}
 
-			err = tx.Model(role).Association("Permissions").Delete(permission)
-			if err != nil {
-				return err
-			}
+		return nil
 
-			return nil
-		})
+	})
+
 	return
 }
 
 func (r *Role) BindPermission(roleID uint, permissionID uint) (err error) {
-	db := r.core.GetDao().Storage().DB()
 
-	err = db.Transaction(
-		func(tx *gorm.DB) error {
-			role := &model.Role{}
-			err = tx.First(role, roleID).Error
-			if err != nil {
-				return err
-			}
+	err = r.query.Transaction(func(tx *query.Query) error {
+		role, err := tx.Role.Where(tx.Role.ID.Eq(roleID)).First()
+		if err != nil {
+			return err
+		}
 
-			permission := &model.Permission{}
-			err = tx.First(permission, permissionID).Error
-			if err != nil {
-				return err
-			}
+		permission, err := tx.Permission.Where(tx.Permission.ID.Eq(permissionID)).First()
+		if err != nil {
+			return err
+		}
 
-			_, err = r.enforcer.AddPolicy(roleID2CasbinKey(roleID), permission.Path, permission.Method)
-			if err != nil {
-				return err
-			}
+		_, err = r.enforcer.AddPolicy(roleID2CasbinKey(roleID), permission.Path, permission.Method)
+		if err != nil {
+			return err
+		}
 
-			err = tx.Model(role).Association("Permissions").Append(permission)
-			if err != nil {
-				return err
-			}
+		err = tx.Role.Permissions.Model(role).Append(permission)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 
-			return nil
-		})
 	return
 }
 
-func (r *Role) Get() (res []model.Role, err error) {
-	db := r.core.GetDao().Storage().DB()
-	err = db.Find(&res).Error
-	return
+func (r *Role) Get() (res []*model.Role, err error) {
+	return r.query.Role.Find()
 }
 
 func (r *Role) GetById(id uint) (res *model.Role, err error) {
-	db := r.core.GetDao().Storage().DB()
-	err = db.First(res, id).Error
-	return
+	return r.query.WrapQuery().Role.Where(r.query.Role.ID.Eq(id)).First()
 }
 
 func (r *Role) Create(role *model.Role) error {
-	db := r.core.GetDao().Storage().DB()
-	return db.Create(role).Error
+	return r.query.WrapQuery().Role.Create(role)
 }
 
 func (r *Role) DeleteById(id uint) (err error) {
-	db := r.core.GetDao().Storage().DB()
-	err = db.Transaction(
-		func(tx *gorm.DB) error {
-			role := &model.Role{}
-			role.ID = id
-			err = tx.Model(role).Association("Permissions").Clear()
-			if err != nil {
-				return err
-			}
 
-			_, err = r.enforcer.RemoveFilteredPolicy(0, role.OnlyKey)
-			if err != nil {
-				return err
-			}
+	err = r.query.Transaction(func(tx *query.Query) error {
+		role, err := tx.Role.Where(tx.Role.ID.Eq(id)).First()
+		if err != nil {
+			return err
+		}
 
-			err = tx.Delete(role).Error
-			if err != nil {
-				return err
-			}
+		err = tx.Role.Permissions.Model(role).Clear()
+		if err != nil {
+			return err
+		}
 
-			return nil
+		_, err = r.enforcer.RemoveFilteredPolicy(0, role.OnlyKey)
+		if err != nil {
+			return err
+		}
 
-		})
+		_, err = tx.Role.Where(tx.Role.ID.Eq(id)).Delete()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 	return
 }

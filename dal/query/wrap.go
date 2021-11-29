@@ -7,7 +7,7 @@ import (
 )
 
 type WrapQuery struct {
-	*types.Core
+	types.DaoCore
 	*Query
 }
 

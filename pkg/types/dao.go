@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/fitan/magic/dal/query"
 	"gorm.io/gorm"
 )
 
@@ -12,5 +13,6 @@ type Storager interface {
 	User() User
 	Role() Role
 	Permission() Permission
+	Query() *query.WrapQuery
 	DB() *gorm.DB
 }

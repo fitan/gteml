@@ -74,7 +74,6 @@ type ServiceCore interface {
 	GetTrace() Tracer
 	GetConfig() Confer
 	GetCoreLog() CoreLoger
-	//GetStorage() Storage
 	GetCache() Cache
 	GetServices() Serviceser
 	GetApis() Apis
