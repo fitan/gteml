@@ -4,6 +4,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
 	"gorm.io/gen/field"
@@ -13,18 +14,18 @@ import (
 	"strconv"
 )
 
-func NewUser(query *query.WrapQuery, daoCore types.DaoCore, enforcer *casbin.Enforcer) types.User {
+func NewUser(query *dbquery.WrapQuery, daoCore types.ServiceCore, enforcer *casbin.Enforcer) types.User {
 	return &User{query: query, core: daoCore, enforcer: enforcer}
 }
 
 type User struct {
-	query    *query.WrapQuery
-	core     types.DaoCore
+	query    *dbquery.WrapQuery
+	core     types.ServiceCore
 	enforcer *casbin.Enforcer
 }
 
 func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method string) (err error) {
-	service, err := u.query.WrapQuery().Service.Where(u.query.Service.Where(u.query.Service.ID.Eq(serviceID))).First()
+	service, err := u.query.WrapQuery().Service.Where(u.query.Service.ID.Eq(serviceID)).First()
 	if err != nil {
 		return errors.WithMessage(err, "service not found")
 	}
@@ -49,6 +50,12 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 }
 
 func (u *User) CheckPassword(userName string, password string) (*model.User, error) {
+	log := u.core.GetCoreLog().ApmLog("dao.storage.CheckPassword")
+	defer func() {
+		log.Sync()
+	}()
+	//ctx := u.core.GetTrace().ApmSpanCtx("sql checkpssword")
+	//return u.query.RawQ().WithContext(ctx).User.Where(u.query.User.Email.Eq(userName)).Where(u.query.User.PassWord.Eq(password)).First()
 	return u.query.WrapQuery().User.Where(u.query.User.Email.Eq(userName)).Where(u.query.User.PassWord.Eq(password)).First()
 }
 

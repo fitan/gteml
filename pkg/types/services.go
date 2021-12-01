@@ -7,6 +7,7 @@ import (
 type Serviceser interface {
 	User() Userer
 	RABC() RBAC
+	Audit() Audit
 }
 
 type Userer interface {

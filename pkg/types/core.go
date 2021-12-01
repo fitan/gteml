@@ -80,10 +80,3 @@ type ServiceCore interface {
 	GetProm() Promer
 	GetDao() DAOer
 }
-
-type DaoCore interface {
-	GetDao() DAOer
-	GetTrace() Tracer
-	GetConfig() Confer
-	GetCoreLog() CoreLoger
-}

@@ -4,9 +4,14 @@ import "gorm.io/gorm"
 
 type Audit struct {
 	gorm.Model
-	Url      string
-	Method   string
-	UserName string
-	UserID   int64
-	Body     string
+	Url        string
+	Query      string
+	Method     string
+	Request    string
+	Response   string
+	Header     string
+	StatusCode int
+	RemoteIP   string
+	ClientIP   string
+	CostTime   string
 }

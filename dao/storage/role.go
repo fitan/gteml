@@ -4,16 +4,17 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 )
 
 type Role struct {
-	core     types.DaoCore
-	query    *query.WrapQuery
+	core     types.ServiceCore
+	query    *dbquery.WrapQuery
 	enforcer *casbin.Enforcer
 }
 
-func NewRole(query *query.WrapQuery, core types.DaoCore, enforcer *casbin.Enforcer) *Role {
+func NewRole(query *dbquery.WrapQuery, core types.ServiceCore, enforcer *casbin.Enforcer) *Role {
 	return &Role{query: query, core: core, enforcer: enforcer}
 }
 

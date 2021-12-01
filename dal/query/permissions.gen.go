@@ -112,20 +112,6 @@ func (p permission) clone(db *gorm.DB) permission {
 
 type permissionDo struct{ gen.DO }
 
-//Where("id=@id")
-func (p permissionDo) GetByID(id uint) (result *model.Permission, err error) {
-	params := map[string]interface{}{
-		"id": id,
-	}
-
-	var generateSQL string
-	generateSQL += "id=@id"
-
-	executeSQL := p.UnderlyingDB().Where(generateSQL, params).Take(&result)
-	err = executeSQL.Error
-	return
-}
-
 func (p permissionDo) Debug() *permissionDo {
 	return p.withDO(p.DO.Debug())
 }

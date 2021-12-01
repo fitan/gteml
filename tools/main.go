@@ -85,7 +85,7 @@ var gormMigrate = &cobra.Command{
 			log.Fatalf("failed connecting to mysql: %v", err)
 		}
 
-		err = client.AutoMigrate(&model.User{}, &model.Role{}, &model.Service{}, &model.Permission{}, &model.CasbinRule{})
+		err = client.AutoMigrate(&model.User{}, &model.Role{}, &model.Service{}, &model.Permission{}, &model.Audit{}, &model.CasbinRule{})
 		if err != nil {
 			log.Fatalf("failed AutoMigrate %v", err)
 		}

@@ -1,20 +1,21 @@
 package query
 
 import (
+	"context"
 	"database/sql"
-	"github.com/fitan/magic/pkg/types"
 	"gorm.io/gorm"
 )
 
-type WrapQuery struct {
-	types.DaoCore
-	*Query
+type QueryCtx struct {
+	*queryCtx
 }
 
-func (w *WrapQuery) WrapQuery() *queryCtx {
-	return w.WithContext(w.GetTrace().Ctx())
+func (q *Query) WrapWithContext(ctx context.Context) *QueryCtx {
+	return &QueryCtx{q.WithContext(ctx)}
 }
 
-func (w *WrapQuery) Transaction(fc func(tx *Query) error, opts ...*sql.TxOptions) error {
-	return w.db.WithContext(w.GetTrace().Ctx()).Transaction(func(tx *gorm.DB) error { return fc(w.clone(tx)) }, opts...)
+func (q *Query) WrapTransaction(ctx context.Context) func(fc func(tx *Query) error, opts ...*sql.TxOptions) error {
+	return func(fc func(tx *Query) error, opts ...*sql.TxOptions) error {
+		return q.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error { return fc(q.clone(tx)) }, opts...)
+	}
 }

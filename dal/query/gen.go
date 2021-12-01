@@ -14,6 +14,7 @@ import (
 func Use(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
+		Audit:      newAudit(db),
 		Permission: newPermission(db),
 		Role:       newRole(db),
 		Service:    newService(db),
@@ -24,6 +25,7 @@ func Use(db *gorm.DB) *Query {
 type Query struct {
 	db *gorm.DB
 
+	Audit      audit
 	Permission permission
 	Role       role
 	Service    service
@@ -35,6 +37,7 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
+		Audit:      q.Audit.clone(db),
 		Permission: q.Permission.clone(db),
 		Role:       q.Role.clone(db),
 		Service:    q.Service.clone(db),
@@ -43,6 +46,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	Audit      auditDo
 	Permission permissionDo
 	Role       roleDo
 	Service    serviceDo
@@ -51,6 +55,7 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		Audit:      *q.Audit.WithContext(ctx),
 		Permission: *q.Permission.WithContext(ctx),
 		Role:       *q.Role.WithContext(ctx),
 		Service:    *q.Service.WithContext(ctx),

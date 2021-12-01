@@ -32,7 +32,7 @@ func (g *GetPermissionByIdIn) ServiceID() (serviceID uint) {
 }
 
 // @GenApi /permission/:id [get]
-func GetPermissionById(core *types.Core, in *GetPermissionByIdIn) (res model.Permission, err error) {
+func GetPermissionById(core *types.Core, in *GetPermissionByIdIn) (res *model.Permission, err error) {
 	res, err = core.GetDao().Storage().Permission().GetByID(in.Uri.Id)
 	return
 }

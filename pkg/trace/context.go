@@ -64,14 +64,28 @@ func (t *Trace) SpanCtx(name string) context.Context {
 	return spanCtx
 }
 
-func (t *Trace) ApmSpanCtx(name string) context.Context {
-	span, nextCtx := apm.StartSpan(t.ctx, name, "method")
-	t.apmSpans = append(t.apmSpans, span)
+func (t *Trace) ApmSpanCtx(name string, spanType string) (context.Context, *apm.Span) {
+	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
 	t.ctx = nextCtx
-	return t.ctx
+	t.apmSpans = append(t.apmSpans, span)
+	//if t.apmSpanCtx == nil {
+	//	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
+	//	t.apmSpanCtx = nextCtx
+	//	t.apmSpans = append(t.apmSpans, span)
+	//} else {
+	//	span, nextCtx := apm.StartSpan(t.apmSpanCtx, name, spanType)
+	//	t.apmSpanCtx = nextCtx
+	//	t.apmSpans = append(t.apmSpans, span)
+	//}
+	return t.ctx, span
 }
 
 func (t *Trace) End() {
+	for _, s := range t.apmSpans {
+		if !s.IsExitSpan() {
+			s.End()
+		}
+	}
 	for _, s := range t.spans {
 		if s.IsRecording() {
 			s.SetStatus(codes.Error, "span not shutdown")

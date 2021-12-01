@@ -78,8 +78,8 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 				fn.Forever(core)
 			}
 		}
-		core.Log.Sync()
-		core.Pool.ReUse(core)
+		//core.Log.Sync()
+		//core.Pool.ReUse(core)
 	}()
 
 	if g.entryMiddleware != nil {

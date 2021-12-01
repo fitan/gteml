@@ -173,20 +173,6 @@ func (a rolePermissionsTx) Count() int64 {
 
 type roleDo struct{ gen.DO }
 
-//Where("id=@id")
-func (r roleDo) GetByID(id uint) (result *model.Role, err error) {
-	params := map[string]interface{}{
-		"id": id,
-	}
-
-	var generateSQL string
-	generateSQL += "id=@id"
-
-	executeSQL := r.UnderlyingDB().Where(generateSQL, params).Take(&result)
-	err = executeSQL.Error
-	return
-}
-
 func (r roleDo) Debug() *roleDo {
 	return r.withDO(r.DO.Debug())
 }

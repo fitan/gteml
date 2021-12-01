@@ -178,20 +178,6 @@ func (a serviceServicesTx) Count() int64 {
 
 type serviceDo struct{ gen.DO }
 
-//Where("id=@id")
-func (s serviceDo) GetByID(id uint) (result *model.Service, err error) {
-	params := map[string]interface{}{
-		"id": id,
-	}
-
-	var generateSQL string
-	generateSQL += "id=@id"
-
-	executeSQL := s.UnderlyingDB().Where(generateSQL, params).Take(&result)
-	err = executeSQL.Error
-	return
-}
-
 func (s serviceDo) Debug() *serviceDo {
 	return s.withDO(s.DO.Debug())
 }

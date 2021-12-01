@@ -36,7 +36,6 @@ func (r *ResultWrapMid) Forever(core *types.Core) {
 }
 
 func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
-	return true
 	if core.GinX.BindErr() != nil {
 		return false
 	} else {
@@ -54,7 +53,6 @@ func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
 }
 
 func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
-	return true
 	if core.GinX.BindErr() != nil {
 		return false
 	} else {
@@ -72,7 +70,6 @@ func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
 }
 
 func (r *ResultWrapMid) BindFnAfter(core *types.Core) bool {
-	return true
 	if core.GinX.BindErr() != nil {
 		return false
 	} else {

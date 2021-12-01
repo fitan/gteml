@@ -1,17 +1,17 @@
 package storage
 
 import (
-	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 )
 
 type Permission struct {
-	query *query.WrapQuery
-	//core types.DaoCore
+	query *dbquery.WrapQuery
+	//core types.ServiceCore
 }
 
-func NewPermission(query *query.WrapQuery, core types.DaoCore) *Permission {
+func NewPermission(query *dbquery.WrapQuery, core types.ServiceCore) *Permission {
 	return &Permission{query: query}
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/dao"
 	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	_ "github.com/go-sql-driver/mysql"
 	mysqlapm "go.elastic.co/apm/module/apmgormv2/driver/mysql"
@@ -64,7 +65,7 @@ func (s *daoReg) With(o ...types.Option) types.Register {
 
 func (s *daoReg) Set(c *types.Core) {
 	obj := s.GetObj()
-	wrapQuery := &query.WrapQuery{c, obj.query}
+	wrapQuery := &dbquery.WrapQuery{c, obj.query}
 	c.Dao = dao.NewDAO(obj.db, wrapQuery, obj.enforcer, c)
 }
 

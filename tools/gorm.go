@@ -56,7 +56,7 @@ func main() {
 	//g.ApplyInterface(func(method model.Method) {}, model.User{}, g.GenerateModel("company"))
 
 	// execute the action of code generation
-	g.ApplyBasic(model.User{}, model.Service{}, model.Role{}, model.Permission{})
+	g.ApplyBasic(model.User{}, model.Service{}, model.Role{}, model.Permission{}, model.Audit{})
 	//g.ApplyInterface(func(method model.Method) {}, model.User{},model.Service{}, model.Role{}, model.Permission{})
 
 	g.Execute()
