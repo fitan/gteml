@@ -7,6 +7,7 @@ import (
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"path"
@@ -49,14 +50,17 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 	return nil
 }
 
-func (u *User) CheckPassword(userName string, password string) (*model.User, error) {
-	log := u.core.GetCoreLog().ApmLog("dao.storage.CheckPassword")
+func (u *User) CheckPassword(userName string, password string) (res *model.User, err error) {
+	log := u.core.GetCoreLog().ApmLog("校验用户密码")
 	defer func() {
+		if err != nil {
+			log.Error(err.Error())
+		}
 		log.Sync()
 	}()
 	//ctx := u.core.GetTrace().ApmSpanCtx("sql checkpssword")
 	//return u.query.RawQ().WithContext(ctx).User.Where(u.query.User.Email.Eq(userName)).Where(u.query.User.PassWord.Eq(password)).First()
-	return u.query.WrapQuery().User.Where(u.query.User.Email.Eq(userName)).Where(u.query.User.PassWord.Eq(password)).First()
+	return u.query.WrapQuery().User.Where(u.query.User.Email.Eq(userName), u.query.User.PassWord.Eq(password)).First()
 }
 
 func (u *User) ById(id uint, preload ...field.RelationField) (*model.User, error) {
@@ -150,6 +154,17 @@ func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
 }
 
 func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
+	log := u.core.GetCoreLog().ApmLog("用户绑定服务和角色")
+	defer func() {
+		if err != nil {
+			log.Error(
+				err.Error(),
+				zap.Any("methodIn", map[string]interface{}{"userID": userID, "roleID": roleID, "serviceID": serviceID}),
+			)
+		}
+
+		log.Sync()
+	}()
 	userIDStr := userID2CasbinKey(userID)
 	roleIDStr := roleID2CasbinKey(roleID)
 

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/fitan/magic/handler/user"
+	"github.com/fitan/magic/pkg/ginbind"
 	"github.com/fitan/magic/pkg/types"
 )
 
@@ -52,8 +53,6 @@ func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 	return b.val, err
 }
 
-type _ = interface{}
-
 // @Accept  json
 // @Produce  json
 // @Param body body SwagCreateBody true " "
@@ -95,10 +94,13 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 		return nil, err
 	}
 
+	err = ginbind.BindCtxKey(core.GinX.GinCtx(), &in.CtxKey)
+	if err != nil {
+		return nil, err
+	}
+
 	return b.val, err
 }
-
-type _ = string
 
 // @Accept  json
 // @Produce  json

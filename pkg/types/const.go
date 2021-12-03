@@ -1,6 +1,6 @@
 package types
 
 const (
-	JwtUserIDKey = "userID"
+	JwtUserIDKey = "JwtUserIDKey"
 	CoreKey      = "coreKey"
 )

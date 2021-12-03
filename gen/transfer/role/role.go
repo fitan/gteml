@@ -47,8 +47,6 @@ func (b *BindRolePermissionBinder) BindVal(core *types.Core) (res interface{}, e
 	return b.val, err
 }
 
-type _ = string
-
 // @Accept  json
 // @Produce  json
 // @Param body body SwagBindRolePermissionBody true " "
@@ -98,8 +96,6 @@ func (b *UnBindRolePermissionBinder) BindVal(core *types.Core) (res interface{},
 
 	return b.val, err
 }
-
-type _ = string
 
 // @Accept  json
 // @Produce  json

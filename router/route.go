@@ -16,9 +16,9 @@ import (
 func Router() *gin.Engine {
 	r := gin.Default()
 
+	r.Use(apmgin.Middleware(r))
 	r.Use(ginmid.SetCore())
 	r.Use(ginmid.NewAudit().Audit())
-	r.Use(apmgin.Middleware(r))
 
 	prometheus.UseGinprom(r)
 	pprof.Register(r)

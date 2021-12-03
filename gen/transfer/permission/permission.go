@@ -41,8 +41,6 @@ func (b *CreatePermissionBinder) BindVal(core *types.Core) (res interface{}, err
 	return b.val, err
 }
 
-type _ = string
-
 // @Accept  json
 // @Produce  json
 // @Param body body SwagCreatePermissionBody true " "
@@ -83,8 +81,6 @@ func (b *GetPermissionByIdBinder) BindVal(core *types.Core) (res interface{}, er
 	return b.val, err
 }
 
-type _ = model.Permission
-
 // @Accept  json
 // @Produce  json
 // @Param id path string true " "
@@ -124,8 +120,6 @@ func (b *DeletePermissionByIdBinder) BindVal(core *types.Core) (res interface{},
 
 	return b.val, err
 }
-
-type _ = string
 
 // @Accept  json
 // @Produce  json
@@ -168,8 +162,6 @@ func (b *UpdatePermissionBinder) BindVal(core *types.Core) (res interface{}, err
 
 	return b.val, err
 }
-
-type _ = string
 
 // @Accept  json
 // @Produce  json

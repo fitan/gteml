@@ -38,11 +38,6 @@ func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 				return
 				//core = coreSrc.GetCorePool().GetObj()
 			}
-			//gin的request ctx放到trace里
-			//core.SetCtx(c.Request.Core())
-			// core包裹gin context
-			core.GinX.SetGinCtx(c)
-			core.Tracer.SetCtx(c.Request.Context())
 			// 加载中间件option
 			for _, f := range o {
 				err := f(core)

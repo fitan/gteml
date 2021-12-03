@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/fitan/magic/handler/user"
-	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
 )
 
@@ -48,8 +47,6 @@ func (b *BindUserPermissionBinder) BindVal(core *types.Core) (res interface{}, e
 
 	return b.val, err
 }
-
-type _ = string
 
 // @Accept  json
 // @Produce  json
@@ -103,8 +100,6 @@ func (b *UnBindUserPermissionBinder) BindVal(core *types.Core) (res interface{},
 	return b.val, err
 }
 
-type _ = string
-
 // @Accept  json
 // @Produce  json
 // @Param body body SwagUnBindUserPermissionBody true " "
@@ -146,8 +141,6 @@ func (b *GetUserByIDBinder) BindVal(core *types.Core) (res interface{}, err erro
 
 	return b.val, err
 }
-
-type _ = model.User
 
 // @Accept  json
 // @Produce  json

@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/fitan/magic/pkg/types"
+	"strconv"
 )
 
 type CreateIn struct {
@@ -45,10 +46,13 @@ type SayHelloIn struct {
 	Query struct {
 		Say string `json:"say" form:"say"`
 	} `json:"query"`
+	CtxKey struct {
+		JwtUserID uint `ctx:"JwtUserID"`
+	}
 }
 
 func (s *SayHelloIn) ServiceID() (serviceID uint) {
-	return 1
+	return s.CtxKey.JwtUserID
 }
 
 // @GenApi /say [get]
@@ -58,5 +62,5 @@ func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 		return in.Query.Say, nil
 	}
 
-	return core.GetServices().User().Read(), nil
+	return core.GetServices().User().Read() + strconv.Itoa(int(in.CtxKey.JwtUserID)), nil
 }
