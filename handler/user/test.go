@@ -47,7 +47,7 @@ type SayHelloIn struct {
 		Say string `json:"say" form:"say"`
 	} `json:"query"`
 	CtxKey struct {
-		JwtUserID uint `ctx:"JwtUserID"`
+		JwtUserID uint `ctxkey:"JwtUserIDKey"`
 	}
 }
 

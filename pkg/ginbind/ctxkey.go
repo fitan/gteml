@@ -28,6 +28,7 @@ func BindCtxKey(ctx *gin.Context, i interface{}) error {
 		}
 
 		value, ok := ctx.Get(tagV)
+
 		if ok {
 			valueV := reflect.ValueOf(value)
 			if iV.Field(i).Type() != valueV.Type() {

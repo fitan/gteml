@@ -53,6 +53,8 @@ func NewAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 				return "", jwt.ErrMissingLoginValues
 			}
 
+			core := c.MustGet(types.CoreKey).(types.ServiceCore)
+
 			user, err := core.GetServices().User().Login(login.UserName, login.Password)
 			return user, err
 
