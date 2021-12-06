@@ -53,6 +53,7 @@ type SayHelloIn struct {
 
 type JwtKey struct {
 	JwtUserID uint `ctxkey:"JwtUserIDKey" binding:"required"`
+	TestValue string
 }
 
 func (s *SayHelloIn) ServiceID() (serviceID uint) {
@@ -66,5 +67,5 @@ func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 		return in.Query.Say, nil
 	}
 
-	return core.GetServices().User().Read() + strconv.Itoa(int(in.CtxKey.JwtUserID)), nil
+	return core.GetServices().User().Read() + strconv.Itoa(int(in.CtxKey.JwtUserID)) + in.CtxKey.TestValue, nil
 }

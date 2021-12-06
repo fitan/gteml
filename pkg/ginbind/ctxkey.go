@@ -18,8 +18,16 @@ func bindCtxKeyByValue(ctx *gin.Context, iV reflect.Value) error {
 			if iV.Field(i).Type().Kind() != reflect.Ptr {
 				nestValue = iV.Field(i).Addr()
 			} else {
-				nestValue = reflect.New(iV.Field(i).Type().Elem())
-				iV.Field(i).Set(nestValue)
+				if iV.Field(i).IsZero() {
+					nestValue = reflect.New(iV.Field(i).Type().Elem())
+					iV.Field(i).Set(nestValue)
+				} else {
+					nestValue = iV.Field(i)
+				}
+				//} else {
+				//	nestValue = reflect.NewAt(iV.Field(i).Type(), unsafe.Pointer(iV.Field(i).UnsafeAddr())).Elem()
+				//	iV.Field(i).Set(nestValue)
+				//}
 			}
 
 			err := bindCtxKeyByValue(ctx, nestValue)
