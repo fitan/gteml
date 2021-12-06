@@ -7,18 +7,25 @@ import (
 	"reflect"
 )
 
-func BindCtxKey(ctx *gin.Context, i interface{}) error {
-	iV := reflect.ValueOf(i)
-	if iV.Type().Kind() != reflect.Ptr {
-		return errors.New("binding value not ptr")
-	}
-
+func bindCtxKeyByValue(ctx *gin.Context, iV reflect.Value) error {
 	iV = iV.Elem()
-
 	for i := 0; i < iV.Type().NumField(); i++ {
 		tf := iV.Type().Field(i)
 
 		if tf.Anonymous {
+			var nestValue reflect.Value
+
+			if iV.Field(i).Type().Kind() != reflect.Ptr {
+				nestValue = iV.Field(i).Addr()
+			} else {
+				nestValue = reflect.New(iV.Field(i).Type().Elem())
+				iV.Field(i).Set(nestValue)
+			}
+
+			err := bindCtxKeyByValue(ctx, nestValue)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -38,4 +45,13 @@ func BindCtxKey(ctx *gin.Context, i interface{}) error {
 		}
 	}
 	return nil
+}
+
+func BindCtxKey(ctx *gin.Context, i interface{}) error {
+	iV := reflect.ValueOf(i)
+	if iV.Type().Kind() != reflect.Ptr {
+		return errors.New("binding value not ptr")
+	}
+
+	return bindCtxKeyByValue(ctx, iV)
 }

@@ -55,3 +55,23 @@ func CtxKey() {
 func main() {
 	CtxKey()
 }
+
+type Say struct {
+	Say2 Say2
+}
+
+func (s *Say) Say1() {
+
+}
+
+type Say2 struct {
+}
+
+func (s *Say2) Say2() {
+
+}
+
+type Sayer interface {
+	Say1()
+	Say2()
+}

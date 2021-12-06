@@ -4,6 +4,7 @@ import (
 	"github.com/fitan/magic/pkg/conf"
 	"github.com/fitan/magic/pkg/types"
 	"log"
+	"os"
 	"runtime"
 	"time"
 )
@@ -18,7 +19,13 @@ func (c *Conf) GetMyConf() *types.MyConf {
 
 func NewConfReg() *ConfRegister {
 	myConf := &types.MyConf{}
-	w, err := conf.WatchFile("conf", []string{"./"}, myConf, 5*time.Second)
+	configENV := os.Getenv("MAGIC_CONFIG_ENV")
+	configName := "conf"
+	if configENV != "" {
+		configName = configName + "_" + configENV
+	}
+
+	w, err := conf.WatchFile(configName, []string{"./"}, myConf, 5*time.Second)
 	if err != nil {
 		panic(err)
 	}

@@ -47,8 +47,12 @@ type SayHelloIn struct {
 		Say string `json:"say" form:"say"`
 	} `json:"query"`
 	CtxKey struct {
-		JwtUserID uint `ctxkey:"JwtUserIDKey"`
+		*JwtKey
 	}
+}
+
+type JwtKey struct {
+	JwtUserID uint `ctxkey:"JwtUserIDKey" binding:"required"`
 }
 
 func (s *SayHelloIn) ServiceID() (serviceID uint) {

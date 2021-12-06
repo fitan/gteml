@@ -2,22 +2,26 @@ package ginx
 
 import (
 	"github.com/fitan/magic/pkg/types"
+	"go.elastic.co/apm"
 	"net/http"
 	"strconv"
 )
 
 type GinXResult struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg,omitempty"`
-	Data interface{} `json:"data"`
+	Code          int         `json:"code"`
+	Msg           string      `json:"msg,omitempty"`
+	TransactionId string      `json:"transaction.id,omitempty"`
+	Data          interface{} `json:"data"`
 }
 
 type ResultWrapMid struct {
 }
 
 func (r *ResultWrapMid) Forever(core *types.Core) {
+	apm.SpanFromContext(core.GetTrace().Ctx()).ParentID()
 	wrapRes := GinXResult{
-		Data: core.GinX.BindRes(),
+		Data:          core.GinX.BindRes(),
+		TransactionId: apm.TransactionFromContext(core.GetTrace().Ctx()).TraceContext().Span.String(),
 	}
 	var code int
 	if core.GinX.BindErr() != nil {
