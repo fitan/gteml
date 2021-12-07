@@ -95,6 +95,8 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 		return nil, err
 	}
 
+	in.CtxKey.JwtKey = &user.JwtKey{TestValue: "Hello"}
+
 	err = ginbind.BindCtxKey(core.GinX.GinCtx(), &in.CtxKey)
 	if err != nil {
 		return nil, err
