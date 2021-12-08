@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/fitan/magic/gen/transfer/k8s"
 	"github.com/fitan/magic/gen/transfer/permission"
 	"github.com/fitan/magic/gen/transfer/role"
 	"github.com/fitan/magic/gen/transfer/user"
@@ -42,5 +43,6 @@ func registerRouter(r gin.IRouter) {
 	gReg := ginx.NewGinXHandlerRegister()
 	role.Register(r, gReg)
 	user.Register(r, gReg)
+	k8s.Register(r, gReg)
 	permission.Register(r, gReg)
 }

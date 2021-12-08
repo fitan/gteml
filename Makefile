@@ -27,3 +27,6 @@ gorm-migrate:
 
 swag:
 	swag init  --parseDependency
+
+api:
+	genapi  gen -t api -n handler

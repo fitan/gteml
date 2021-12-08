@@ -15,9 +15,13 @@ import (
 )
 
 type K8s struct {
-	k8sClient     kubernetes.Clientset
+	k8sClient     *kubernetes.Clientset
 	runtimeClient client.Client
 	core          types.ServiceCore
+}
+
+func NewK8s(k8sClient *kubernetes.Clientset, runtimeClient client.Client, core types.ServiceCore) *K8s {
+	return &K8s{k8sClient: k8sClient, runtimeClient: runtimeClient, core: core}
 }
 
 func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
@@ -75,6 +79,7 @@ func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
 }
 
 func (k *K8s) GetApp(namespace, name string) (app *appv1beta1.Application, err error) {
+	app = &appv1beta1.Application{}
 	err = k.runtimeClient.Get(
 		k.core.GetTrace().Ctx(), client.ObjectKey{
 			Namespace: namespace,

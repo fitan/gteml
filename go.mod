@@ -8,7 +8,6 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.7.0
 	github.com/casbin/casbin/v2 v2.39.1
 	github.com/casbin/gorm-adapter/v3 v3.4.5
-	github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96 // indirect
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.4
@@ -17,7 +16,7 @@ require (
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/lib/pq v1.10.3 // indirect
-	github.com/oam-dev/kubevela-core-api v1.1.13 // indirect
+	github.com/oam-dev/kubevela-core-api v1.1.13
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pyroscope-io/pyroscope v0.2.2
@@ -47,7 +46,8 @@ require (
 	gorm.io/driver/mysql v1.2.0
 	gorm.io/gen v0.1.25
 	gorm.io/gorm v1.22.3
-	k8s.io/apimachinery v0.22.4 // indirect
-	k8s.io/klog v1.0.0 // indirect
-	sigs.k8s.io/controller-runtime v0.10.3 // indirect
+	k8s.io/api v0.22.2
+	k8s.io/apimachinery v0.22.4
+	k8s.io/client-go v0.22.2
+	sigs.k8s.io/controller-runtime v0.10.3
 )

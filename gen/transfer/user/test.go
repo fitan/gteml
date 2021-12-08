@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin/binding"
 	"net/http"
 
 	"github.com/fitan/magic/handler/user"
@@ -95,14 +94,7 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 		return nil, err
 	}
 
-	in.CtxKey.JwtKey = &user.JwtKey{TestValue: "Hello"}
-
 	err = ginbind.BindCtxKey(core.GinX.GinCtx(), &in.CtxKey)
-	if err != nil {
-		return nil, err
-	}
-
-	err = binding.Validator.ValidateStruct(&in.CtxKey)
 	if err != nil {
 		return nil, err
 	}

@@ -91,5 +91,5 @@ func (t *TraceLog) Sync() error {
 //Error 增加trace的error状态
 func (t *TraceLog) Error(msg string, fields ...zap.Field) {
 	t.span.SetStatus(codes.Error, msg)
-	t.Logger.Error(msg, fields...)
+	t.Logger.WithOptions(zap.AddCallerSkip(1)).Error(msg, fields...)
 }

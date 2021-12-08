@@ -3,13 +3,13 @@ package ginx
 import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 )
 
 type GinX struct {
 	*gin.Context
 	request  interface{}
 	response interface{}
-	bindErr  error
 	errors   []error
 
 	entryMiddleware *[]types.Middleware
@@ -54,7 +54,6 @@ func (g *GinX) SetResponse(i interface{}) {
 
 func (g *GinX) Reset() {
 	g.request = nil
-	g.bindErr = nil
 	g.errors = g.errors[:0]
 	g.response = nil
 	g.handlerMiddleware = nil
@@ -149,12 +148,12 @@ func (g *GinX) GinCtx() *gin.Context {
 
 func (g *GinX) setBindVal(data interface{}, err error) {
 	g.request = data
-	g.SetError(err)
+	g.SetError(errors.WithMessage(err, "bind val error"))
 }
 
 func (g *GinX) setBindFn(data interface{}, err error) {
 	g.response = data
-	g.SetError(err)
+	g.SetError(errors.WithMessage(err, "bind fn error"))
 }
 
 type GinXOption func(g *GinX)

@@ -41,7 +41,7 @@ func init() {
 		},
 		&daoReg{},
 		PromReg,
-		&ServiceRegister{},
+		NewServiceRegister(),
 		&api2.ApisRegister{},
 		&VersionReg{},
 		&PoolReg{},
