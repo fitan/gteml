@@ -6,12 +6,13 @@ type GinXer interface {
 	BindTransfer(core *Core, i GinXBinder)
 	SetGinCtx(ctx *gin.Context)
 	GinCtx() *gin.Context
-	SetBindReq(interface{})
-	BindReq() interface{}
-	SetBindRes(interface{})
-	BindRes() interface{}
-	SetBindErr(error)
-	BindErr() error
+	SetRequest(interface{})
+	Request() interface{}
+	SetResponse(interface{})
+	Response() interface{}
+	SetError(error)
+	Errors() []error
+	LastError() error
 	Reset()
 	SetEntryMid(m *[]Middleware)
 	SetHandlerMid(m *[]Middleware)

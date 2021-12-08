@@ -20,13 +20,13 @@ type ResultWrapMid struct {
 func (r *ResultWrapMid) Forever(core *types.Core) {
 	apm.SpanFromContext(core.GetTrace().Ctx()).ParentID()
 	wrapRes := GinXResult{
-		Data:          core.GinX.BindRes(),
+		Data:          core.GinX.Response(),
 		TransactionId: apm.TransactionFromContext(core.GetTrace().Ctx()).TraceContext().Span.String(),
 	}
 	var code int
-	if core.GinX.BindErr() != nil {
+	if core.GinX.LastError() != nil {
 
-		wrapRes.Msg = core.GinX.BindErr().Error()
+		wrapRes.Msg = core.GinX.LastError().Error()
 		code = 5003
 	} else {
 		code = 2000
@@ -40,7 +40,7 @@ func (r *ResultWrapMid) Forever(core *types.Core) {
 }
 
 func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
-	if core.GinX.BindErr() != nil {
+	if core.GinX.LastError() != nil {
 		return false
 	} else {
 		return true
@@ -57,7 +57,7 @@ func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
 }
 
 func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
-	if core.GinX.BindErr() != nil {
+	if core.GinX.LastError() != nil {
 		return false
 	} else {
 		return true
@@ -74,7 +74,7 @@ func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
 }
 
 func (r *ResultWrapMid) BindFnAfter(core *types.Core) bool {
-	if core.GinX.BindErr() != nil {
+	if core.GinX.LastError() != nil {
 		return false
 	} else {
 		return true

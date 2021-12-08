@@ -14,11 +14,11 @@ func (t *TraceMid) Forever(core *types.Core) {
 	send := func() {
 		l := core.CoreLog.TraceLog("GinXTraceWrap")
 		defer l.Sync()
-		res, _ := json.Marshal(core.GinX.BindRes())
-		req, _ := json.Marshal(core.GinX.BindReq())
+		res, _ := json.Marshal(core.GinX.Response())
+		req, _ := json.Marshal(core.GinX.Request())
 		zf := []zap.Field{zap.String("req", string(req)), zap.String("res", string(res))}
-		if core.GinX.BindErr() != nil {
-			l.Error(core.GinX.BindErr().Error(), zf...)
+		if core.GinX.LastError() != nil {
+			l.Error(core.GinX.LastError().Error(), zf...)
 		} else {
 			l.Info("handler info", zf...)
 		}
@@ -30,7 +30,7 @@ func (t *TraceMid) Forever(core *types.Core) {
 			return
 		}
 
-		if core.GinX.BindErr() != nil {
+		if core.GinX.LastError() != nil {
 			send()
 			return
 		}

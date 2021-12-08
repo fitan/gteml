@@ -9,22 +9,22 @@ type TestMid struct {
 }
 
 func (t *TestMid) BindValBefor(core *types.Core) bool {
-	core.GinX.SetBindErr(errors.New("TestMid: BindValBefor"))
+	core.GinX.SetError(errors.New("TestMid: BindValBefor"))
 	return true
 }
 
 func (t *TestMid) BindValAfter(core *types.Core) bool {
-	core.GinX.SetBindErr(errors.New("TestMid: BindValAfter"))
+	core.GinX.SetError(errors.New("TestMid: BindValAfter"))
 	return true
 }
 
 func (t *TestMid) BindFnAfter(core *types.Core) bool {
-	core.GinX.SetBindErr(errors.New("TestMid: BindFnAfter"))
+	core.GinX.SetError(errors.New("TestMid: BindFnAfter"))
 	return true
 }
 
 func (t *TestMid) Forever(core *types.Core) {
-	tempErr := core.GinX.BindErr()
+	tempErr := core.GinX.LastError()
 	for {
 		if tempErr == nil {
 			return

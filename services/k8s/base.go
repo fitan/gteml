@@ -127,6 +127,7 @@ func (k *K8s) GetPod(namespace string, name string) (res *v12.Pod, err error) {
 
 		log.Sync()
 	}()
+
 	return k.k8sClient.CoreV1().Pods(namespace).Get(k.core.GetTrace().Ctx(), name, v1.GetOptions{})
 }
 

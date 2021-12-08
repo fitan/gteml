@@ -3,14 +3,14 @@ package ginx
 import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 type GinX struct {
 	*gin.Context
-	bindReq interface{}
-	bindRes interface{}
-	bindErr error
+	request  interface{}
+	response interface{}
+	bindErr  error
+	errors   []error
 
 	entryMiddleware *[]types.Middleware
 
@@ -25,44 +25,48 @@ func (g *GinX) SetHandlerMid(m *[]types.Middleware) {
 	g.handlerMiddleware = m
 }
 
-func (g *GinX) BindReq() interface{} {
-	return g.bindReq
+func (g *GinX) Request() interface{} {
+	return g.request
 }
 
-func (g *GinX) BindRes() interface{} {
-	return g.bindRes
+func (g *GinX) Response() interface{} {
+	return g.response
 }
 
-func (g *GinX) BindErr() error {
-	return g.bindErr
+func (g *GinX) LastError() error {
+	if len(g.errors) == 0 {
+		return nil
+	}
+	return g.errors[len(g.errors)-1]
 }
 
-func (g *GinX) SetBindReq(i interface{}) {
-	g.bindReq = i
+func (g *GinX) Errors() []error {
+	return g.errors
 }
 
-func (g *GinX) SetBindRes(i interface{}) {
-	g.bindRes = i
+func (g *GinX) SetRequest(i interface{}) {
+	g.request = i
+}
+
+func (g *GinX) SetResponse(i interface{}) {
+	g.response = i
 }
 
 func (g *GinX) Reset() {
-	g.bindReq = nil
+	g.request = nil
 	g.bindErr = nil
-	g.bindRes = nil
+	g.errors = g.errors[:0]
+	g.response = nil
 	g.handlerMiddleware = nil
 	g.Context = nil
 }
 
-func (g *GinX) SetBindErr(err error) {
+func (g *GinX) SetError(err error) {
 	if err == nil {
 		return
 	}
-	if g.bindErr == nil {
-		g.bindErr = err
-		return
-	}
-
-	g.bindErr = errors.Wrapf(g.bindErr, "%s :", err.Error())
+	g.errors = append(g.errors, err)
+	return
 }
 
 func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
@@ -144,13 +148,13 @@ func (g *GinX) GinCtx() *gin.Context {
 }
 
 func (g *GinX) setBindVal(data interface{}, err error) {
-	g.bindReq = data
-	g.SetBindErr(err)
+	g.request = data
+	g.SetError(err)
 }
 
 func (g *GinX) setBindFn(data interface{}, err error) {
-	g.bindRes = data
-	g.SetBindErr(err)
+	g.response = data
+	g.SetError(err)
 }
 
 type GinXOption func(g *GinX)

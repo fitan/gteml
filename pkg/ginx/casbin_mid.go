@@ -20,19 +20,19 @@ func (c *CasbinVerifyMid) BindValAfter(core *types.Core) bool {
 	ginX := core.GetGinX()
 	userID, ok := ginX.GinCtx().Get(types.JwtUserIDKey)
 	if !ok {
-		ginX.SetBindErr(errors.New("userID none of ctx"))
+		ginX.SetError(errors.New("userID none of ctx"))
 		return false
 	}
 
 	userIDuint, ok := userID.(uint)
 	if !ok {
-		ginX.SetBindErr(errors.New("userID type not is uint"))
+		ginX.SetError(errors.New("userID type not is uint"))
 		return false
 	}
 
-	casbinVerify, ok := ginX.BindReq().(CasbinVerifyer)
+	casbinVerify, ok := ginX.Request().(CasbinVerifyer)
 	if !ok {
-		ginX.SetBindErr(errors.New("Do not implement CasbinVerifyer"))
+		ginX.SetError(errors.New("Do not implement CasbinVerifyer"))
 		return false
 	}
 
@@ -40,7 +40,7 @@ func (c *CasbinVerifyMid) BindValAfter(core *types.Core) bool {
 
 	err := core.GetDao().Storage().User().CheckUserPermission(userIDuint, serviceID, ginX.GinCtx().FullPath(), ginX.GinCtx().Request.Method)
 	if err != nil {
-		ginX.SetBindErr(err)
+		ginX.SetError(err)
 		return false
 	}
 

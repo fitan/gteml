@@ -23,6 +23,13 @@ func (g *GinXHandlerRegister) Register(i gin.IRouter, transfer types.GinXTransfe
 
 }
 
+func (g *GinXHandlerRegister) Group(options ...GinXHandlerOption) *GinXHandlerRegister {
+	os := make([]GinXHandlerOption, 0, len(g.options)+len(options))
+	os = append(os, g.options...)
+	os = append(os, options...)
+	return NewGinXHandlerRegister(os...)
+}
+
 func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHandlerOption) {
 	i.Handle(
 		transfer.Method(), transfer.Url(), func(c *gin.Context) {
@@ -42,7 +49,7 @@ func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 			for _, f := range o {
 				err := f(core)
 				if err != nil {
-					core.GinX.SetBindErr(fmt.Errorf("load option err: %w", err))
+					core.GinX.SetError(fmt.Errorf("load option err: %w", err))
 					break
 				}
 			}
