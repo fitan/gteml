@@ -9,11 +9,12 @@ import (
 
 type K8s interface {
 	CreateApp(request types.CreateAppRequest) (err error)
-	GetApp(namespace, name string) (app *v1beta1.Application, err error)
-	GetPodsByDeploymentName(namespace string, deploymentName string) (pods *v1.PodList, err error)
-	GetPod(namespace string, name string) (res *v1.Pod, err error)
-	CreateConfMap(namespace string, name string, data map[string]string) (res *v1.ConfigMap, err error)
-	GetConfigMap(namespace, name string) (res *v1.ConfigMap, err error)
-	GetConfigMapsByDeployment(namespace string, deploymentName string) (res *v1.ConfigMapList, err error)
-	GetDeployment(namespace, name string) (res *v12.Deployment, err error)
+	GetApps(keys []types.K8sKey) (res *v1beta1.ApplicationList, err error)
+	GetApp(key types.K8sKey) (res *v1beta1.Application, err error)
+	GetPodsByDeploymentKey(key types.K8sKey) (pods *v1.PodList, err error)
+	GetPodByKey(key types.K8sKey) (res *v1.Pod, err error)
+	CreateConfMap(key types.K8sKey, data map[string]string) (res *v1.ConfigMap, err error)
+	GetConfigMapByKey(key types.K8sKey) (res *v1.ConfigMap, err error)
+	GetConfigMapsByDeploymentKey(key types.K8sKey) (res *v1.ConfigMapList, err error)
+	GetDeployment(key types.K8sKey) (res *v12.Deployment, err error)
 }

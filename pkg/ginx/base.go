@@ -165,13 +165,3 @@ func NewGin(fs ...GinXOption) *GinX {
 	}
 	return g
 }
-
-type GinXHandlerOption func(c *types.Core) error
-
-// gin value 设置key
-func WithHandlerName(name string) GinXHandlerOption {
-	return func(c *types.Core) error {
-		c.GinX.GinCtx().Set(FnName, name)
-		return nil
-	}
-}

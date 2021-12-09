@@ -1,5 +1,13 @@
 package types
 
+type K8sKey struct {
+	Namespace string `json:"namespace,omitempty"`
+	Name      string `json:"name,omitempty"`
+}
+
+type CreatePvOption struct {
+}
+
 type CreateAppRequest struct {
 	Metadata struct {
 		Name      string `json:"name"`

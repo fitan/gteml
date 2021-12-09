@@ -22,7 +22,6 @@ func init() {
 }
 
 type ServiceRegister struct {
-	enforcer      *casbin.Enforcer
 	k8sClient     *kubernetes.Clientset
 	runtimeClient client.Client
 	reload        bool
