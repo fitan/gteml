@@ -2,7 +2,6 @@ package core
 
 import (
 	"flag"
-	"github.com/casbin/casbin/v2"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/fitan/magic/services"
 	core_oam_dev "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev"
@@ -79,7 +78,7 @@ func (s *ServiceRegister) Reload(c *types.Core) {
 }
 
 func (s *ServiceRegister) Set(c *types.Core) {
-	c.Services = services.NewServices(c, s.Get().enforcer, s.Get().k8sClient, s.Get().runtimeClient)
+	c.Services = services.NewServices(c, nil, s.Get().k8sClient, s.Get().runtimeClient)
 }
 
 func (s *ServiceRegister) Unset(c *types.Core) {
