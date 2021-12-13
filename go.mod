@@ -15,6 +15,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/oam-dev/kubevela-core-api v1.1.13
 	github.com/opentracing/opentracing-go v1.2.0
@@ -41,11 +42,11 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.0
 	go.opentelemetry.io/otel/trace v1.0.0
 	go.uber.org/zap v1.19.1
-	golang.org/x/sys v0.0.0-20211113001501-0c823b97ae02 // indirect
+	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gorm.io/driver/mysql v1.2.0
-	gorm.io/gen v0.1.25
-	gorm.io/gorm v1.22.3
+	gorm.io/driver/mysql v1.2.1
+	gorm.io/gen v0.2.23
+	gorm.io/gorm v1.22.4
 	k8s.io/api v0.22.2
 	k8s.io/apimachinery v0.22.4
 	k8s.io/client-go v0.22.2

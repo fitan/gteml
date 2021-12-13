@@ -10,8 +10,6 @@ run:
 gen-conf:
 	go run tools/main.go genconf -s ./conf.yaml -d ./pkg/types/conf_gen.go
 
-ent:
-	go run -mod=mod entgo.io/ent/cmd/ent generate ./pkg/ent/schema
 
 migrate:
 	go run tools/gen/main.go  migrate

@@ -255,8 +255,7 @@ func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (r
 
 		log.Sync()
 	}()
-	ctx := k.core.GetTrace().Ctx()
-	return k.k8sClient.CoreV1().ConfigMaps(key.Namespace).Create(ctx, &v12.ConfigMap{
+	return k.k8sClient.CoreV1().ConfigMaps(key.Namespace).Create(k.core.GetTrace().Ctx(), &v12.ConfigMap{
 		ObjectMeta: v1.ObjectMeta{Name: key.Name},
 		Data:       data,
 	}, v1.CreateOptions{})

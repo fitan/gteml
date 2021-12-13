@@ -7,11 +7,11 @@ package query
 import (
 	"context"
 
-	"github.com/fitan/magic/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 
+	"github.com/fitan/magic/model"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 )
@@ -83,9 +83,9 @@ func (s service) As(alias string) *service {
 	return &s
 }
 
-func (s *service) GetFieldByName(fieldName string) (field.Expr, bool) {
-	field, ok := s.fieldMap[fieldName]
-	return field, ok
+func (s *service) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
+	_f, ok := s.fieldMap[fieldName]
+	return _f.(field.OrderExpr), ok
 }
 
 func (s *service) fillFieldMap() {

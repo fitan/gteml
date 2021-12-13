@@ -7,11 +7,11 @@ package query
 import (
 	"context"
 
-	"github.com/fitan/magic/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 
+	"github.com/fitan/magic/model"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 )
@@ -36,6 +36,8 @@ func newAudit(db *gorm.DB) audit {
 	_audit.Header = field.NewString(tableName, "header")
 	_audit.StatusCode = field.NewInt(tableName, "status_code")
 	_audit.RemoteIP = field.NewString(tableName, "remote_ip")
+	_audit.ClientIP = field.NewString(tableName, "client_ip")
+	_audit.CostTime = field.NewString(tableName, "cost_time")
 
 	_audit.fillFieldMap()
 
@@ -58,6 +60,8 @@ type audit struct {
 	Header     field.String
 	StatusCode field.Int
 	RemoteIP   field.String
+	ClientIP   field.String
+	CostTime   field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -78,19 +82,21 @@ func (a audit) As(alias string) *audit {
 	a.Header = field.NewString(alias, "header")
 	a.StatusCode = field.NewInt(alias, "status_code")
 	a.RemoteIP = field.NewString(alias, "remote_ip")
+	a.ClientIP = field.NewString(alias, "client_ip")
+	a.CostTime = field.NewString(alias, "cost_time")
 
 	a.fillFieldMap()
 
 	return &a
 }
 
-func (a *audit) GetFieldByName(fieldName string) (field.Expr, bool) {
-	field, ok := a.fieldMap[fieldName]
-	return field, ok
+func (a *audit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
+	_f, ok := a.fieldMap[fieldName]
+	return _f.(field.OrderExpr), ok
 }
 
 func (a *audit) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 12)
+	a.fieldMap = make(map[string]field.Expr, 14)
 	a.fieldMap["id"] = a.ID
 	a.fieldMap["created_at"] = a.CreatedAt
 	a.fieldMap["updated_at"] = a.UpdatedAt
@@ -103,6 +109,8 @@ func (a *audit) fillFieldMap() {
 	a.fieldMap["header"] = a.Header
 	a.fieldMap["status_code"] = a.StatusCode
 	a.fieldMap["remote_ip"] = a.RemoteIP
+	a.fieldMap["client_ip"] = a.ClientIP
+	a.fieldMap["cost_time"] = a.CostTime
 }
 
 func (a audit) clone(db *gorm.DB) audit {

@@ -12,14 +12,11 @@ type SpaceName struct {
 }
 
 type GetAppIn struct {
-	Uri SpaceName
+	Uri types2.K8sKey
 }
 
 // @Description 获取app
 // @GenApi /k8s/:namespace/app/:name [get]
 func GetApp(core *types.Core, in *GetAppIn) (*v1beta1.Application, error) {
-	return core.Services.K8s().GetApp(types2.K8sKey{
-		Namespace: in.Uri.Namespace,
-		Name:      in.Uri.Name,
-	})
+	return core.Services.K8s().GetApp(in.Uri)
 }

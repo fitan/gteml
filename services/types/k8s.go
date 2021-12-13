@@ -1,5 +1,10 @@
 package types
 
+import (
+	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
+	"github.com/oam-dev/kubevela-core-api/pkg/oam/util"
+)
+
 type K8sKey struct {
 	Namespace string `json:"namespace,omitempty"`
 	Name      string `json:"name,omitempty"`
@@ -19,7 +24,7 @@ type CreateAppRequest struct {
 		Properties struct {
 			Image           string   `json:"image"`
 			Cmd             []string `json:"cmd"`
-			Port            uint     `json:"port"`
+			Port            int      `json:"port"`
 			Cpu             string   `json:"cpu"`
 			Mem             string   `json:"mem"`
 			ImagePullPolicy string   `json:"imagePullPolicy"`
@@ -32,48 +37,96 @@ type CreateAppRequest struct {
 				Name  string `json:"name"`
 				Value string `json:"value"`
 			} `json:"env"`
-			LivenessProbe  struct{} `json:"livenessProbe"`
+			LivenessProbe struct {
+				Exec    []string `json:"exec"`
+				HttpGet struct {
+					Path        string
+					Port        string
+					httpHeaders []struct {
+						Name  string
+						Value string
+					}
+				}
+				TcpSocket struct {
+					Port int
+				}
+				InitialDelaySeconds int
+				PeriodSeconds       int
+				TimeoutSeconds      int
+				SuccessThreshold    int
+				FailureThreshold    int
+			} `json:"livenessProbe"`
 			ReadinessProbe struct{} `json:"readinessProbe"`
 		}
 		Traits struct {
-			Ingress []struct {
-				Properties struct {
-					Domain string          `json:"domain"`
-					Http   map[string]uint `json:"http"`
-				} `json:"properties"`
-			} `json:"ingress"`
+			Ingress TraitIngress `json:"ingress"`
 
-			Rollout struct {
-				Properties struct {
-					TargetSize     uint   `json:"targetSize"`
-					RolloutBatches []uint `json:"rolloutBatches"`
-				} `json:"properties"`
-			} `json:"rollout"`
+			Rollout TraitRollout `json:"rollout"`
 
-			CpuScaler struct {
-				Properties struct {
-					Min        uint `json:"min"`
-					Max        uint `json:"max"`
-					CpuPercent uint `json:"cpuPercent"`
-				} `json:"properties"`
-			} `json:"cpuScaler"`
+			CpuScaler TraitCpuScaler `json:"cpu_scaler"`
 
-			Labels struct {
-				Properties map[string]string `json:"properties"`
-			} `json:"labels"`
+			Labels TraitLabels `json:"labels"`
 
-			Annotations struct {
-				Properties map[string]string `json:"properties"`
-			} `json:"annotations"`
+			Annotations TraitAnnotations `json:"annotations"`
 
-			Sidecar struct {
-				Properties struct {
-					Name    string            `json:"name"`
-					Image   string            `json:"image"`
-					Cmd     []string          `json:"cmd"`
-					Volumes map[string]string `json:"volumes"`
-				} `json:"properties"`
-			}
+			Sidecar TraitSidecar `json:"sidecar"`
 		}
+	} `json:"components"`
+}
+
+type TraitIngress struct {
+	Domain string         `json:"domain"`
+	Http   map[string]int `json:"http"`
+}
+
+func (t *TraitIngress) ToTrait() common.ApplicationTrait {
+	return common.ApplicationTrait{
+		Type: "ingress",
+		Properties: util.Object2RawExtension(map[string]interface{}{
+			"domain": t.Domain,
+			"http":   t.Http,
+		}),
+	}
+}
+
+type TraitRollout struct {
+	TargetSize     int   `json:"targetSize"`
+	RolloutBatches []int `json:"rolloutBatches"`
+}
+
+func (t *TraitRollout) ToTrait() common.ApplicationTrait {
+	rolloutBatches := make([]map[string]int, 0, len(t.RolloutBatches))
+	for _, i := range t.RolloutBatches {
+		replicas := i
+		rolloutBatches = append(rolloutBatches, map[string]int{"- replicas": replicas})
+	}
+	return common.ApplicationTrait{
+		Type: "rollout",
+		Properties: util.Object2RawExtension(map[string]interface{}{
+			"targetSize":     t.TargetSize,
+			"rolloutBatches": rolloutBatches,
+		}),
+	}
+}
+
+type TraitCpuScaler struct {
+	Min        uint `json:"min"`
+	Max        uint `json:"max"`
+	CpuPercent uint `json:"cpuPercent"`
+}
+
+type TraitLabels map[string]string
+
+type TraitAnnotations map[string]string
+
+type TraitServiceBinding map[string]string
+
+type TraitSidecar struct {
+	Name    string   `json:"name"`
+	Image   string   `json:"image"`
+	Cmd     []string `json:"cmd"`
+	Volumes []struct {
+		Name string `json:"name"`
+		Path string `json:"path"`
 	}
 }

@@ -40,8 +40,6 @@ func (b *GetAppBinder) BindVal(core *types.Core) (res interface{}, err error) {
 
 // @Accept  json
 // @Produce  json
-// @Param namespace path string true " "
-// @Param name path string true " "
 // @Success 200 {object} ginx.GinXResult{data=v1beta1.Application}
 // @Description 获取app
 // @Router /k8s/:namespace/app/:name [get]
