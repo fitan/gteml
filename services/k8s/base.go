@@ -3,10 +3,8 @@ package k8s
 import (
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
-	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
 	appv1beta1 "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
 	"github.com/oam-dev/kubevela-core-api/pkg/oam"
-	"github.com/oam-dev/kubevela-core-api/pkg/oam/util"
 	"go.uber.org/zap"
 	"io/ioutil"
 	v13 "k8s.io/api/apps/v1"
@@ -46,42 +44,7 @@ func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
 		log.Sync()
 	}()
 
-	components := make([]common.ApplicationComponent, 0, len(request.Components))
-	for _, v := range request.Components {
-		components = append(components, common.ApplicationComponent{
-			Name:       v.Name,
-			Type:       v.Type,
-			Properties: util.Object2RawExtension(map[string]interface{}{}),
-		})
-	}
-
-	return k.runtimeClient.Create(k.core.GetTrace().Ctx(), &appv1beta1.Application{
-		TypeMeta: v1.TypeMeta{
-			Kind:       "Application",
-			APIVersion: "core.oam.dev/v1beta1",
-		},
-		ObjectMeta: v1.ObjectMeta{
-			Namespace: request.Metadata.NameSpace,
-			Name:      request.Metadata.Name,
-		},
-		Spec: appv1beta1.ApplicationSpec{
-			Components: []common.ApplicationComponent{
-				{
-					Name: "web",
-					Type: "webservice",
-					Properties: util.Object2RawExtension(map[string]interface{}{
-						"image": "nginx:1.14.0",
-					}),
-					Traits: []common.ApplicationTrait{
-						{
-							Type: "labels",
-							Properties: util.Object2RawExtension(map[string]interface{}{
-								"hello": "world",
-							}),
-						}},
-				}},
-		},
-	})
+	return k.runtimeClient.Create(k.core.GetTrace().Ctx(), request.ToApplication())
 }
 
 func (k *K8s) UpdateApp(app *appv1beta1.Application) (err error) {
