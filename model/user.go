@@ -26,7 +26,22 @@ type User struct {
 	Services []Service `gorm:"many2many:user_services"`
 }
 
-type Method interface {
+type ApiUser struct {
+	gorm.Model
+	Name string
+	//唯一
+	Email  string
+	Token  string
+	Enable bool
+}
+
+type UserMethod interface {
 	// Where("id=@id")
 	GetByID(id uint) (gen.T, error)
+	// Where("email=@email and pass_word=@password")
+	CheckAccount(email, password string) (gen.T, error)
+	// update @@table {{set}} pass_word=@password {{end}} {{where}} id=@id {{end}}
+	ModifyPassword(id int, password string) error
+	// select * from @@table
+	FindApi() ([]ApiUser, error)
 }

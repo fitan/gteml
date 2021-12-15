@@ -51,7 +51,6 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 }
 
 func (u *User) CheckPassword(userName string, password string) (res *model.User, err error) {
-
 	log := u.core.GetCoreLog().ApmLog("校验用户密码")
 	defer func() {
 		if err != nil {

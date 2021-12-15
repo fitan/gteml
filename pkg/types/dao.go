@@ -19,7 +19,7 @@ type Storager interface {
 }
 
 type WrapQuery interface {
-	ServiceCore
+	TracerCore
 	RawQ() *query.Query
 	WrapQuery() *query.QueryCtx
 	Transaction(fc func(tx *query.Query) error, opts ...*sql.TxOptions) error

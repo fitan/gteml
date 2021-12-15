@@ -70,6 +70,10 @@ func (c *Core) GetGinX() GinXer {
 	return c.GinX
 }
 
+type TracerCore interface {
+	GetTrace() Tracer
+}
+
 type ServiceCore interface {
 	GetTrace() Tracer
 	GetConfig() Confer

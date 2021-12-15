@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"strings"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,6 +15,7 @@ import (
 	"github.com/fitan/magic/model"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
+	"gorm.io/gen/helper"
 )
 
 func newUser(db *gorm.DB) user {
@@ -264,6 +266,76 @@ func (a userServicesTx) Count() int64 {
 }
 
 type userDo struct{ gen.DO }
+
+//Where("id=@id")
+func (u userDo) GetByID(id uint) (result *model.User, err error) {
+	params := map[string]interface{}{
+		"id": id,
+	}
+
+	var generateSQL strings.Builder
+	generateSQL.WriteString("id=@id")
+
+	executeSQL := u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	err = executeSQL.Error
+	return
+}
+
+//Where("email=@email and pass_word=@password")
+func (u userDo) CheckAccount(email string, password string) (result *model.User, err error) {
+	params := map[string]interface{}{
+		"email":    email,
+		"password": password,
+	}
+
+	var generateSQL strings.Builder
+	generateSQL.WriteString("email=@email and pass_word=@password")
+
+	executeSQL := u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	err = executeSQL.Error
+	return
+}
+
+//update @@table {{set}} pass_word=@password {{end}} {{where}} id=@id {{end}}
+func (u userDo) ModifyPassword(id int, password string) (err error) {
+	params := map[string]interface{}{
+		"password": password,
+		"id":       id,
+	}
+
+	var generateSQL strings.Builder
+	generateSQL.WriteString("update users")
+	var setSQL0 strings.Builder
+	setSQL0.WriteString(" pass_word=@password")
+	helper.JoinSetBuilder(&generateSQL, setSQL0)
+	var whereSQL0 strings.Builder
+	whereSQL0.WriteString(" id=@id")
+	helper.JoinWhereBuilder(&generateSQL, whereSQL0)
+
+	executeSQL := u.UnderlyingDB().Exec(generateSQL.String(), params)
+	err = executeSQL.Error
+	return
+}
+
+//select * from @@table
+func (u userDo) FindApi() (result []model.ApiUser, err error) {
+	var generateSQL strings.Builder
+	generateSQL.WriteString("select * from users")
+
+	executeSQL := u.UnderlyingDB().Raw(generateSQL.String()).Find(&result)
+	err = executeSQL.Error
+	return
+}
+
+//select * from @@table
+func (u userDo) FirstApi() (result model.ApiUser, err error) {
+	var generateSQL strings.Builder
+	generateSQL.WriteString("select * from users")
+
+	executeSQL := u.UnderlyingDB().Raw(generateSQL.String()).Take(&result)
+	err = executeSQL.Error
+	return
+}
 
 func (u userDo) Debug() *userDo {
 	return u.withDO(u.DO.Debug())

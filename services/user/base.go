@@ -18,6 +18,10 @@ func (u *User) Login(username string, password string) (*model.User, error) {
 	return u.Core.GetDao().Storage().User().CheckPassword(username, password)
 }
 
+func (u *User) ModifyPassword(id int, password string) error {
+	return u.Core.GetDao().Storage().Query().WrapQuery().User.ModifyPassword(id, password)
+}
+
 func (u *User) Read() string {
 	//log := u.Core.GetCoreLog().TraceLog("user.read")
 	//defer log.Sync()
@@ -40,6 +44,10 @@ func (u *User) Read() string {
 	u.Core.GetDao().Storage().User().CheckPassword("admin", "admin")
 
 	return req.Email
+}
+
+func (u *User) FindApi() ([]model.ApiUser, error) {
+	return u.Core.GetDao().Storage().Query().WrapQuery().User.FindApi()
 }
 
 func (u *User) Create() {
