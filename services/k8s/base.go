@@ -3,8 +3,10 @@ package k8s
 import (
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
+	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
 	appv1beta1 "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
 	"github.com/oam-dev/kubevela-core-api/pkg/oam"
+	"github.com/oam-dev/kubevela-core-api/pkg/oam/util"
 	"go.uber.org/zap"
 	"io/ioutil"
 	v13 "k8s.io/api/apps/v1"
@@ -203,13 +205,13 @@ func (k *K8s) DeletePodByKey(key servicesTypes.K8sKey) (err error) {
 	return k.k8sClient.CoreV1().Pods(key.Namespace).Delete(k.core.GetTrace().Ctx(), key.Name, v1.DeleteOptions{})
 }
 
-func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (res *v12.ConfigMap, err error) {
+func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (err error) {
 	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateConfMap")
 	defer func() {
 		log.Debug(
 			"CreateConfMapMsg",
 			zap.Any("methodIn", map[string]interface{}{"key": key, "data": data}),
-			zap.Any("methodOut", map[string]interface{}{"res": res, "err": err}),
+			zap.Any("methodOut", map[string]interface{}{"err": err}),
 		)
 
 		if err != nil {
@@ -218,10 +220,29 @@ func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (r
 
 		log.Sync()
 	}()
-	return k.k8sClient.CoreV1().ConfigMaps(key.Namespace).Create(k.core.GetTrace().Ctx(), &v12.ConfigMap{
-		ObjectMeta: v1.ObjectMeta{Name: key.Name},
-		Data:       data,
-	}, v1.CreateOptions{})
+	return k.runtimeClient.Create(k.core.GetTrace().Ctx(), &appv1beta1.Application{
+		TypeMeta: v1.TypeMeta{
+			Kind: servicesTypes.ApplicationKindName,
+		},
+		ObjectMeta: v1.ObjectMeta{
+			Name:      key.Name + "-ConfMap",
+			Namespace: key.Namespace,
+		},
+		Spec: appv1beta1.ApplicationSpec{
+			Components: []common.ApplicationComponent{common.ApplicationComponent{
+				Name: key.Name + "-ConfMap",
+				Type: "raw",
+				Properties: util.Object2RawExtension(v12.ConfigMap{
+					ObjectMeta: v1.ObjectMeta{Name: key.Name},
+					Data:       data,
+				}),
+			}},
+		},
+	})
+	//return k.k8sClient.CoreV1().ConfigMaps(key.Namespace).Create(k.core.GetTrace().Ctx(), &v12.ConfigMap{
+	//	ObjectMeta: v1.ObjectMeta{Name: key.Name},
+	//	Data:       data,
+	//}, v1.CreateOptions{})
 }
 
 func (k *K8s) GetConfigMapByKey(key servicesTypes.K8sKey) (res *v12.ConfigMap, err error) {

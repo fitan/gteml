@@ -7,6 +7,8 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const ApplicationKindName = "Application"
+
 type K8sKey struct {
 	Namespace string `json:"namespace,omitempty"`
 	Name      string `json:"name,omitempty"`
@@ -43,6 +45,11 @@ func (a *CreateAppRequest) ToApplication() *appv1beta1.Application {
 		},
 		Spec: appv1beta1.ApplicationSpec{
 			Components: components,
+			Policies: []appv1beta1.AppPolicy{appv1beta1.AppPolicy{
+				Name:       "health-policy" + "-" + a.Metadata.Name,
+				Type:       "health",
+				Properties: util.Object2RawExtension(map[string]interface{}{"probeInterval": 30, "probeTimeout": 10}),
+			}},
 		},
 	}
 }
@@ -89,7 +96,7 @@ type Probe struct {
 	HttpGet *struct {
 		Path        string
 		Port        string
-		httpHeaders *[]struct {
+		HttpHeaders *[]struct {
 			Name  string
 			Value string
 		} `json:"http_headers"`
