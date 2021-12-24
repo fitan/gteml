@@ -1,0 +1,11 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: nocodb
+spec:
+  components:
+    - name: nocodb
+      type: webservice
+      properties:
+        image: nocodb/nocodb
+        port: 8080

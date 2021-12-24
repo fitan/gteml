@@ -1,0 +1,28 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: web
+spec:
+  components:
+    - name: express-server
+      type: webservice
+      properties:
+        image: crccheck/hello-world
+        port: 8000
+      traits:
+        - type: ingress
+          properties:
+            domain: testsvc.example.com
+            http:
+              "/": 8000
+        - type: cpuscaler         # Automatically scale the component by CPU usage after deployed
+          properties:
+            min: 1
+            max: 10
+            cpuPercent: 60
+        - type: labels
+          properties:
+            "release": "stable"
+        - type: annotations
+          properties:
+            "description": "web application"

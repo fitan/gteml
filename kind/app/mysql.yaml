@@ -1,0 +1,24 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: mysql
+spec:
+  components:
+    - name: mysql
+      type: webservice
+      properties:
+        image: mysql:latest
+        port: 3306
+        ports:
+          - port: 3306
+            protocol: TCP
+          - port: 3307
+            protocol: TCP
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "123456"
+#      traits:
+#        - type: expose
+#          properties:
+#            port: [3306]
+#            type: ClusterIP
