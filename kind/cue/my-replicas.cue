@@ -14,6 +14,6 @@ template: {
         // +patchStrategy=retainkeys
         patch: spec: replicas: parameter.replicas
         parameter: {
-                replicas: *1 | int
+                replicas:  *1 | int
         }
 }

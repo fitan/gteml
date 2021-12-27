@@ -20,3 +20,19 @@ type GetAppIn struct {
 func GetApp(core *types.Core, in *GetAppIn) (*v1beta1.Application, error) {
 	return core.Services.K8s().GetApp(in.Uri)
 }
+
+type CreateWorkerIn struct {
+	Uri  types2.K8sKey `json:"uri"`
+	Body types2.Worker `json:"body"`
+}
+
+// @Description 创建worker
+// @GenApi /k8s/:namespace/app/:name [post]
+func CreateWorker(core *types.Core, in *CreateWorkerIn) (bool, error) {
+	err := core.Services.K8s().CreateWorker(&in.Body)
+	if err != nil {
+		return false, err
+	}
+	return true, err
+
+}

@@ -10,8 +10,8 @@ import (
 const ApplicationKindName = "Application"
 
 type K8sKey struct {
-	Namespace string `json:"namespace,omitempty"`
-	Name      string `json:"name,omitempty"`
+	Namespace string `json:"namespace,omitempty" uri:"namespace"`
+	Name      string `json:"name,omitempty" uri:"name"`
 }
 
 type CreatePvOption struct {

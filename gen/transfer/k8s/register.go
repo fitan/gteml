@@ -9,4 +9,6 @@ func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
 	reg.Register(r, &GetAppTransfer{}, ginx.WithHandlerName("GetApp"))
 
+	reg.Register(r, &CreateWorkerTransfer{}, ginx.WithHandlerName("CreateWorker"))
+
 }

@@ -1,6 +1,8 @@
 package k8s
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
@@ -28,6 +30,35 @@ type K8s struct {
 
 func NewK8s(k8sClient *kubernetes.Clientset, runtimeClient client.Client, core types.ServiceCore) *K8s {
 	return &K8s{k8sClient: k8sClient, runtimeClient: runtimeClient, core: core}
+}
+
+func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
+	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateWorker")
+	defer func() {
+		log.Debug(
+			"CreateAppMsg",
+			zap.Any("methodIn", map[string]interface{}{"worker": worker}),
+			zap.Any("methodOut", map[string]interface{}{"err": err}),
+		)
+
+		if err != nil {
+			log.Error(err.Error(), zap.Any("methodIn", map[string]interface{}{"worker": worker}))
+		}
+
+		log.Sync()
+	}()
+	b, _ := json.Marshal(worker)
+	fmt.Println(string(b))
+
+	w, _ := json.Marshal(worker.ToWorker())
+	fmt.Println(string(w))
+	_, err = k.GetApp(worker.Metadata)
+	if err != nil {
+		return k.runtimeClient.Create(k.core.GetTrace().Ctx(), worker.ToWorker())
+	} else {
+		return k.runtimeClient.Update(k.core.GetTrace().Ctx(), worker.ToWorker(), nil)
+	}
+
 }
 
 func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
