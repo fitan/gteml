@@ -3,6 +3,7 @@ module github.com/fitan/magic
 go 1.16
 
 require (
+	cuelang.org/go v0.2.2 // indirect
 	github.com/Depado/ginprom v1.7.2
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.7.0

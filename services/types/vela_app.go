@@ -34,6 +34,7 @@ func (a *CreateAppRequest) ToApplication() *appv1beta1.Application {
 	for _, v := range a.Components {
 		components = append(components, v.ToApplicationComponent())
 	}
+
 	return &appv1beta1.Application{
 		TypeMeta: v1.TypeMeta{
 			Kind:       "Application",
@@ -73,37 +74,37 @@ type Component struct {
 			Name  string `json:"name"`
 			Value string `json:"value"`
 		} `json:"env"`
-		LivenessProbe  *Probe `json:"livenessProbe"`
-		ReadinessProbe *Probe `json:"readinessProbe"`
+		LivenessProbe  *HealthProbe `json:"livenessProbe"`
+		ReadinessProbe *HealthProbe `json:"readinessProbe"`
 	}
 	Traits struct {
 		Ingress *TraitIngress `json:"ingress"`
 
 		Rollout *TraitRollout `json:"rollout"`
 
-		CpuScaler *TraitCpuScaler `json:"cpu_scaler"`
+		//CpuScaler *TraitCpuScaler `json:"cpu_scaler"`
 
-		Labels *TraitLabels `json:"labels"`
+		Labels *Labels `json:"labels"`
 
-		Annotations *TraitAnnotations `json:"annotations"`
+		Annotations *Annotations `json:"annotations"`
 
-		Sidecar *TraitSidecar `json:"sidecar"`
+		Sidecar *Sidecar `json:"sidecar"`
 	}
 }
 
-type Probe struct {
+type HealthProbe struct {
 	Exec    *[]string `json:"exec"`
 	HttpGet *struct {
-		Path        string
-		Port        string
+		Path        string `json:"path"`
+		Port        string `json:"port"`
 		HttpHeaders *[]struct {
 			Name  string
 			Value string
-		} `json:"http_headers"`
-	} `json:"http_get"`
+		} `json:"httpHeaders"`
+	} `json:"httpGet"`
 	TcpSocket *struct {
 		Port int `json:"port"`
-	} `json:"tcp_socket"`
+	} `json:"tcpSocket"`
 	InitialDelaySeconds int `json:"initialDelaySeconds"`
 	PeriodSeconds       int `json:"periodSeconds"`
 	TimeoutSeconds      int `json:"timeoutSeconds"`
@@ -115,9 +116,6 @@ func (c *Component) ToApplicationComponent() common.ApplicationComponent {
 	traits := make([]common.ApplicationTrait, 0, 0)
 	if c.Traits.Ingress != nil {
 		traits = append(traits, c.Traits.Ingress.ToTrait())
-	}
-	if c.Traits.CpuScaler != nil {
-		traits = append(traits, c.Traits.CpuScaler.ToTrait())
 	}
 
 	if c.Traits.Annotations != nil {
@@ -178,40 +176,22 @@ func (t *TraitRollout) ToTrait() common.ApplicationTrait {
 	}
 }
 
-type TraitCpuScaler struct {
-	Min        uint `json:"min"`
-	Max        uint `json:"max"`
-	CpuPercent uint `json:"cpuPercent"`
-}
-
-func (t *TraitCpuScaler) ToTrait() common.ApplicationTrait {
-	return common.ApplicationTrait{
-		Type: "cpuscaler",
-		Properties: util.Object2RawExtension(map[string]interface{}{
-			"min":        t.Min,
-			"max":        t.Max,
-			"cpuPercent": t.CpuPercent,
-		}),
-	}
-}
-
-type TraitLabels map[string]string
-
-func (t *TraitLabels) ToTrait() common.ApplicationTrait {
-	return common.ApplicationTrait{
-		Type:       "labels",
-		Properties: util.Object2RawExtension(*t),
-	}
-}
-
-type TraitAnnotations map[string]string
-
-func (t *TraitAnnotations) ToTrait() common.ApplicationTrait {
-	return common.ApplicationTrait{
-		Type:       "annotations",
-		Properties: util.Object2RawExtension(*t),
-	}
-}
+//type TraitCpuScaler struct {
+//	Min        uint `json:"min"`
+//	Max        uint `json:"max"`
+//	CpuPercent uint `json:"cpuPercent"`
+//}
+//
+//func (t *TraitCpuScaler) ToTrait() common.ApplicationTrait {
+//	return common.ApplicationTrait{
+//		Type: "cpuscaler",
+//		Properties: util.Object2RawExtension(map[string]interface{}{
+//			"min":        t.Min,
+//			"max":        t.Max,
+//			"cpuPercent": t.CpuPercent,
+//		}),
+//	}
+//}
 
 type TraitServiceBinding map[string]string
 
@@ -225,32 +205,6 @@ func (t *TraitServiceBinding) ToTrait() common.ApplicationTrait {
 		Type: "service-binding",
 		Properties: util.Object2RawExtension(map[string]interface{}{
 			"envMappings": envMap,
-		}),
-	}
-}
-
-type TraitSidecar struct {
-	Name    string   `json:"name"`
-	Image   string   `json:"image"`
-	Cmd     []string `json:"cmd"`
-	Volumes []struct {
-		Name string `json:"name"`
-		Path string `json:"path"`
-	}
-}
-
-func (t *TraitSidecar) ToTrait() common.ApplicationTrait {
-	volumes := make([]map[string]string, 0, 0)
-	for _, v := range t.Volumes {
-		volumes = append(volumes, map[string]string{"name": v.Name, "path": v.Path})
-	}
-	return common.ApplicationTrait{
-		Type: "sidecar",
-		Properties: util.Object2RawExtension(map[string]interface{}{
-			"name":    t.Name,
-			"image":   t.Image,
-			"cmd":     t.Cmd,
-			"volumes": volumes,
 		}),
 	}
 }
