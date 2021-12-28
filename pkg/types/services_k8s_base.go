@@ -8,7 +8,7 @@ import (
 )
 
 type K8s interface {
-	CreateWorker(worker *types.Worker) (err error)
+	ApplyWorker(worker *types.Worker) (err error)
 	CreateApp(request types.CreateAppRequest) (err error)
 	UpdateApp(app *v1beta1.Application) (err error)
 	GetApps(keys []types.K8sKey) (res *v1beta1.ApplicationList, err error)

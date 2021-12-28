@@ -45,6 +45,7 @@ type WorkerComponent struct {
 		ConfigMap     *ConfigMap     `json:"configMap,omitempty"`
 		Pvc           *Pvc           `json:"pvc,omitempty"`
 		Scaler        *Scaler        `json:"scaler,omitempty"`
+		Ports         *MyPorts       `json:"ports,omitempty"`
 	} `json:"traits,omitempty"`
 }
 
@@ -105,6 +106,10 @@ func (w *Worker) ToComponent() common.ApplicationComponent {
 
 	if w.Component.Traits.Scaler != nil {
 		traits = append(traits, w.Component.Traits.Scaler.ToTrait())
+	}
+
+	if w.Component.Traits.Ports != nil {
+		traits = append(traits, w.Component.Traits.Ports.ToTrait())
 	}
 
 	return common.ApplicationComponent{

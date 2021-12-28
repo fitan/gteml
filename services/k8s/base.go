@@ -1,8 +1,6 @@
 package k8s
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
@@ -13,6 +11,7 @@ import (
 	"io/ioutil"
 	v13 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -36,6 +35,52 @@ func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
 	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateWorker")
 	defer func() {
 		log.Debug(
+			"CreateWorkerMsg",
+			zap.Any("methodIn", map[string]interface{}{"worker": worker}),
+			zap.Any("methodOut", map[string]interface{}{"err": err}),
+		)
+
+		if err != nil {
+			log.Error(err.Error(), zap.Any("methodIn", map[string]interface{}{"worker": worker}))
+		}
+
+		log.Sync()
+	}()
+
+	return k.runtimeClient.Create(k.core.GetTrace().Ctx(), worker.ToWorker())
+
+}
+
+func (k *K8s) UpdateWorker(worker *servicesTypes.Worker) (err error) {
+	log := k.core.GetCoreLog().ApmLog("services.k8s.UpdateWorker")
+	defer func() {
+		log.Debug(
+			"UpdateWorkerMsg",
+			zap.Any("methodIn", map[string]interface{}{"worker": worker}),
+			zap.Any("methodOut", map[string]interface{}{"err": err}),
+		)
+
+		if err != nil {
+			log.Error(err.Error(), zap.Any("methodIn", map[string]interface{}{"worker": worker}))
+		}
+
+		log.Sync()
+	}()
+
+	old, err := k.GetApp(worker.Metadata)
+	if err != nil {
+		return err
+	}
+	w := worker.ToWorker()
+	w.SetResourceVersion(old.ResourceVersion)
+	return k.runtimeClient.Update(k.core.GetTrace().Ctx(), w, &client.UpdateOptions{})
+
+}
+
+func (k *K8s) ApplyWorker(worker *servicesTypes.Worker) (err error) {
+	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateWorker")
+	defer func() {
+		log.Debug(
 			"CreateAppMsg",
 			zap.Any("methodIn", map[string]interface{}{"worker": worker}),
 			zap.Any("methodOut", map[string]interface{}{"err": err}),
@@ -47,18 +92,21 @@ func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
 
 		log.Sync()
 	}()
-	b, _ := json.Marshal(worker)
-	fmt.Println(string(b))
-
-	w, _ := json.Marshal(worker.ToWorker())
-	fmt.Println(string(w))
-	_, err = k.GetApp(worker.Metadata)
+	//b, _ := json.Marshal(worker)
+	//fmt.Println(string(b))
+	//
+	//w, _ := json.Marshal(worker.ToWorker())
+	//fmt.Println(string(w))
+	old, err := k.GetApp(worker.Metadata)
 	if err != nil {
-		return k.runtimeClient.Create(k.core.GetTrace().Ctx(), worker.ToWorker())
-	} else {
-		return k.runtimeClient.Update(k.core.GetTrace().Ctx(), worker.ToWorker(), nil)
+		if apierrors.IsNotFound(err) {
+			return k.runtimeClient.Create(k.core.GetTrace().Ctx(), worker.ToWorker())
+		}
+		return err
 	}
-
+	w := worker.ToWorker()
+	w.SetResourceVersion(old.ResourceVersion)
+	return k.runtimeClient.Update(k.core.GetTrace().Ctx(), w, &client.UpdateOptions{})
 }
 
 func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
@@ -195,8 +243,14 @@ func (k *K8s) GetPodsByDeploymentKey(key servicesTypes.K8sKey) (pods *v12.PodLis
 	if err != nil {
 		return nil, err
 	}
+
+	asMap, err := v1.LabelSelectorAsMap(deployment.Spec.Selector)
+	if err != nil {
+		return nil, err
+	}
+
 	return k.k8sClient.CoreV1().Pods(key.Namespace).List(k.core.GetTrace().Ctx(), v1.ListOptions{
-		LabelSelector: deployment.Spec.Selector.String(),
+		LabelSelector: labels.SelectorFromSet(asMap).String(),
 	})
 }
 

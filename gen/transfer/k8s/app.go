@@ -99,3 +99,45 @@ func (b *CreateWorkerBinder) BindVal(core *types.Core) (res interface{}, err err
 func (b *CreateWorkerBinder) BindFn(core *types.Core) (interface{}, error) {
 	return k8s.CreateWorker(core, b.val)
 }
+
+type GetPodsTransfer struct {
+}
+
+func (t *GetPodsTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *GetPodsTransfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod"
+}
+
+func (t *GetPodsTransfer) Binder() types.GinXBinder {
+	return new(GetPodsBinder)
+}
+
+type GetPodsBinder struct {
+	val *k8s.GetPodsIn
+}
+
+func (b *GetPodsBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.GetPodsIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Success 200 {object} ginx.GinXResult{data=v1.PodList}
+// @Description Get Pods
+// @Router /k8s/:namespace/app/:name/pod [get]
+func (b *GetPodsBinder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.GetPods(core, b.val)
+}

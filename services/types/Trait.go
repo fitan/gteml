@@ -70,8 +70,8 @@ func (i *InitContainer) ToTrait() common.ApplicationTrait {
 }
 
 type Expose struct {
-	Ports []int  `json:"ports"`
-	Type  string `json:"type"`
+	Port []int  `json:"port"`
+	Type string `json:"type"`
 }
 
 func (e *Expose) ToTrait() common.ApplicationTrait {
@@ -87,7 +87,7 @@ type ConfigMap struct {
 		MountPath string             `json:"mountPath"`
 		readOnly  bool               `json:"readOnly"`
 		Data      *map[string]string `json:"data"`
-	}
+	} `json:"volumes"`
 }
 
 func (c *ConfigMap) ToTrait() common.ApplicationTrait {
@@ -118,6 +118,20 @@ type Pvc struct {
 func (p *Pvc) ToTrait() common.ApplicationTrait {
 	return common.ApplicationTrait{
 		Type:       "pvc",
+		Properties: util.Object2RawExtension(p),
+	}
+}
+
+type MyPorts struct {
+	Ports []struct {
+		ContainerPort int    `json:"containerPort"`
+		Ptotocol      string `json:"ptotocol"`
+	} `json:"ports"`
+}
+
+func (p *MyPorts) ToTrait() common.ApplicationTrait {
+	return common.ApplicationTrait{
+		Type:       "my-ports",
 		Properties: util.Object2RawExtension(p),
 	}
 }

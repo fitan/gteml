@@ -11,4 +11,6 @@ func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
 	reg.Register(r, &CreateWorkerTransfer{}, ginx.WithHandlerName("CreateWorker"))
 
+	reg.Register(r, &GetPodsTransfer{}, ginx.WithHandlerName("GetPods"))
+
 }
