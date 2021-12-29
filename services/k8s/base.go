@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"bufio"
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
@@ -8,6 +9,7 @@ import (
 	"github.com/oam-dev/kubevela-core-api/pkg/oam"
 	"github.com/oam-dev/kubevela-core-api/pkg/oam/util"
 	"go.uber.org/zap"
+	"io"
 	"io/ioutil"
 	v13 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
@@ -473,14 +475,11 @@ func (k *K8s) DeletePvc(key servicesTypes.K8sKey) (err error) {
 	return k.k8sClient.CoreV1().PersistentVolumeClaims(key.Namespace).Delete(k.core.GetTrace().Ctx(), key.Name, v1.DeleteOptions{})
 }
 
-func (k *K8s) GetPodLogs(key servicesTypes.K8sKey, containerName string) (string, error) {
-	var taillines int64 = 5000
-	var byteReadLimit int64 = 500000
-	req := k.k8sClient.CoreV1().Pods(key.Namespace).GetLogs(key.Name, &v12.PodLogOptions{
-		Container:  containerName,
-		Timestamps: true,
-		LimitBytes: &byteReadLimit,
-		TailLines:  &taillines,
+func (k *K8s) GetPodLogs(key servicesTypes.K8sKey, podName, containerName string, tailLines *int64) (string, error) {
+	req := k.k8sClient.CoreV1().Pods(key.Namespace).GetLogs(podName, &v12.PodLogOptions{
+		Container: containerName,
+		TailLines: tailLines,
+		//Timestamps: true,
 	})
 	readCloser, err := req.Stream(k.core.GetTrace().Ctx())
 	if err != nil {
@@ -489,9 +488,45 @@ func (k *K8s) GetPodLogs(key servicesTypes.K8sKey, containerName string) (string
 
 	defer readCloser.Close()
 
-	logsB, err := ioutil.ReadAll(readCloser)
+	b, err := ioutil.ReadAll(readCloser)
 	if err != nil {
 		return "", err
 	}
-	return string(logsB), nil
+
+	return string(b), nil
+}
+
+func (k *K8s) WatchPodLogs(key servicesTypes.K8sKey, podName, containerName string, c chan string) error {
+	var taillines int64 = 10
+	//var byteReadLimit int64 = 500000
+	req := k.k8sClient.CoreV1().Pods(key.Namespace).GetLogs(podName, &v12.PodLogOptions{
+		Container: containerName,
+		Follow:    true,
+		//Timestamps: true,
+		//LimitBytes: &byteReadLimit,
+		TailLines: &taillines,
+	})
+	readCloser, err := req.Stream(k.core.GetTrace().Ctx())
+	if err != nil {
+		return err
+	}
+
+	defer readCloser.Close()
+	defer close(c)
+	r := bufio.NewReader(readCloser)
+	for {
+		bytes, err := r.ReadBytes('\n')
+		c <- string(bytes)
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+		}
+	}
+
+	//logsB, err := ioutil.ReadAll(readCloser)
+	//if err != nil {
+	//	return "", err
+	//}
+	//return string(logsB), nil
 }

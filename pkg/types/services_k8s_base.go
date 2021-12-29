@@ -27,5 +27,6 @@ type K8s interface {
 	UpdatePvc(pvc *v1.PersistentVolumeClaim) (claim *v1.PersistentVolumeClaim, err error)
 	GetPvc(key types.K8sKey) (res *v1.PersistentVolumeClaim, err error)
 	DeletePvc(key types.K8sKey) (err error)
-	GetPodLogs(key types.K8sKey, containerName string) (string, error)
+	WatchPodLogs(key types.K8sKey, podName, containerName string, c chan string) error
+	GetPodLogs(key types.K8sKey, podName, containerName string, tailLines *int64) (string, error)
 }

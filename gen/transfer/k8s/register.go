@@ -13,4 +13,8 @@ func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
 	reg.Register(r, &GetPodsTransfer{}, ginx.WithHandlerName("GetPods"))
 
+	reg.Register(r, &WatchPodLogsTransfer{}, ginx.WithHandlerName("WatchPodLogs"))
+
+	reg.Register(r, &DownloadPodLogsTransfer{}, ginx.WithHandlerName("DownloadPodLogs"))
+
 }

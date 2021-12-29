@@ -2,10 +2,13 @@ package ginx
 
 import (
 	"github.com/fitan/magic/pkg/types"
+	"github.com/pkg/errors"
 	"go.elastic.co/apm"
 	"net/http"
 	"strconv"
 )
+
+var SkipWrapError = errors.New("Skip ResultWrapMid")
 
 type GinXResult struct {
 	Code          int         `json:"code"`
@@ -18,6 +21,10 @@ type ResultWrapMid struct {
 }
 
 func (r *ResultWrapMid) Forever(core *types.Core) {
+	if errors.Is(core.GinX.LastError(), SkipWrapError) {
+		return
+	}
+
 	apm.SpanFromContext(core.GetTrace().Ctx()).ParentID()
 	wrapRes := GinXResult{
 		Data:          core.GinX.Response(),

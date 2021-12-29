@@ -11,7 +11,6 @@ import (
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"go.elastic.co/apm/module/apmgin"
-	"log"
 )
 
 func Router() *gin.Engine {
@@ -25,14 +24,15 @@ func Router() *gin.Engine {
 	pprof.Register(r)
 	//r.Use(ginmid.ReUserCore())
 
-	jwtMid, err := ginmid.NewAuthMiddleware()
-	if err != nil {
-		log.Panicln(err)
-	}
+	//jwtMid, err := ginmid.NewAuthMiddleware()
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
 
-	authorized := r.Group("/", jwtMid.MiddlewareFunc())
-	registerRouter(authorized)
-	LoginRoute(r, jwtMid)
+	//authorized := r.Group("/", jwtMid.MiddlewareFunc())
+	//registerRouter(authorized)
+	//LoginRoute(r, jwtMid)
+	registerRouter(r)
 	SwagRoute(r)
 
 	return r

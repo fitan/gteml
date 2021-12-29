@@ -141,3 +141,101 @@ func (b *GetPodsBinder) BindVal(core *types.Core) (res interface{}, err error) {
 func (b *GetPodsBinder) BindFn(core *types.Core) (interface{}, error) {
 	return k8s.GetPods(core, b.val)
 }
+
+type WatchPodLogsTransfer struct {
+}
+
+func (t *WatchPodLogsTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *WatchPodLogsTransfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs"
+}
+
+func (t *WatchPodLogsTransfer) Binder() types.GinXBinder {
+	return new(WatchPodLogsBinder)
+}
+
+type WatchPodLogsBinder struct {
+	val *k8s.WatchPodLogsIn
+}
+
+func (b *WatchPodLogsBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.WatchPodLogsIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Param podName path string true " "
+// @Param containerName path string true " "
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description Get pod logs
+// @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs [get]
+func (b *WatchPodLogsBinder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.WatchPodLogs(core, b.val)
+}
+
+type SwagDownloadPodLogsQuery struct {
+	TailLines int64 `json:"tailLines" form:"tailLines"`
+}
+
+type DownloadPodLogsTransfer struct {
+}
+
+func (t *DownloadPodLogsTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *DownloadPodLogsTransfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs/download"
+}
+
+func (t *DownloadPodLogsTransfer) Binder() types.GinXBinder {
+	return new(DownloadPodLogsBinder)
+}
+
+type DownloadPodLogsBinder struct {
+	val *k8s.DownloadPodLogsIn
+}
+
+func (b *DownloadPodLogsBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.DownloadPodLogsIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	err = core.GinX.GinCtx().ShouldBindQuery(&in.Query)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param query query SwagDownloadPodLogsQuery false " "
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Param podName path string true " "
+// @Param containerName path string true " "
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description download pod logs
+// @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs/download [get]
+func (b *DownloadPodLogsBinder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.DownloadPodLogs(core, b.val)
+}

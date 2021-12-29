@@ -148,12 +148,12 @@ func (g *GinX) GinCtx() *gin.Context {
 
 func (g *GinX) setBindVal(data interface{}, err error) {
 	g.request = data
-	g.SetError(errors.WithMessage(err, "bind val error"))
+	g.SetError(errors.Wrap(err, "bind val error"))
 }
 
 func (g *GinX) setBindFn(data interface{}, err error) {
 	g.response = data
-	g.SetError(errors.WithMessage(err, "bind fn error"))
+	g.SetError(errors.Wrap(err, "bind fn error"))
 }
 
 type GinXOption func(g *GinX)
