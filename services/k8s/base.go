@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
+	"github.com/gorilla/websocket"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/common"
 	appv1beta1 "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
 	"github.com/oam-dev/kubevela-core-api/pkg/oam"
@@ -19,6 +20,8 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/remotecommand"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -26,6 +29,7 @@ type K8s struct {
 	k8sClient       *kubernetes.Clientset
 	runtimeClient   client.Client
 	informerFactory informers.SharedInformerFactory
+	cfg             *rest.Config
 	core            types.ServiceCore
 }
 
@@ -523,10 +527,43 @@ func (k *K8s) WatchPodLogs(key servicesTypes.K8sKey, podName, containerName stri
 			}
 		}
 	}
+}
 
-	//logsB, err := ioutil.ReadAll(readCloser)
-	//if err != nil {
-	//	return "", err
-	//}
-	//return string(logsB), nil
+func (k *K8s) SSH(key servicesTypes.K8sKey, podName, containerName string, ws *websocket.Conn) error {
+	defer ws.Close()
+	req := k.k8sClient.CoreV1().RESTClient().Post().Resource("pods").Name(podName).Namespace(key.Namespace).SubResource("exec")
+	req.VersionedParams(&v12.PodExecOptions{
+		TypeMeta: v1.TypeMeta{
+			Kind:       "",
+			APIVersion: "",
+		},
+		Stdin:     true,
+		Stdout:    true,
+		Stderr:    true,
+		TTY:       true,
+		Container: containerName,
+		Command:   []string{"clear; (bash || ash || sh)"},
+	}, v1.ParameterCodec)
+	executor, err := remotecommand.NewSPDYExecutor(k.cfg, "POST", req.URL())
+	if err != nil {
+		return err
+	}
+
+	handler := &TerminalSession{
+		wsConn:   ws,
+		sizeChan: make(chan remotecommand.TerminalSize),
+		doneChan: make(chan struct{}),
+	}
+
+	err = executor.Stream(remotecommand.StreamOptions{
+		Stdin:             handler,
+		Stdout:            handler,
+		Stderr:            handler,
+		Tty:               true,
+		TerminalSizeQueue: handler,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

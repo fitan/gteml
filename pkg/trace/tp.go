@@ -59,6 +59,8 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	otel.SetTracerProvider(tp)
 	//tr := tp.Tracer("cmdb")
 	//ctx, _ := context.WithCancel(context.Background())
 	//ctx, span := tr.Start(ctx, "foo")
