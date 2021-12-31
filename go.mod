@@ -3,7 +3,7 @@ module github.com/fitan/magic
 go 1.16
 
 require (
-	cuelang.org/go v0.2.2 // indirect
+	cuelang.org/go v0.2.2
 	github.com/Depado/ginprom v1.7.2
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.7.0
@@ -11,12 +11,12 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.4.5
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/jinzhu/now v1.1.4 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/oam-dev/kubevela-core-api v1.1.13
 	github.com/opentracing/opentracing-go v1.2.0
@@ -31,25 +31,25 @@ require (
 	github.com/swaggo/swag v1.7.4
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelgorm v0.1.7
 	go.elastic.co/apm v1.14.0
-	go.elastic.co/apm/module/apmgin v1.14.0
-	go.elastic.co/apm/module/apmgormv2 v1.14.0
 	go.elastic.co/apm/module/apmhttp v1.14.0
 	go.elastic.co/apm/module/apmzap v1.14.0
+	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.28.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.24.0
-	go.opentelemetry.io/otel v1.0.0
+	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.0.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.0.0
 	go.opentelemetry.io/otel/sdk v1.0.0
-	go.opentelemetry.io/otel/trace v1.0.0
+	go.opentelemetry.io/otel/trace v1.3.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.2.1
 	gorm.io/gen v0.2.23
 	gorm.io/gorm v1.22.4
-	k8s.io/api v0.22.2
-	k8s.io/apimachinery v0.22.4
-	k8s.io/client-go v0.22.2
-	sigs.k8s.io/controller-runtime v0.10.3
+	k8s.io/api v0.23.0
+	k8s.io/apimachinery v0.23.0
+	k8s.io/client-go v0.23.0
+	sigs.k8s.io/controller-runtime v0.11.0
 )

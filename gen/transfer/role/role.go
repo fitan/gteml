@@ -8,7 +8,7 @@ import (
 )
 
 type SwagBindRolePermissionBody struct {
-	PermissionID uint `json:"permission_id"`
+	PermissionID uint `json:"permissionId"`
 }
 
 type BindRolePermissionTransfer struct {
@@ -19,7 +19,7 @@ func (t *BindRolePermissionTransfer) Method() string {
 }
 
 func (t *BindRolePermissionTransfer) Url() string {
-	return "/role/:role_id/permission"
+	return "/role/:roleId/permission"
 }
 
 func (t *BindRolePermissionTransfer) Binder() types.GinXBinder {
@@ -50,15 +50,15 @@ func (b *BindRolePermissionBinder) BindVal(core *types.Core) (res interface{}, e
 // @Accept  json
 // @Produce  json
 // @Param body body SwagBindRolePermissionBody true " "
-// @Param role_id path string true " "
+// @Param roleId path string true " "
 // @Success 200 {object} ginx.GinXResult{data=string}
-// @Router /role/:role_id/permission [post]
+// @Router /role/:roleId/permission [post]
 func (b *BindRolePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return role.BindRolePermission(core, b.val)
 }
 
 type SwagUnBindRolePermissionBody struct {
-	PermissionID uint `json:"permission_id"`
+	PermissionID uint `json:"permissionId"`
 }
 
 type UnBindRolePermissionTransfer struct {
@@ -69,7 +69,7 @@ func (t *UnBindRolePermissionTransfer) Method() string {
 }
 
 func (t *UnBindRolePermissionTransfer) Url() string {
-	return "/role/:role_id/permission"
+	return "/role/:roleId/permission"
 }
 
 func (t *UnBindRolePermissionTransfer) Binder() types.GinXBinder {
@@ -100,9 +100,9 @@ func (b *UnBindRolePermissionBinder) BindVal(core *types.Core) (res interface{},
 // @Accept  json
 // @Produce  json
 // @Param body body SwagUnBindRolePermissionBody true " "
-// @Param role_id path string true " "
+// @Param roleId path string true " "
 // @Success 200 {object} ginx.GinXResult{data=string}
-// @Router /role/:role_id/permission [delete]
+// @Router /role/:roleId/permission [delete]
 func (b *UnBindRolePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return role.UnBindRolePermission(core, b.val)
 }

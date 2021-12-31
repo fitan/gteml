@@ -23,7 +23,7 @@ func CreatePermission(core *types.Core, in *CreatePermissionIn) (res string, err
 
 type GetPermissionByIdIn struct {
 	Uri struct {
-		Id uint `uri:"id"`
+		Id uint `json:"id" uri:"id"`
 	} `json:"uri"`
 }
 
@@ -39,7 +39,7 @@ func GetPermissionById(core *types.Core, in *GetPermissionByIdIn) (res *model.Pe
 
 type DeletePermissionByIdIn struct {
 	Uri struct {
-		Id uint `uri:"id"`
+		Id uint `json:"id" uri:"id"`
 	} `json:"uri"`
 }
 

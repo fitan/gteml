@@ -11,7 +11,8 @@ import (
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	_ "github.com/go-sql-driver/mysql"
-	mysqlapm "go.elastic.co/apm/module/apmgormv2/driver/mysql"
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 )
@@ -26,12 +27,14 @@ func (s *daoReg) Reload(c *types.Core) {
 	s.db = nil
 }
 
-func (s *daoReg) GetObj() *daoReg {
+func (s *daoReg) GetObj(c *types.Core) *daoReg {
 	if s.db == nil {
-		db, err := gorm.Open(mysqlapm.Open(ConfReg.Confer.GetMyConf().Mysql.Url))
+		db, err := gorm.Open(mysql.Open(ConfReg.Confer.GetMyConf().Mysql.Url), &gorm.Config{})
+		//db, err := gorm.Open(mysqlapm.Open(ConfReg.Confer.GetMyConf().Mysql.Url))
 		if err != nil {
 			log.Panicf("mysql create db: %s", err.Error())
 		}
+		db.Use(otelgorm.NewPlugin())
 
 		s.db = db
 
@@ -64,7 +67,7 @@ func (s *daoReg) With(o ...types.Option) types.Register {
 }
 
 func (s *daoReg) Set(c *types.Core) {
-	obj := s.GetObj()
+	obj := s.GetObj(c)
 	wrapQuery := &dbquery.WrapQuery{c, obj.query}
 	c.Dao = dao.NewDAO(obj.db, wrapQuery, obj.enforcer, c)
 }

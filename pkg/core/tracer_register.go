@@ -11,7 +11,7 @@ type Trace struct {
 	tp *oteltrace.TracerProvider
 }
 
-func (t *Trace) getTp(c *types.Core) *oteltrace.TracerProvider {
+func (t *Trace) get(c *types.Core) *Trace {
 	if t.tp == nil {
 		tp, err := trace.TracerProvider(ConfReg.Confer.GetMyConf().App.Name, ConfReg.Confer.GetMyConf().Trace.TracerProviderAddr)
 		if err != nil {
@@ -20,7 +20,7 @@ func (t *Trace) getTp(c *types.Core) *oteltrace.TracerProvider {
 		}
 		t.tp = tp
 	}
-	return t.tp
+	return t
 }
 
 func (t *Trace) Reload(c *types.Core) {
@@ -32,7 +32,7 @@ func (t *Trace) With(o ...types.Option) types.Register {
 }
 
 func (t *Trace) Set(c *types.Core) {
-	c.Tracer = trace.NewTrace(t.getTp(c), ConfReg.Confer.GetMyConf().Trace.Open)
+	c.Tracer = trace.NewTrace(t.get(c).tp, ConfReg.Confer.GetMyConf().Trace.Open)
 }
 
 func (t *Trace) Unset(c *types.Core) {

@@ -8,8 +8,8 @@ import (
 )
 
 type SwagBindUserPermissionBody struct {
-	RoleID   uint `json:"role_id"`
-	DomainID uint `json:"domain_id"`
+	RoleID   uint `json:"roleId"`
+	DomainID uint `json:"domainId"`
 }
 
 type BindUserPermissionTransfer struct {
@@ -20,7 +20,7 @@ func (t *BindUserPermissionTransfer) Method() string {
 }
 
 func (t *BindUserPermissionTransfer) Url() string {
-	return "/user/:user_id/permission"
+	return "/user/:userId/permission"
 }
 
 func (t *BindUserPermissionTransfer) Binder() types.GinXBinder {
@@ -51,17 +51,17 @@ func (b *BindUserPermissionBinder) BindVal(core *types.Core) (res interface{}, e
 // @Accept  json
 // @Produce  json
 // @Param body body SwagBindUserPermissionBody true " "
-// @Param user_id path string true " "
+// @Param userId path string true " "
 // @Success 200 {object} ginx.GinXResult{data=string}
 // @Description 给用户绑定角色和服务
-// @Router /user/:user_id/permission [post]
+// @Router /user/:userId/permission [post]
 func (b *BindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.BindUserPermission(core, b.val)
 }
 
 type SwagUnBindUserPermissionBody struct {
-	RoleID   uint `json:"role_id"`
-	DomainID uint `json:"domain_id"`
+	RoleID   uint `json:"roleId"`
+	DomainID uint `json:"domainId"`
 }
 
 type UnBindUserPermissionTransfer struct {
@@ -72,7 +72,7 @@ func (t *UnBindUserPermissionTransfer) Method() string {
 }
 
 func (t *UnBindUserPermissionTransfer) Url() string {
-	return "/user/:user_id/permission"
+	return "/user/:userId/permission"
 }
 
 func (t *UnBindUserPermissionTransfer) Binder() types.GinXBinder {
@@ -103,10 +103,10 @@ func (b *UnBindUserPermissionBinder) BindVal(core *types.Core) (res interface{},
 // @Accept  json
 // @Produce  json
 // @Param body body SwagUnBindUserPermissionBody true " "
-// @Param user_id path string true " "
+// @Param userId path string true " "
 // @Success 200 {object} ginx.GinXResult{data=string}
 // @Description 用户解除绑定
-// @Router /user/:user_id/permission [delete]
+// @Router /user/:userId/permission [delete]
 func (b *UnBindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.UnBindUserPermission(core, b.val)
 }

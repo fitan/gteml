@@ -86,6 +86,10 @@ Gen:
       Src: "./gen/entrest"
       Dest: "./gen/handler/ent"
   Ts:
+    - Name: "handler"
+      Src: "./handler"
+      Dest: "./gen/transfer/ts"
+      Prefix: "gteml"
     -
       Name: "logic"
       Src: "./logic"

@@ -28,3 +28,6 @@ swag:
 
 gen-api:
 	genapi  gen -t api -n handler
+
+gen-ts:
+	genapi gen -t ts -n handler

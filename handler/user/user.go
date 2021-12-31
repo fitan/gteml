@@ -7,17 +7,17 @@ import (
 
 type BindUserPermissionIn struct {
 	Uri struct {
-		UserID uint `uri:"user_id"`
+		UserID uint `json:"userId" uri:"userId"`
 	} `json:"uri"`
 
 	Body struct {
-		RoleID   uint `json:"role_id"`
-		DomainID uint `json:"domain_id"`
+		RoleID   uint `json:"roleId"`
+		DomainID uint `json:"domainId"`
 	} `json:"body"`
 }
 
 // @Description 给用户绑定角色和服务
-// @GenApi /user/:user_id/permission [post]
+// @GenApi /user/:userId/permission [post]
 func BindUserPermission(core *types.Core, in *BindUserPermissionIn) (string, error) {
 	err := core.GetDao().Storage().User().BindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
 	if err != nil {
@@ -29,17 +29,17 @@ func BindUserPermission(core *types.Core, in *BindUserPermissionIn) (string, err
 
 type UnBindUserPermissionIn struct {
 	Uri struct {
-		UserID uint `uri:"user_id"`
+		UserID uint `json:"userId" uri:"userId"`
 	} `json:"uri"`
 
 	Body struct {
-		RoleID   uint `json:"role_id"`
-		DomainID uint `json:"domain_id"`
-	}
+		RoleID   uint `json:"roleId"`
+		DomainID uint `json:"domainId"`
+	} `json:"body"`
 }
 
 // @Description 用户解除绑定
-// @GenApi /user/:user_id/permission [delete]
+// @GenApi /user/:userId/permission [delete]
 func UnBindUserPermission(core *types.Core, in *UnBindUserPermissionIn) (string, error) {
 	err := core.GetDao().Storage().User().UnBindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
 	if err != nil {

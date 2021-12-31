@@ -10,13 +10,15 @@ import (
 	"github.com/fitan/magic/pkg/prometheus"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"go.elastic.co/apm/module/apmgin"
+	//"go.elastic.co/apm/module/apmgin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func Router() *gin.Engine {
 	r := gin.Default()
+	r.Use(otelgin.Middleware("ginhttp"))
 
-	r.Use(apmgin.Middleware(r))
+	//r.Use(apmgin.Middleware(r))
 	r.Use(ginmid.SetCore())
 	r.Use(ginmid.NewAudit().Audit())
 
