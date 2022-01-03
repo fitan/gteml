@@ -53,7 +53,7 @@ func TracerProvider(serviceName string, url string) (*trace.TracerProvider, erro
 	return tp, nil
 }
 
-func init() {
+func Init() {
 	var err error
 	tp, err = TracerProvider("demo", "http://10.170.34.122:14268/api/traces")
 	if err != nil {

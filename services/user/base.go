@@ -31,6 +31,7 @@ func (u *User) Read() string {
 
 	log := u.Core.GetCoreLog().ApmLog("read")
 	log.Error("this is read", zap.String("read", "read"), zap.Any("carry", map[string]interface{}{"method1": "1", "method2": "2"}))
+	log.Error("这个是一起的")
 	log.Sync()
 
 	log = u.Core.GetCoreLog().ApmLog("read1")

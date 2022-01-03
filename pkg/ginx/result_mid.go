@@ -3,7 +3,7 @@ package ginx
 import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
-	"go.elastic.co/apm"
+	"go.opentelemetry.io/otel/trace"
 	"net/http"
 	"strconv"
 )
@@ -11,10 +11,10 @@ import (
 var SkipWrapError = errors.New("Skip ResultWrapMid")
 
 type GinXResult struct {
-	Code          int         `json:"code"`
-	Msg           string      `json:"msg,omitempty"`
-	TransactionId string      `json:"transaction.id,omitempty"`
-	Data          interface{} `json:"data"`
+	Code    int         `json:"code"`
+	Msg     string      `json:"msg,omitempty"`
+	TraceId string      `json:"traceId,omitempty"`
+	Data    interface{} `json:"data"`
 }
 
 type ResultWrapMid struct {
@@ -25,10 +25,11 @@ func (r *ResultWrapMid) Forever(core *types.Core) {
 		return
 	}
 
-	apm.SpanFromContext(core.GetTrace().Ctx()).ParentID()
+	trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID()
+	core.GetTrace().Ctx()
 	wrapRes := GinXResult{
-		Data:          core.GinX.Response(),
-		TransactionId: apm.TransactionFromContext(core.GetTrace().Ctx()).TraceContext().Span.String(),
+		Data:    core.GinX.Response(),
+		TraceId: trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID().String(),
 	}
 	var code int
 	if core.GinX.LastError() != nil {
