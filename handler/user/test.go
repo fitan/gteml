@@ -9,8 +9,6 @@ type CreateIn struct {
 	Body struct {
 		Hello string `json:"hello"`
 	} `json:"body"`
-	Uri    struct{}
-	Header struct{}
 }
 
 // @GenApi /user [post]
@@ -48,12 +46,12 @@ type SayHelloIn struct {
 	} `json:"query"`
 	CtxKey struct {
 		*JwtKey
-	}
+	} `json:"ctxKey"`
 }
 
 type JwtKey struct {
-	JwtUserID uint `ctxkey:"JwtUserIDKey" binding:"required"`
-	TestValue string
+	JwtUserID uint   `ctxkey:"JwtUserIDKey" binding:"required" json:"jwtUserId"`
+	TestValue string `json:"testValue"`
 }
 
 func (s *SayHelloIn) ServiceID() (serviceID uint) {

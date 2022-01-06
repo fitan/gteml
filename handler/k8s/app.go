@@ -17,7 +17,7 @@ type SpaceName struct {
 }
 
 type GetAppIn struct {
-	Uri types2.K8sKey
+	Uri types2.K8sKey `json:"uri"`
 }
 
 // @Description 获取app

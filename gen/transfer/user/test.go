@@ -40,16 +40,6 @@ func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 		return nil, err
 	}
 
-	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
-	if err != nil {
-		return nil, err
-	}
-
-	err = core.GinX.GinCtx().ShouldBindHeader(&in.Header)
-	if err != nil {
-		return nil, err
-	}
-
 	return b.val, err
 }
 

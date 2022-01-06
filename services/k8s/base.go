@@ -112,6 +112,7 @@ func (k *K8s) ApplyWorker(worker *servicesTypes.Worker) (err error) {
 	}
 	w := worker.ToWorker()
 	w.SetResourceVersion(old.ResourceVersion)
+	log.Info("ToWorker", zap.Any("worker", w))
 	return k.runtimeClient.Update(k.core.GetTrace().Ctx(), w, &client.UpdateOptions{})
 }
 

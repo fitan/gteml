@@ -135,3 +135,13 @@ func (p *MyPorts) ToTrait() common.ApplicationTrait {
 		Properties: util.Object2RawExtension(p),
 	}
 }
+
+type MyEnv struct {
+}
+
+func (m *MyEnv) ToTrait() common.ApplicationTrait {
+	return common.ApplicationTrait{
+		Type:       "my-env",
+		Properties: util.Object2RawExtension(m),
+	}
+}

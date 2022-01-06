@@ -5,6 +5,7 @@ import (
 	appv1beta1 "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
 	"github.com/oam-dev/kubevela-core-api/pkg/oam/util"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	"reflect"
 )
 
 type Worker struct {
@@ -46,6 +47,8 @@ type WorkerComponent struct {
 		Pvc           *Pvc           `json:"pvc,omitempty"`
 		Scaler        *Scaler        `json:"scaler,omitempty"`
 		Ports         *MyPorts       `json:"ports,omitempty"`
+		MyEnv         *MyEnv         `json:"myEnv,omitempty"`
+		Test          *struct{}      `json:"test,omitempty"`
 	} `json:"traits,omitempty"`
 }
 
@@ -72,45 +75,67 @@ func (w *Worker) ToWorker() *appv1beta1.Application {
 
 func (w *Worker) ToComponent() common.ApplicationComponent {
 	traits := make([]common.ApplicationTrait, 0, 0)
-	if w.Component.Traits.ConfigMap != nil {
-		traits = append(traits, w.Component.Traits.ConfigMap.ToTrait())
+
+	v := reflect.ValueOf(w.Component.Traits)
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).IsZero() {
+			continue
+		}
+
+		toTraiter, ok := v.Field(i).Interface().(ToTraiter)
+		if !ok {
+			panic(v.Field(i).String() + "Do not implement ToTraiter")
+		}
+
+		trait := toTraiter.ToTrait()
+		traits = append(traits, trait)
+
 	}
 
-	if w.Component.Traits.Pvc != nil {
-		traits = append(traits, w.Component.Traits.Pvc.ToTrait())
-	}
-
-	if w.Component.Traits.Expose != nil {
-		traits = append(traits, w.Component.Traits.Expose.ToTrait())
-	}
-
-	if w.Component.Traits.Labels != nil {
-		traits = append(traits, w.Component.Traits.Labels.ToTrait())
-	}
-
-	if w.Component.Traits.Annotations != nil {
-		traits = append(traits, w.Component.Traits.Annotations.ToTrait())
-	}
-
-	if w.Component.Traits.InitContainer != nil {
-		traits = append(traits, w.Component.Traits.InitContainer.ToTrait())
-	}
-
-	if w.Component.Traits.Sidecar != nil {
-		traits = append(traits, w.Component.Traits.Sidecar.ToTrait())
-	}
-
-	if w.Component.Traits.Ingress != nil {
-		traits = append(traits, w.Component.Traits.Ingress.ToTrait())
-	}
-
-	if w.Component.Traits.Scaler != nil {
-		traits = append(traits, w.Component.Traits.Scaler.ToTrait())
-	}
-
-	if w.Component.Traits.Ports != nil {
-		traits = append(traits, w.Component.Traits.Ports.ToTrait())
-	}
+	//traits := make([]common.ApplicationTrait, 0, 0)
+	//if w.Component.Traits.ConfigMap != nil {
+	//	traits = append(traits, w.Component.Traits.ConfigMap.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Pvc != nil {
+	//	traits = append(traits, w.Component.Traits.Pvc.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Expose != nil {
+	//	traits = append(traits, w.Component.Traits.Expose.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Labels != nil {
+	//	traits = append(traits, w.Component.Traits.Labels.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Annotations != nil {
+	//	traits = append(traits, w.Component.Traits.Annotations.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.InitContainer != nil {
+	//	traits = append(traits, w.Component.Traits.InitContainer.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Sidecar != nil {
+	//	traits = append(traits, w.Component.Traits.Sidecar.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Ingress != nil {
+	//	traits = append(traits, w.Component.Traits.Ingress.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Scaler != nil {
+	//	traits = append(traits, w.Component.Traits.Scaler.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.Ports != nil {
+	//	traits = append(traits, w.Component.Traits.Ports.ToTrait())
+	//}
+	//
+	//if w.Component.Traits.MyEnv != nil {
+	//	traits = append(traits, w.Component.Traits.MyEnv.ToTrait())
+	//}
 
 	return common.ApplicationComponent{
 		Name:       w.Metadata.Name,
