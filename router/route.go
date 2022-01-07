@@ -15,14 +15,13 @@ import (
 )
 
 func Router() *gin.Engine {
-	r := gin.New()
+	//r := gin.New()
 
-	//r := gin.Default()
+	r := gin.Default()
 	r.Use(otelgin.Middleware("ginhttp"))
 
 	//r.Use(apmgin.Middleware(r))
 	r.Use(ginmid.SetCore())
-	r.Use(gin.Logger(), ginmid.Recover())
 	r.Use(ginmid.NewAudit().Audit())
 
 	prometheus.UseGinprom(r)

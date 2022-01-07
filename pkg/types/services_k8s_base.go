@@ -1,8 +1,10 @@
 package types
 
 import (
+	"bytes"
 	"github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
+	"io"
 	v12 "k8s.io/api/apps/v1"
 	"k8s.io/api/core/v1"
 )
@@ -28,5 +30,9 @@ type K8s interface {
 	GetPvc(key types.K8sKey) (res *v1.PersistentVolumeClaim, err error)
 	DeletePvc(key types.K8sKey) (err error)
 	WatchPodLogs(key types.K8sKey, podName, containerName string, c chan string) error
+	PodCopyFile(src string, dest string, containername string) (in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer, err error)
+	PodCopyFileV2(key types.K8sKey, containerName string, src string) (
+		*io.PipeReader, error,
+	)
 	GetPodLogs(key types.K8sKey, podName, containerName string, tailLines *int64) (string, error)
 }

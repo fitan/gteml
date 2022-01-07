@@ -6,8 +6,11 @@ import (
 	"github.com/fitan/magic/pkg/types"
 	types2 "github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
+	"go.uber.org/zap"
 	"io"
+	"io/ioutil"
 	"k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/uuid"
 	"strings"
 )
 
@@ -97,4 +100,60 @@ func DownloadPodLogs(core *types.Core, in *DownloadPodLogsIn) (string, error) {
 	core.GetGinX().GinCtx().Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", in.Uri.PodName+".log"))
 	core.GetGinX().GinCtx().Data(200, "Content-Type: text/xml", []byte(log))
 	return "", ginx.SkipWrapError
+}
+
+type DownloadPodFileIn struct {
+	Uri struct {
+		types2.K8sKey
+		PodName       string `json:"podName" uri:"podName"`
+		ContainerName string `json:"containerName" uri:"containerName"`
+	} `json:"uri"`
+	Query struct {
+		FilePath string `json:"filePath" form:"filePath"`
+	} `json:"query"`
+}
+
+// @Description 下载pod里的文件
+// @GenApi /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file [get]
+func DownloadPodFile(core *types.Core, in *DownloadPodFileIn) (res string, err error) {
+	log := core.GetCoreLog().ApmLog("handler.k8s.DownloadPodFile")
+	defer func() {
+		log.Debug(
+			"DownloadMsg",
+			zap.Any("methodIn", map[string]interface{}{"core": core, "in": in}),
+			zap.Any("methodOut", map[string]interface{}{"res": res, "err": err}),
+		)
+
+		if err != nil {
+			log.Error(err.Error(), zap.Any("methodIn", map[string]interface{}{"core": core, "in": in}))
+		}
+
+		log.Sync()
+	}()
+	src := in.Uri.Namespace + "/" + in.Uri.PodName + ":" + strings.TrimPrefix(in.Query.FilePath, "/")
+	log.Info("src", zap.String("src", src))
+
+	localFilePath := "/tmp/" + string(uuid.NewUUID())
+	downIn, downOut, downErr, err := core.GetServices().K8s().PodCopyFile(src, localFilePath, in.Uri.ContainerName)
+	if err != nil {
+		return "", err
+	}
+	log.Info("PodCopyFile", zap.String("in", downIn.String()), zap.String("out", downOut.String()), zap.String("err", downErr.String()))
+	read, err := ioutil.ReadFile(localFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	return string(read), nil
+}
+
+// @Description 下载pod里的文件 V2
+// @GenApi /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
+func DownloadPodFileV2(core *types.Core, in *DownloadPodFileIn) (res int64, err error) {
+	src := in.Uri.Namespace + "/" + in.Uri.PodName + ":" + strings.TrimPrefix(in.Query.FilePath, "/")
+	reader, err := core.GetServices().K8s().PodCopyFileV2(in.Uri.K8sKey, in.Uri.ContainerName, src)
+	if err != nil {
+		return 0, err
+	}
+	return io.Copy(core.GetGinX().GinCtx().Writer, reader)
 }

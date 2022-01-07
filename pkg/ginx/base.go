@@ -4,6 +4,8 @@ import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
+	"runtime"
 )
 
 type GinX struct {
@@ -70,6 +72,19 @@ func (g *GinX) SetError(err error) {
 
 func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 	defer func() {
+
+		err := recover()
+		if err != nil {
+			const size = 64 << 10
+			buf := make([]byte, size)
+			buf = buf[:runtime.Stack(buf, false)]
+			log := core.GetCoreLog().ApmLog("pkg.ginx.wrapMid.recover")
+			log.Error("panic", zap.Any("err", err), zap.String("stack", string(buf)))
+			log.Sync()
+
+			core.GinX.SetError(errors.New("系统错误，请联系管理员"))
+		}
+
 		if g.entryMiddleware != nil {
 			for _, fn := range *g.entryMiddleware {
 				fn.Forever(core)

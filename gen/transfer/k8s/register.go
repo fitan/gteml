@@ -17,4 +17,6 @@ func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
 	reg.Register(r, &DownloadPodLogsTransfer{}, ginx.WithHandlerName("DownloadPodLogs"))
 
+	reg.Register(r, &DownloadPodFileTransfer{}, ginx.WithHandlerName("DownloadPodFile"))
+
 }

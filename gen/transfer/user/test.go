@@ -6,6 +6,7 @@ import (
 	"github.com/fitan/magic/handler/user"
 	"github.com/fitan/magic/pkg/ginbind"
 	"github.com/fitan/magic/pkg/types"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type SwagCreateBody struct {
@@ -85,6 +86,11 @@ func (b *SayHelloBinder) BindVal(core *types.Core) (res interface{}, err error) 
 	}
 
 	err = ginbind.BindCtxKey(core.GinX.GinCtx(), &in.CtxKey)
+	if err != nil {
+		return nil, err
+	}
+
+	err = binding.Validator.ValidateStruct(&in.CtxKey)
 	if err != nil {
 		return nil, err
 	}

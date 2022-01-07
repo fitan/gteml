@@ -112,6 +112,7 @@ func (a *Audit) Audit() gin.HandlerFunc {
 		query := ctx.Request.URL.Query().Encode()
 		remoteIP := ctx.Request.RemoteAddr
 		response := blw.body.String()
+		log.Info(response)
 		statusCode := ctx.Writer.Status()
 		err = core.GetDao().Storage().Query().WrapQuery().Audit.Create(&model.Audit{
 			Url:        url,

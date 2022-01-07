@@ -239,3 +239,57 @@ func (b *DownloadPodLogsBinder) BindVal(core *types.Core) (res interface{}, err 
 func (b *DownloadPodLogsBinder) BindFn(core *types.Core) (interface{}, error) {
 	return k8s.DownloadPodLogs(core, b.val)
 }
+
+type SwagDownloadPodFileQuery struct {
+	FilePath string `json:"filePath" form:"filePath"`
+}
+
+type DownloadPodFileTransfer struct {
+}
+
+func (t *DownloadPodFileTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *DownloadPodFileTransfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/file"
+}
+
+func (t *DownloadPodFileTransfer) Binder() types.GinXBinder {
+	return new(DownloadPodFileBinder)
+}
+
+type DownloadPodFileBinder struct {
+	val *k8s.DownloadPodFileIn
+}
+
+func (b *DownloadPodFileBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.DownloadPodFileIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	err = core.GinX.GinCtx().ShouldBindQuery(&in.Query)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param query query SwagDownloadPodFileQuery false " "
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Param containerName path string true " "
+// @Param fileName path string true " "
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description 下载pod里的文件
+// @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file [get]
+func (b *DownloadPodFileBinder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.DownloadPodFile(core, b.val)
+}

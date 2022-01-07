@@ -21,6 +21,18 @@ type ResultWrapMid struct {
 }
 
 func (r *ResultWrapMid) Forever(core *types.Core) {
+	//err := recover()
+	//if err != nil {
+	//	const size = 64 << 10
+	//	buf := make([]byte, size)
+	//	buf = buf[:runtime.Stack(buf, false)]
+	//	log := core.GetCoreLog().ApmLog("pkg.ginx.wrapMid.recover")
+	//	log.Error("panic", zap.Any("err", err), zap.String("stack", string(buf)))
+	//	log.Sync()
+	//
+	//	core.GinX.SetError(errors.New("系统错误，请联系管理员"))
+	//}
+
 	if errors.Is(core.GinX.LastError(), SkipWrapError) {
 		return
 	}

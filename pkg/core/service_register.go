@@ -1,13 +1,16 @@
 package core
 
 import (
-	"flag"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/fitan/magic/services"
 	core_oam_dev "github.com/oam-dev/kubevela-core-api/apis/core.oam.dev"
 	kubevelaapistandard "github.com/oam-dev/kubevela-core-api/apis/standard.oam.dev/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/client-go/kubernetes"
+	scheme2 "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -23,6 +26,7 @@ func init() {
 type ServiceRegister struct {
 	k8sClient     *kubernetes.Clientset
 	runtimeClient client.Client
+	k8sConfig     *rest.Config
 	reload        bool
 }
 
@@ -32,20 +36,21 @@ func NewServiceRegister() *ServiceRegister {
 
 func (s *ServiceRegister) Get() *ServiceRegister {
 	if s.reload {
-
-		k8sconfig := flag.String("k8sconfig", "/root/.kube/config", "kubernetes config file path")
-		flag.Parse()
-		config, err := clientcmd.BuildConfigFromFlags("", *k8sconfig)
+		var err error
+		s.k8sConfig, err = clientcmd.BuildConfigFromFlags("", ConfReg.Confer.GetMyConf().K8sConf.ConfigPath)
 		if err != nil {
 			log.Panicln(err)
 		}
-		k8sClient, err := kubernetes.NewForConfig(config)
+		s.k8sConfig.APIPath = "/api"
+		s.k8sConfig.GroupVersion = &schema.GroupVersion{Version: "v1"}
+		s.k8sConfig.NegotiatedSerializer = serializer.WithoutConversionCodecFactory{CodecFactory: scheme2.Codecs}
+		k8sClient, err := kubernetes.NewForConfig(s.k8sConfig)
 		if err != nil {
 			log.Panicln(err)
 		}
 		s.k8sClient = k8sClient
 
-		runtimeClient, err := client.New(config, client.Options{Scheme: scheme})
+		runtimeClient, err := client.New(s.k8sConfig, client.Options{Scheme: scheme})
 		if err != nil {
 			log.Println(err)
 		}
@@ -78,7 +83,7 @@ func (s *ServiceRegister) Reload(c *types.Core) {
 }
 
 func (s *ServiceRegister) Set(c *types.Core) {
-	c.Services = services.NewServices(c, nil, s.Get().k8sClient, s.Get().runtimeClient)
+	c.Services = services.NewServices(c, nil, s.Get().k8sClient, s.Get().runtimeClient, s.Get().k8sConfig)
 }
 
 func (s *ServiceRegister) Unset(c *types.Core) {

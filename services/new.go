@@ -8,6 +8,7 @@ import (
 	"github.com/fitan/magic/services/rbac"
 	"github.com/fitan/magic/services/user"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -34,11 +35,11 @@ func (s *Services) K8s() types.K8s {
 	return s.k8s
 }
 
-func NewServices(core types.ServiceCore, enforcer *casbin.Enforcer, k8sClient *kubernetes.Clientset, runtimeClient client.Client) types.Serviceser {
+func NewServices(core types.ServiceCore, enforcer *casbin.Enforcer, k8sClient *kubernetes.Clientset, runtimeClient client.Client, cfg *rest.Config) types.Serviceser {
 	return &Services{
 		user.NewUser(core),
 		rbac.NewRBAC(enforcer, core),
 		audit.NewAudit(core),
-		k8s.NewK8s(k8sClient, runtimeClient, core),
+		k8s.NewK8s(k8sClient, runtimeClient, cfg, core),
 	}
 }

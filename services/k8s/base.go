@@ -2,6 +2,8 @@ package k8s
 
 import (
 	"bufio"
+	"bytes"
+	"fmt"
 	"github.com/fitan/magic/pkg/types"
 	servicesTypes "github.com/fitan/magic/services/types"
 	"github.com/gorilla/websocket"
@@ -18,10 +20,14 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/remotecommand"
+	"k8s.io/kubectl/pkg/cmd/cp"
+	cmdutil "k8s.io/kubectl/pkg/cmd/util"
+	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -33,8 +39,13 @@ type K8s struct {
 	core            types.ServiceCore
 }
 
-func NewK8s(k8sClient *kubernetes.Clientset, runtimeClient client.Client, core types.ServiceCore) *K8s {
-	return &K8s{k8sClient: k8sClient, runtimeClient: runtimeClient, core: core}
+func NewK8s(k8sClient *kubernetes.Clientset, runtimeClient client.Client, cfg *rest.Config, core types.ServiceCore) *K8s {
+	return &K8s{
+		k8sClient:     k8sClient,
+		runtimeClient: runtimeClient,
+		cfg:           cfg,
+		core:          core,
+	}
 }
 
 func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
@@ -528,6 +539,68 @@ func (k *K8s) WatchPodLogs(key servicesTypes.K8sKey, podName, containerName stri
 			}
 		}
 	}
+}
+
+func (k *K8s) PodCopyFile(src string, dest string, containername string) (in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer, err error) {
+	log := k.core.GetCoreLog().ApmLog("services.k8s.PodCopyFile")
+	defer func() {
+		log.Debug(
+			"PodCopyFileMsg",
+			zap.Any("methodIn", map[string]interface{}{"src": src, "dest": dest, "containername": containername}),
+			zap.Any("methodOut", map[string]interface{}{"in": in, "out": out, "errOut": errOut, "err": err}),
+		)
+
+		if err != nil {
+			log.Error(
+				err.Error(),
+				zap.Any("methodIn", map[string]interface{}{"src": src, "dest": dest, "containername": containername}),
+			)
+		}
+
+		log.Sync()
+	}()
+
+	ioStreams, in, out, errOut := genericclioptions.NewTestIOStreams()
+	copyOptions := cp.NewCopyOptions(ioStreams)
+	copyOptions.Clientset = k.k8sClient
+	copyOptions.ClientConfig = k.cfg
+	copyOptions.Container = containername
+	err = copyOptions.Run([]string{src, dest})
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("Could not run copy operation: %v", err)
+	}
+	return in, out, errOut, nil
+}
+
+func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src string) (
+	*io.PipeReader, error,
+) {
+	reader, outStream := io.Pipe()
+	cmdArr := []string{"tar", "cf", "-", src}
+	req := k.k8sClient.RESTClient().Get().Namespace(key.Namespace).Resource("pods").Name(key.Name).SubResource("exec").VersionedParams(
+		&v12.PodExecOptions{
+			Stdin:     true,
+			Stdout:    true,
+			Stderr:    true,
+			TTY:       false,
+			Container: containerName,
+			Command:   cmdArr,
+		}, v1.ParameterCodec)
+	exec, err := remotecommand.NewSPDYExecutor(k.cfg, "POST", req.URL())
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		defer outStream.Close()
+		err = exec.Stream(remotecommand.StreamOptions{
+			Stdin:  os.Stdin,
+			Stdout: outStream,
+			Stderr: os.Stderr,
+			Tty:    false,
+		})
+		cmdutil.CheckErr(err)
+	}()
+	return reader, nil
 }
 
 func (k *K8s) SSH(key servicesTypes.K8sKey, podName, containerName string, ws *websocket.Conn) error {
