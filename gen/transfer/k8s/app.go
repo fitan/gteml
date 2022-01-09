@@ -285,11 +285,65 @@ func (b *DownloadPodFileBinder) BindVal(core *types.Core) (res interface{}, err 
 // @Param query query SwagDownloadPodFileQuery false " "
 // @Param namespace path string true " "
 // @Param name path string true " "
+// @Param podName path string true " "
 // @Param containerName path string true " "
-// @Param fileName path string true " "
 // @Success 200 {object} ginx.GinXResult{data=string}
 // @Description 下载pod里的文件
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file [get]
 func (b *DownloadPodFileBinder) BindFn(core *types.Core) (interface{}, error) {
 	return k8s.DownloadPodFile(core, b.val)
+}
+
+type SwagDownloadPodFileV2Query struct {
+	FilePath string `json:"filePath" form:"filePath"`
+}
+
+type DownloadPodFileV2Transfer struct {
+}
+
+func (t *DownloadPodFileV2Transfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *DownloadPodFileV2Transfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2"
+}
+
+func (t *DownloadPodFileV2Transfer) Binder() types.GinXBinder {
+	return new(DownloadPodFileV2Binder)
+}
+
+type DownloadPodFileV2Binder struct {
+	val *k8s.DownloadPodFileIn
+}
+
+func (b *DownloadPodFileV2Binder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.DownloadPodFileIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	err = core.GinX.GinCtx().ShouldBindQuery(&in.Query)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param query query SwagDownloadPodFileV2Query false " "
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Param podName path string true " "
+// @Param containerName path string true " "
+// @Success 200 {object} ginx.GinXResult{data=int64}
+// @Description 下载pod里的文件 V2
+// @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
+func (b *DownloadPodFileV2Binder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.DownloadPodFileV2(core, b.val)
 }

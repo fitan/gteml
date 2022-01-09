@@ -30,6 +30,8 @@ type K8s interface {
 	GetPvc(key types.K8sKey) (res *v1.PersistentVolumeClaim, err error)
 	DeletePvc(key types.K8sKey) (err error)
 	WatchPodLogs(key types.K8sKey, podName, containerName string, c chan string) error
+	Exec(key types.K8sKey, podName, containerName string, cmd []string, runError *string) *io.PipeReader
+
 	PodCopyFile(src string, dest string, containername string) (in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer, err error)
 	PodCopyFileV2(key types.K8sKey, containerName string, src string) (
 		*io.PipeReader, error,

@@ -26,7 +26,8 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/kubectl/pkg/cmd/cp"
-	cmdutil "k8s.io/kubectl/pkg/cmd/util"
+	"k8s.io/kubectl/pkg/cmd/exec"
+	"k8s.io/kubectl/pkg/cmd/portforward"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -573,8 +574,25 @@ func (k *K8s) PodCopyFile(src string, dest string, containername string) (in *by
 }
 
 func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src string) (
-	*io.PipeReader, error,
+	res *io.PipeReader, err error,
 ) {
+	log := k.core.GetCoreLog().ApmLog("services.k8s.PodCopyFileV2")
+	defer func() {
+		log.Debug(
+			"PodCopyFileV2",
+			zap.Any("methodIn", map[string]interface{}{"key": servicesTypes.K8sKey{}, "containername": containerName, "src": src}),
+			zap.Any("methodOut", map[string]interface{}{"err": err}),
+		)
+
+		if err != nil {
+			log.Error(
+				err.Error(),
+				zap.Any("methodIn", map[string]interface{}{"key": servicesTypes.K8sKey{}, "containername": containerName, "src": src}),
+			)
+		}
+
+		log.Sync()
+	}()
 	reader, outStream := io.Pipe()
 	cmdArr := []string{"tar", "cf", "-", src}
 	req := k.k8sClient.RESTClient().Get().Namespace(key.Namespace).Resource("pods").Name(key.Name).SubResource("exec").VersionedParams(
@@ -582,12 +600,13 @@ func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src 
 			Stdin:     true,
 			Stdout:    true,
 			Stderr:    true,
-			TTY:       false,
+			TTY:       true,
 			Container: containerName,
 			Command:   cmdArr,
 		}, v1.ParameterCodec)
 	exec, err := remotecommand.NewSPDYExecutor(k.cfg, "POST", req.URL())
 	if err != nil {
+		log.Error("NewSPDYExecutor", zap.Error(err))
 		return nil, err
 	}
 	go func() {
@@ -598,9 +617,53 @@ func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src 
 			Stderr: os.Stderr,
 			Tty:    false,
 		})
-		cmdutil.CheckErr(err)
+		if err != nil {
+			log.Error("exec.Stream error", zap.Error(err))
+		}
 	}()
 	return reader, nil
+}
+
+func (k *K8s) Exec(
+	key servicesTypes.K8sKey,
+	podName, containerName string,
+	cmd []string,
+	runError *string,
+) *io.PipeReader {
+
+	reader, writer := io.Pipe()
+
+	in := &bytes.Buffer{}
+	errOut := &bytes.Buffer{}
+
+	options := &exec.ExecOptions{
+		StreamOptions: exec.StreamOptions{
+			IOStreams: genericclioptions.IOStreams{
+				In:     in,
+				Out:    writer,
+				ErrOut: errOut,
+			},
+
+			ContainerName: containerName,
+			Namespace:     key.Namespace,
+			PodName:       podName,
+		},
+
+		// TODO: Improve error messages by first testing if 'tar' is present in the container?
+		Command:  cmd,
+		Executor: &exec.DefaultRemoteExecutor{},
+	}
+
+	options.Config = k.cfg
+	options.PodClient = k.k8sClient.CoreV1()
+	go func() {
+		err := options.Run()
+		if err != nil {
+			*runError = err.Error()
+		}
+		writer.Close()
+	}()
+	return reader
 }
 
 func (k *K8s) SSH(key servicesTypes.K8sKey, podName, containerName string, ws *websocket.Conn) error {

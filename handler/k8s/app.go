@@ -6,6 +6,7 @@ import (
 	"github.com/fitan/magic/pkg/types"
 	types2 "github.com/fitan/magic/services/types"
 	"github.com/oam-dev/kubevela-core-api/apis/core.oam.dev/v1beta1"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
@@ -150,10 +151,25 @@ func DownloadPodFile(core *types.Core, in *DownloadPodFileIn) (res string, err e
 // @Description 下载pod里的文件 V2
 // @GenApi /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
 func DownloadPodFileV2(core *types.Core, in *DownloadPodFileIn) (res int64, err error) {
-	src := in.Uri.Namespace + "/" + in.Uri.PodName + ":" + strings.TrimPrefix(in.Query.FilePath, "/")
-	reader, err := core.GetServices().K8s().PodCopyFileV2(in.Uri.K8sKey, in.Uri.ContainerName, src)
+	log := core.GetCoreLog().ApmLog("handler.k8s.DownloadPodFileV2")
+	defer log.Sync()
+	//src := in.Uri.Namespace + "/" + in.Uri.PodName + ":" + strings.TrimPrefix(in.Query.FilePath, "/")
+	cmd := []string{"tar", "cf", "-", "-C", in.Query.FilePath, "."}
+	//cmd := []string{"ls"}
+	var runError string
+	reader := core.GetServices().K8s().Exec(in.Uri.K8sKey, in.Uri.PodName, in.Uri.ContainerName, cmd, &runError)
+	//reader, err := core.GetServices().K8s().PodCopyFileV2(in.Uri.K8sKey, in.Uri.ContainerName, src)
+	c := core.GetGinX().GinCtx()
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+"download.tar")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Cache-Control", "no-cache")
+	count, err := io.Copy(core.GetGinX().GinCtx().Writer, reader)
 	if err != nil {
 		return 0, err
 	}
-	return io.Copy(core.GetGinX().GinCtx().Writer, reader)
+	if runError != "" {
+		return 0, errors.New(runError)
+	}
+	return count, ginx.SkipWrapError
 }

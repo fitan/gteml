@@ -18,7 +18,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/lib/pq v1.10.3 // indirect
-	github.com/oam-dev/kubevela-core-api v1.1.13
+	github.com/oam-dev/kubevela-core-api v1.1.3
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pyroscope-io/pyroscope v0.2.2
@@ -43,15 +43,17 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.0
 	go.opentelemetry.io/otel/trace v1.3.0
 	go.uber.org/zap v1.19.1
+	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.2.1
 	gorm.io/gen v0.2.23
 	gorm.io/gorm v1.22.4
-	k8s.io/api v0.23.1
-	k8s.io/apimachinery v0.23.1
-	k8s.io/cli-runtime v0.23.1 // indirect
-	k8s.io/client-go v0.23.1
-	k8s.io/kubectl v0.23.1
+	k8s.io/api v0.23.0
+	k8s.io/apimachinery v0.23.0
+	k8s.io/cli-runtime v0.23.0
+	k8s.io/client-go v0.23.0
+	k8s.io/kubectl v0.23.0
 	sigs.k8s.io/controller-runtime v0.11.0
 )
