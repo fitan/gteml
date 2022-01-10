@@ -33,6 +33,7 @@ type K8s interface {
 	Exec(key types.K8sKey, podName, containerName string, cmd []string, runError *string) *io.PipeReader
 
 	PodCopyFile(src string, dest string, containername string) (in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer, err error)
+	PortForward(key types.K8sKey, podName string, ports []string, down <-chan struct{}) error
 	PodCopyFileV2(key types.K8sKey, containerName string, src string) (
 		*io.PipeReader, error,
 	)

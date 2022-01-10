@@ -1,11 +1,11 @@
 package k8s
 
 import (
-	types2 "github.com/fitan/magic/services/types"
 	"net/http"
 
 	"github.com/fitan/magic/handler/k8s"
 	"github.com/fitan/magic/pkg/types"
+	types2 "github.com/fitan/magic/services/types"
 )
 
 type GetAppTransfer struct {
@@ -346,4 +346,57 @@ func (b *DownloadPodFileV2Binder) BindVal(core *types.Core) (res interface{}, er
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
 func (b *DownloadPodFileV2Binder) BindFn(core *types.Core) (interface{}, error) {
 	return k8s.DownloadPodFileV2(core, b.val)
+}
+
+type SwagPortforwardQuery struct {
+	Ports []string `json:"ports" form:"ports"`
+}
+
+type PortforwardTransfer struct {
+}
+
+func (t *PortforwardTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *PortforwardTransfer) Url() string {
+	return "/k8s/:namespace/app/:name/pod/:podName/portforward"
+}
+
+func (t *PortforwardTransfer) Binder() types.GinXBinder {
+	return new(PortforwardBinder)
+}
+
+type PortforwardBinder struct {
+	val *k8s.PortforwardIn
+}
+
+func (b *PortforwardBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &k8s.PortforwardIn{}
+	b.val = in
+
+	err = core.GinX.GinCtx().ShouldBindUri(&in.Uri)
+	if err != nil {
+		return nil, err
+	}
+
+	err = core.GinX.GinCtx().ShouldBindQuery(&in.Query)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Param query query SwagPortforwardQuery false " "
+// @Param namespace path string true " "
+// @Param name path string true " "
+// @Param podName path string true " "
+// @Success 200 {object} ginx.GinXResult{data=string}
+// @Description
+// @Router /k8s/:namespace/app/:name/pod/:podName/portforward [get]
+func (b *PortforwardBinder) BindFn(core *types.Core) (interface{}, error) {
+	return k8s.Portforward(core, b.val)
 }

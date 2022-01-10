@@ -24,10 +24,12 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/portforward"
 	"k8s.io/client-go/tools/remotecommand"
+	"k8s.io/client-go/transport/spdy"
 	"k8s.io/kubectl/pkg/cmd/cp"
 	"k8s.io/kubectl/pkg/cmd/exec"
-	"k8s.io/kubectl/pkg/cmd/portforward"
+	"net/http"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -622,6 +624,30 @@ func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src 
 		}
 	}()
 	return reader, nil
+}
+
+func (k *K8s) PortForward(key servicesTypes.K8sKey, podName string, ports []string, down <-chan struct{}) error {
+	req := k.k8sClient.CoreV1().RESTClient().Post().Namespace(key.Namespace).Resource("pods").Name(podName).SubResource("portforward")
+	//signals := make(chan os.Signal, 1)
+	//StopChannel := make(chan struct{}, 1)
+	ReadyChannel := make(chan struct{})
+
+	//defer signal.Stop(signals)
+
+	transport, upgrader, err := spdy.RoundTripperFor(k.cfg)
+	if err != nil {
+		return err
+	}
+
+	stream := genericclioptions.NewTestIOStreamsDiscard()
+
+	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, "POST", req.URL())
+	fw, err := portforward.NewOnAddresses(dialer, []string{"0.0.0.0"}, ports, down, ReadyChannel, stream.Out, stream.ErrOut)
+	if err != nil {
+		return err
+	}
+
+	return fw.ForwardPorts()
 }
 
 func (k *K8s) Exec(

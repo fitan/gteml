@@ -21,4 +21,6 @@ func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
 	reg.Register(r, &DownloadPodFileV2Transfer{}, ginx.WithHandlerName("DownloadPodFileV2"))
 
+	reg.Register(r, &PortforwardTransfer{}, ginx.WithHandlerName("Portforward"))
+
 }

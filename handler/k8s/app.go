@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"context"
 	"fmt"
 	"github.com/fitan/magic/pkg/ginx"
 	"github.com/fitan/magic/pkg/types"
@@ -13,6 +14,7 @@ import (
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/uuid"
 	"strings"
+	"time"
 )
 
 type SpaceName struct {
@@ -172,4 +174,25 @@ func DownloadPodFileV2(core *types.Core, in *DownloadPodFileIn) (res int64, err 
 		return 0, errors.New(runError)
 	}
 	return count, ginx.SkipWrapError
+}
+
+type PortforwardIn struct {
+	Uri struct {
+		types2.K8sKey
+		PodName string `json:"podName" uri:"podName"`
+	} `json:"uri"`
+	Query struct {
+		Ports []string `json:"ports" form:"ports"`
+	} `json:"query"`
+}
+
+// @Description
+// @GenApi /k8s/:namespace/app/:name/pod/:podName/portforward [get]
+func Portforward(core *types.Core, in *PortforwardIn) (res string, err error) {
+	ctx, _ := context.WithTimeout(core.GetTrace().Ctx(), 300*time.Second)
+	err = core.GetServices().K8s().PortForward(in.Uri.K8sKey, in.Uri.PodName, in.Query.Ports, ctx.Done())
+	if err != nil {
+		return "", err
+	}
+	return "portforward time is up", nil
 }
