@@ -98,7 +98,7 @@ func (a *Audit) Audit() gin.HandlerFunc {
 
 		ctx.Next()
 
-		log := core.GetCoreLog().ApmLog("pkg.ginmid.audit")
+		log := core.GetCoreLog().TraceLog("pkg.ginmid.audit")
 		defer func() {
 			if err != nil {
 				log.Error(err.Error())

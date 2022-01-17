@@ -14,7 +14,7 @@ func NewAudit(core types.ServiceCore) *Audit {
 }
 
 func (a *Audit) InsetAudit(audit *model.Audit) error {
-	log := a.core.GetCoreLog().ApmLog("services.audit.insetAudit")
+	log := a.core.GetCoreLog().TraceLog("services.audit.insetAudit")
 	defer func() {
 		log.Sync()
 	}()

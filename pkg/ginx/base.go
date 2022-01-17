@@ -78,7 +78,7 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			log := core.GetCoreLog().ApmLog("pkg.ginx.wrapMid.recover")
+			log := core.GetCoreLog().TraceLog("pkg.ginx.wrapMid.recover")
 			log.Error("panic", zap.Any("err", err), zap.String("stack", string(buf)))
 			log.Sync()
 

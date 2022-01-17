@@ -52,7 +52,7 @@ func NewK8s(k8sClient *kubernetes.Clientset, runtimeClient client.Client, cfg *r
 }
 
 func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateWorker")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.CreateWorker")
 	defer func() {
 		log.Debug(
 			"CreateWorkerMsg",
@@ -72,7 +72,7 @@ func (k *K8s) CreateWorker(worker *servicesTypes.Worker) (err error) {
 }
 
 func (k *K8s) UpdateWorker(worker *servicesTypes.Worker) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.UpdateWorker")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.UpdateWorker")
 	defer func() {
 		log.Debug(
 			"UpdateWorkerMsg",
@@ -98,7 +98,7 @@ func (k *K8s) UpdateWorker(worker *servicesTypes.Worker) (err error) {
 }
 
 func (k *K8s) ApplyWorker(worker *servicesTypes.Worker) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateWorker")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.CreateWorker")
 	defer func() {
 		log.Debug(
 			"CreateAppMsg",
@@ -131,7 +131,7 @@ func (k *K8s) ApplyWorker(worker *servicesTypes.Worker) (err error) {
 }
 
 func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateApp")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.CreateApp")
 	defer func() {
 		log.Debug(
 			"CreateAppMsg",
@@ -150,7 +150,7 @@ func (k *K8s) CreateApp(request servicesTypes.CreateAppRequest) (err error) {
 }
 
 func (k *K8s) UpdateApp(app *appv1beta1.Application) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.UpdateApp")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.UpdateApp")
 	defer func() {
 		log.Debug(
 			"UpdateAppMsg",
@@ -168,7 +168,7 @@ func (k *K8s) UpdateApp(app *appv1beta1.Application) (err error) {
 }
 
 func (k *K8s) GetApps(keys []servicesTypes.K8sKey) (res *appv1beta1.ApplicationList, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetApps")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetApps")
 	defer func() {
 		log.Debug(
 			"GetAppsMsg",
@@ -199,7 +199,7 @@ func (k *K8s) GetApps(keys []servicesTypes.K8sKey) (res *appv1beta1.ApplicationL
 }
 
 func (k *K8s) GetApp(key servicesTypes.K8sKey) (res *appv1beta1.Application, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetApp")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetApp")
 	defer func() {
 		log.Debug(
 			"GetAppMsg",
@@ -224,7 +224,7 @@ func (k *K8s) GetApp(key servicesTypes.K8sKey) (res *appv1beta1.Application, err
 }
 
 func (k *K8s) DeleteApp(key servicesTypes.K8sKey) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.DeleteApp")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.DeleteApp")
 	defer func() {
 		log.Debug(
 			"DeleteAppMsg",
@@ -246,7 +246,7 @@ func (k *K8s) DeleteApp(key servicesTypes.K8sKey) (err error) {
 }
 
 func (k *K8s) GetPodsByDeploymentKey(key servicesTypes.K8sKey) (pods *v12.PodList, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetPodsByDeploymentKey")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetPodsByDeploymentKey")
 	defer func() {
 		log.Debug(
 			"GetPodsByDeploymentKeyMsg",
@@ -276,7 +276,7 @@ func (k *K8s) GetPodsByDeploymentKey(key servicesTypes.K8sKey) (pods *v12.PodLis
 }
 
 func (k *K8s) GetPodByKey(key servicesTypes.K8sKey) (res *v12.Pod, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetPodByKey")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetPodByKey")
 	defer func() {
 		log.Debug(
 			"GetPodByKeyMsg",
@@ -294,7 +294,7 @@ func (k *K8s) GetPodByKey(key servicesTypes.K8sKey) (res *v12.Pod, err error) {
 }
 
 func (k *K8s) DeletePodByKey(key servicesTypes.K8sKey) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.DeletePodByKey")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.DeletePodByKey")
 	defer func() {
 		log.Debug(
 			"DeletePodByKeyMsg",
@@ -312,7 +312,7 @@ func (k *K8s) DeletePodByKey(key servicesTypes.K8sKey) (err error) {
 }
 
 func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.CreateConfMap")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.CreateConfMap")
 	defer func() {
 		log.Debug(
 			"CreateConfMapMsg",
@@ -352,7 +352,7 @@ func (k *K8s) CreateConfMap(key servicesTypes.K8sKey, data map[string]string) (e
 }
 
 func (k *K8s) GetConfigMapByKey(key servicesTypes.K8sKey) (res *v12.ConfigMap, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetConfigMapByKey")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetConfigMapByKey")
 	defer func() {
 		log.Debug(
 			"GetConfigMapByKeyMsg",
@@ -371,7 +371,7 @@ func (k *K8s) GetConfigMapByKey(key servicesTypes.K8sKey) (res *v12.ConfigMap, e
 }
 
 func (k *K8s) GetConfigMapsByDeploymentKey(key servicesTypes.K8sKey) (res *v12.ConfigMapList, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetConfigMapsByDeploymentKey")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetConfigMapsByDeploymentKey")
 	defer func() {
 		log.Debug(
 			"GetConfigMapsByDeploymentKeyMsg",
@@ -396,7 +396,7 @@ func (k *K8s) GetConfigMapsByDeploymentKey(key servicesTypes.K8sKey) (res *v12.C
 }
 
 func (k *K8s) GetDeployment(key servicesTypes.K8sKey) (res *v13.Deployment, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetDeployment")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetDeployment")
 	defer func() {
 		log.Debug(
 			"GetDeploymentMsg",
@@ -416,7 +416,7 @@ func (k *K8s) GetDeployment(key servicesTypes.K8sKey) (res *v13.Deployment, err 
 func (k *K8s) CreatePvc(
 	key servicesTypes.K8sKey, volumeName, storageClassName, limits, requests string,
 ) (res *v12.PersistentVolumeClaim, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.CreatePvc")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.CreatePvc")
 	defer func() {
 		log.Debug(
 			"CreatePvcMsg",
@@ -459,7 +459,7 @@ func (k *K8s) UpdatePvc(pvc *v12.PersistentVolumeClaim) (claim *v12.PersistentVo
 }
 
 func (k *K8s) GetPvc(key servicesTypes.K8sKey) (res *v12.PersistentVolumeClaim, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.GetPvc")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.GetPvc")
 	defer func() {
 		log.Debug(
 			"GetPvcMsg",
@@ -477,7 +477,7 @@ func (k *K8s) GetPvc(key servicesTypes.K8sKey) (res *v12.PersistentVolumeClaim, 
 }
 
 func (k *K8s) DeletePvc(key servicesTypes.K8sKey) (err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.DeletePvc")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.DeletePvc")
 	defer func() {
 		log.Debug(
 			"DeletePvcMsg",
@@ -545,7 +545,7 @@ func (k *K8s) WatchPodLogs(key servicesTypes.K8sKey, podName, containerName stri
 }
 
 func (k *K8s) PodCopyFile(src string, dest string, containername string) (in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer, err error) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.PodCopyFile")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.PodCopyFile")
 	defer func() {
 		log.Debug(
 			"PodCopyFileMsg",
@@ -578,7 +578,7 @@ func (k *K8s) PodCopyFile(src string, dest string, containername string) (in *by
 func (k *K8s) PodCopyFileV2(key servicesTypes.K8sKey, containerName string, src string) (
 	res *io.PipeReader, err error,
 ) {
-	log := k.core.GetCoreLog().ApmLog("services.k8s.PodCopyFileV2")
+	log := k.core.GetCoreLog().TraceLog("services.k8s.PodCopyFileV2")
 	defer func() {
 		log.Debug(
 			"PodCopyFileV2",

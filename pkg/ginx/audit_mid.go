@@ -22,7 +22,7 @@ func (a *Audit) BindFnAfter(core *types.Core) bool {
 }
 
 func (a *Audit) Forever(core *types.Core) {
-	log := core.GetCoreLog().ApmLog("pkg.ginx.audit")
+	log := core.GetCoreLog().TraceLog("pkg.ginx.audit")
 	var err error
 	defer func() {
 		if err != nil {

@@ -18,15 +18,15 @@ func (c *CoreLog) IsOpenTrace() bool {
 	return c.xlog.IsOpenTrace()
 }
 
-func (c *CoreLog) ApmLog(spanName string) types.Logger {
+func (c *CoreLog) TraceLog(spanName string) types.Logger {
 	return c.xlog.TraceLog(c.core.Tracer.SpanCtx(spanName))
 	//ctx, _ := c.core.Tracer.ApmSpanCtx(spanName, "method")
 	//return c.xlog.ApmLog(ctx)
 }
 
-func (c *CoreLog) TraceLog(spanName string) types.Logger {
-	return c.xlog.TraceLog(c.core.Tracer.SpanCtx(spanName))
-}
+//func (c *CoreLog) TraceLog(spanName string) types.Logger {
+//	return c.xlog.TraceLog(c.core.Tracer.SpanCtx(spanName))
+//}
 
 func (c *CoreLog) Log() types.Logger {
 	return c.xlog

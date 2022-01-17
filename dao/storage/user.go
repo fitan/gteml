@@ -51,7 +51,7 @@ func (u *User) CheckUserPermission(userID uint, serviceID uint, path, method str
 }
 
 func (u *User) CheckPassword(userName string, password string) (res *model.User, err error) {
-	log := u.core.GetCoreLog().ApmLog("校验用户密码")
+	log := u.core.GetCoreLog().TraceLog("校验用户密码")
 	defer func() {
 		if err != nil {
 			log.Error(err.Error())
@@ -154,7 +154,7 @@ func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
 }
 
 func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
-	log := u.core.GetCoreLog().ApmLog("用户绑定服务和角色")
+	log := u.core.GetCoreLog().TraceLog("用户绑定服务和角色")
 	defer func() {
 		if err != nil {
 			log.Error(

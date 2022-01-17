@@ -119,7 +119,7 @@ type DownloadPodFileIn struct {
 // @Description 下载pod里的文件
 // @GenApi /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file [get]
 func DownloadPodFile(core *types.Core, in *DownloadPodFileIn) (res string, err error) {
-	log := core.GetCoreLog().ApmLog("handler.k8s.DownloadPodFile")
+	log := core.GetCoreLog().TraceLog("handler.k8s.DownloadPodFile")
 	defer func() {
 		log.Debug(
 			"DownloadMsg",
@@ -153,7 +153,7 @@ func DownloadPodFile(core *types.Core, in *DownloadPodFileIn) (res string, err e
 // @Description 下载pod里的文件 V2
 // @GenApi /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
 func DownloadPodFileV2(core *types.Core, in *DownloadPodFileIn) (res int64, err error) {
-	log := core.GetCoreLog().ApmLog("handler.k8s.DownloadPodFileV2")
+	log := core.GetCoreLog().TraceLog("handler.k8s.DownloadPodFileV2")
 	defer log.Sync()
 	//src := in.Uri.Namespace + "/" + in.Uri.PodName + ":" + strings.TrimPrefix(in.Query.FilePath, "/")
 	cmd := []string{"tar", "cf", "-", "-C", in.Query.FilePath, "."}

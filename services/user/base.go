@@ -29,12 +29,12 @@ func (u *User) Read() string {
 	//log := u.Core.GetCoreLog().ApmLog("user.read")
 	req, _ := u.Core.GetDao().Storage().User().ById(1)
 
-	log := u.Core.GetCoreLog().ApmLog("read")
+	log := u.Core.GetCoreLog().TraceLog("read")
 	log.Error("this is read", zap.String("read", "read"), zap.Any("carry", map[string]interface{}{"method1": "1", "method2": "2"}))
 	log.Error("这个是一起的")
 	log.Sync()
 
-	log = u.Core.GetCoreLog().ApmLog("read1")
+	log = u.Core.GetCoreLog().TraceLog("read1")
 	log.Error("this is read1", zap.String("read1", "read1"), zap.Any("carry", map[string]interface{}{"method1": "1", "method2": "2"}))
 	log.Sync()
 

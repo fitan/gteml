@@ -24,7 +24,7 @@ func (r *RBAC) GetRole() [][]string {
 }
 
 func (r *RBAC) CreateRole(role string, obj string, method string) (err error) {
-	log := r.core.GetCoreLog().ApmLog("services.rbac.createRole")
+	log := r.core.GetCoreLog().TraceLog("services.rbac.createRole")
 	defer func() {
 		if err != nil {
 			log.Error(
@@ -40,7 +40,7 @@ func (r *RBAC) CreateRole(role string, obj string, method string) (err error) {
 }
 
 func (r *RBAC) UpdateRole(oldRole, oldObj, oldMethod, newRole, newObj, newMethod string) (err error) {
-	log := r.core.GetCoreLog().ApmLog("services.rbac.updateRole")
+	log := r.core.GetCoreLog().TraceLog("services.rbac.updateRole")
 	defer func() {
 		if err != nil {
 			log.Error(
@@ -60,7 +60,7 @@ func (r *RBAC) UpdateRole(oldRole, oldObj, oldMethod, newRole, newObj, newMethod
 }
 
 func (r *RBAC) DeleteRole(role string, obj string, method string) (err error) {
-	log := r.core.GetCoreLog().ApmLog("services.rbac.deleteRole")
+	log := r.core.GetCoreLog().TraceLog("services.rbac.deleteRole")
 	defer func() {
 		if err != nil {
 			log.Error(
@@ -84,7 +84,7 @@ func (r *RBAC) GetAuthorizationByUser(user string) [][]string {
 }
 
 func (r *RBAC) AddAuthorization(user, role, domain string) (err error) {
-	log := r.core.GetCoreLog().ApmLog("services.rbac.addAuthorization")
+	log := r.core.GetCoreLog().TraceLog("services.rbac.addAuthorization")
 	defer func() {
 		if err != nil {
 			log.Error(
@@ -99,7 +99,7 @@ func (r *RBAC) AddAuthorization(user, role, domain string) (err error) {
 }
 
 func (r *RBAC) DeleteAuthorization(user, role, domain string) (err error) {
-	log := r.core.GetCoreLog().ApmLog("services.rbac.deleteAuthorization")
+	log := r.core.GetCoreLog().TraceLog("services.rbac.deleteAuthorization")
 	defer func() {
 		if err != nil {
 			log.Error(

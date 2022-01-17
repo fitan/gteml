@@ -7,9 +7,9 @@ import (
 
 type CoreLoger interface {
 	IsOpenTrace() bool
-	TraceLog(spanName string) Logger
+	//TraceLog(spanName string) Logger
 	Log() Logger
-	ApmLog(spanName string) Logger
+	TraceLog(spanName string) Logger
 	//ApmLog(spanName string) Logger
 }
 
