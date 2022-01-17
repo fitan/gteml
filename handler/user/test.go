@@ -12,7 +12,7 @@ type CreateIn struct {
 }
 
 // @GenApi /user [post]
-func Create(c *types.Core, in *CreateIn) (interface{}, error) {
+func Create(c *types.Core, in *CreateIn) (string, error) {
 	//c.Log.Info("这是 create的开始")
 	//c.Log.Sync()
 	//
@@ -37,7 +37,7 @@ func Create(c *types.Core, in *CreateIn) (interface{}, error) {
 	//}
 	//return byId, nil
 	//return data.String(), nil
-	return nil, nil
+	return "", nil
 }
 
 type SayHelloIn struct {
@@ -58,7 +58,6 @@ func (s *SayHelloIn) ServiceID() (serviceID uint) {
 	return s.CtxKey.JwtUserID
 }
 
-// @GenApi /say [get]
 func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 
 	if in.Query.Say != "" {

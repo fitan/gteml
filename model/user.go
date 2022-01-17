@@ -34,6 +34,20 @@ type ApiUser struct {
 	Enable bool
 }
 
+type QueryUser struct {
+	Name string `json:"name" gen:"="`
+	Or   struct {
+		Email string `json:"email" gen:"="`
+	}
+	Paging struct {
+		Limit int `json:"limit"`
+		Page  int `json:"page"`
+	}
+	Roles struct {
+		Id int32 `json:"id" gen:"="`
+	} `json:"roles" gen:"relation"`
+}
+
 type UserMethod interface {
 	// where("id=@id")
 	GetByID(id uint) (gen.T, error)
