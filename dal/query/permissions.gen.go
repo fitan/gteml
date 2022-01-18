@@ -86,7 +86,11 @@ func (p permission) As(alias string) *permission {
 
 func (p *permission) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := p.fieldMap[fieldName]
-	return _f.(field.OrderExpr), ok
+	if !ok || _f == nil {
+		return nil, false
+	}
+	_oe, ok := _f.(field.OrderExpr)
+	return _oe, ok
 }
 
 func (p *permission) fillFieldMap() {
@@ -285,6 +289,10 @@ func (p permissionDo) FirstOrCreate() (*model.Permission, error) {
 func (p permissionDo) FindByPage(offset int, limit int) (result []*model.Permission, count int64, err error) {
 	count, err = p.Count()
 	if err != nil {
+		return
+	}
+
+	if limit <= 0 {
 		return
 	}
 

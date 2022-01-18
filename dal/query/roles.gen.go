@@ -83,7 +83,11 @@ func (r role) As(alias string) *role {
 
 func (r *role) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := r.fieldMap[fieldName]
-	return _f.(field.OrderExpr), ok
+	if !ok || _f == nil {
+		return nil, false
+	}
+	_oe, ok := _f.(field.OrderExpr)
+	return _oe, ok
 }
 
 func (r *role) fillFieldMap() {
@@ -346,6 +350,10 @@ func (r roleDo) FirstOrCreate() (*model.Role, error) {
 func (r roleDo) FindByPage(offset int, limit int) (result []*model.Role, count int64, err error) {
 	count, err = r.Count()
 	if err != nil {
+		return
+	}
+
+	if limit <= 0 {
 		return
 	}
 

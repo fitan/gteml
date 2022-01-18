@@ -92,7 +92,11 @@ func (a audit) As(alias string) *audit {
 
 func (a *audit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := a.fieldMap[fieldName]
-	return _f.(field.OrderExpr), ok
+	if !ok || _f == nil {
+		return nil, false
+	}
+	_oe, ok := _f.(field.OrderExpr)
+	return _oe, ok
 }
 
 func (a *audit) fillFieldMap() {
@@ -293,6 +297,10 @@ func (a auditDo) FirstOrCreate() (*model.Audit, error) {
 func (a auditDo) FindByPage(offset int, limit int) (result []*model.Audit, count int64, err error) {
 	count, err = a.Count()
 	if err != nil {
+		return
+	}
+
+	if limit <= 0 {
 		return
 	}
 

@@ -85,7 +85,11 @@ func (s service) As(alias string) *service {
 
 func (s *service) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := s.fieldMap[fieldName]
-	return _f.(field.OrderExpr), ok
+	if !ok || _f == nil {
+		return nil, false
+	}
+	_oe, ok := _f.(field.OrderExpr)
+	return _oe, ok
 }
 
 func (s *service) fillFieldMap() {
@@ -351,6 +355,10 @@ func (s serviceDo) FirstOrCreate() (*model.Service, error) {
 func (s serviceDo) FindByPage(offset int, limit int) (result []*model.Service, count int64, err error) {
 	count, err = s.Count()
 	if err != nil {
+		return
+	}
+
+	if limit <= 0 {
 		return
 	}
 

@@ -103,7 +103,11 @@ func (u user) As(alias string) *user {
 
 func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := u.fieldMap[fieldName]
-	return _f.(field.OrderExpr), ok
+	if !ok || _f == nil {
+		return nil, false
+	}
+	_oe, ok := _f.(field.OrderExpr)
+	return _oe, ok
 }
 
 func (u *user) fillFieldMap() {
@@ -267,52 +271,64 @@ func (a userServicesTx) Count() int64 {
 
 type userDo struct{ gen.DO }
 
-//Where("id=@id")
+//where("id=@id")
 func (u userDo) GetByID(id uint) (result *model.User, err error) {
-	params := map[string]interface{}{
-		"id": id,
-	}
+	params := make(map[string]interface{}, 0)
 
 	var generateSQL strings.Builder
-	generateSQL.WriteString("id=@id")
+	params["id"] = id
+	generateSQL.WriteString("id=@id ")
 
-	executeSQL := u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	var executeSQL *gorm.DB
+	if len(params) > 0 {
+		executeSQL = u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	} else {
+		executeSQL = u.UnderlyingDB().Where(generateSQL.String()).Take(&result)
+	}
 	err = executeSQL.Error
 	return
 }
 
-//Where("email=@email and pass_word=@password")
+//where("email=@email and pass_word=@password")
 func (u userDo) CheckAccount(email string, password string) (result *model.User, err error) {
-	params := map[string]interface{}{
-		"email":    email,
-		"password": password,
-	}
+	params := make(map[string]interface{}, 0)
 
 	var generateSQL strings.Builder
-	generateSQL.WriteString("email=@email and pass_word=@password")
+	params["email"] = email
+	params["password"] = password
+	generateSQL.WriteString("email=@email and pass_word=@password ")
 
-	executeSQL := u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	var executeSQL *gorm.DB
+	if len(params) > 0 {
+		executeSQL = u.UnderlyingDB().Where(generateSQL.String(), params).Take(&result)
+	} else {
+		executeSQL = u.UnderlyingDB().Where(generateSQL.String()).Take(&result)
+	}
 	err = executeSQL.Error
 	return
 }
 
 //update @@table {{set}} pass_word=@password {{end}} {{where}} id=@id {{end}}
 func (u userDo) ModifyPassword(id int, password string) (err error) {
-	params := map[string]interface{}{
-		"password": password,
-		"id":       id,
-	}
+	params := make(map[string]interface{}, 0)
 
 	var generateSQL strings.Builder
-	generateSQL.WriteString("update users")
+	generateSQL.WriteString("update users ")
 	var setSQL0 strings.Builder
-	setSQL0.WriteString(" pass_word=@password")
+	params["password"] = password
+	setSQL0.WriteString("pass_word=@password ")
 	helper.JoinSetBuilder(&generateSQL, setSQL0)
 	var whereSQL0 strings.Builder
-	whereSQL0.WriteString(" id=@id")
+	params["id"] = id
+	whereSQL0.WriteString("id=@id ")
 	helper.JoinWhereBuilder(&generateSQL, whereSQL0)
 
-	executeSQL := u.UnderlyingDB().Exec(generateSQL.String(), params)
+	var executeSQL *gorm.DB
+	if len(params) > 0 {
+		executeSQL = u.UnderlyingDB().Exec(generateSQL.String(), params)
+	} else {
+		executeSQL = u.UnderlyingDB().Exec(generateSQL.String())
+	}
 	err = executeSQL.Error
 	return
 }
@@ -320,19 +336,10 @@ func (u userDo) ModifyPassword(id int, password string) (err error) {
 //select * from @@table
 func (u userDo) FindApi() (result []model.ApiUser, err error) {
 	var generateSQL strings.Builder
-	generateSQL.WriteString("select * from users")
+	generateSQL.WriteString("select * from users ")
 
-	executeSQL := u.UnderlyingDB().Raw(generateSQL.String()).Find(&result)
-	err = executeSQL.Error
-	return
-}
-
-//select * from @@table
-func (u userDo) FirstApi() (result model.ApiUser, err error) {
-	var generateSQL strings.Builder
-	generateSQL.WriteString("select * from users")
-
-	executeSQL := u.UnderlyingDB().Raw(generateSQL.String()).Take(&result)
+	var executeSQL *gorm.DB
+	executeSQL = u.UnderlyingDB().Raw(generateSQL.String()).Find(&result)
 	err = executeSQL.Error
 	return
 }
@@ -510,6 +517,10 @@ func (u userDo) FirstOrCreate() (*model.User, error) {
 func (u userDo) FindByPage(offset int, limit int) (result []*model.User, count int64, err error) {
 	count, err = u.Count()
 	if err != nil {
+		return
+	}
+
+	if limit <= 0 {
 		return
 	}
 

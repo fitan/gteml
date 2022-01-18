@@ -44,12 +44,12 @@ require (
 	go.opentelemetry.io/otel/trace v1.3.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
-	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
+	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gorm.io/driver/mysql v1.2.1
-	gorm.io/gen v0.2.23
-	gorm.io/gorm v1.22.4
+	gorm.io/driver/mysql v1.2.3
+	gorm.io/gen v0.2.35
+	gorm.io/gorm v1.22.5
 	k8s.io/api v0.23.0
 	k8s.io/apimachinery v0.23.0
 	k8s.io/cli-runtime v0.23.0
