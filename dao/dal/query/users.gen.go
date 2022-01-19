@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"gorm.io/gen/helper"

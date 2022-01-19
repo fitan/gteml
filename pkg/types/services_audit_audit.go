@@ -1,6 +1,6 @@
 package types
 
-import "github.com/fitan/magic/model"
+import "github.com/fitan/magic/dao/dal/model"
 
 type Audit interface {
 	InsetAudit(audit *model.Audit) error

@@ -1,10 +1,14 @@
 package ginx
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
+	"log"
 	"net/http"
+	"path"
 )
 
 type GinXHandlerRegister struct {
@@ -30,7 +34,22 @@ func (g *GinXHandlerRegister) Group(options ...GinXHandlerOption) *GinXHandlerRe
 	return NewGinXHandlerRegister(os...)
 }
 
+var CollectRouterSlice [][]string
+
+func CollectRouter(i interface{}, transfer types.GinXTransfer) {
+	if g, ok := i.(*gin.RouterGroup); ok {
+		md5 := md5.Sum([]byte(path.Join(transfer.FuncName(), transfer.Method(), g.BasePath(), transfer.Url())))
+		CollectRouterSlice = append(CollectRouterSlice, []string{transfer.FuncName(), transfer.Method(), path.Join(g.BasePath(), transfer.Url()), cast.ToString(md5)})
+		log.Printf("method: %v, path: %v, md5: %x", transfer.Method(), path.Join(g.BasePath(), transfer.Url()), md5)
+	} else {
+		md5 := md5.Sum([]byte(path.Join(transfer.FuncName(), transfer.Method(), transfer.Url())))
+		CollectRouterSlice = append(CollectRouterSlice, []string{transfer.FuncName(), transfer.Method(), transfer.Url(), cast.ToString(md5)})
+		log.Printf("method: %v, path: %v, md5: %x", transfer.Method(), transfer.Url(), md5)
+	}
+}
+
 func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHandlerOption) {
+	CollectRouter(i, transfer)
 	i.Handle(
 		transfer.Method(), transfer.Url(), func(c *gin.Context) {
 			var core *types.Core

@@ -5,9 +5,9 @@ import (
 	log2 "github.com/casbin/casbin/v2/log"
 	"github.com/casbin/casbin/v2/util"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"github.com/fitan/magic/dal/query"
 	"github.com/fitan/magic/dao"
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
+	query2 "github.com/fitan/magic/dao/dal/query"
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	_ "github.com/go-sql-driver/mysql"
@@ -20,7 +20,7 @@ import (
 type daoReg struct {
 	db       *gorm.DB
 	enforcer *casbin.Enforcer
-	query    *query.Query
+	query    *query2.Query
 }
 
 func (s *daoReg) Reload(c *types.Core) {
@@ -56,7 +56,7 @@ func (s *daoReg) GetObj(c *types.Core) *daoReg {
 		//s.enforcer.EnableEnforce(true)
 		s.enforcer.AddNamedDomainMatchingFunc("g", "keyMatch", util.KeyMatch)
 
-		s.query = query.Use(db)
+		s.query = query2.Use(db)
 		//s.enforcer.SetRoleManager(s.enforcer.GetRoleManager())
 	}
 	return s

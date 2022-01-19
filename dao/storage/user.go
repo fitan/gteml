@@ -2,8 +2,8 @@ package storage
 
 import (
 	"github.com/casbin/casbin/v2"
-	"github.com/fitan/magic/dal/query"
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
+	query2 "github.com/fitan/magic/dao/dal/query"
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
@@ -79,7 +79,7 @@ func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
 	var serviceType string
 
 	err = u.query.Transaction(
-		func(tx *query.Query) error {
+		func(tx *query2.Query) error {
 			service, err := tx.Service.Where(tx.Service.ID.Eq(serviceID)).First()
 			if err != nil {
 				return err
@@ -153,7 +153,7 @@ func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
 	var serviceType string
 
 	err = u.query.Transaction(
-		func(tx *query.Query) error {
+		func(tx *query2.Query) error {
 
 			service, err := tx.Service.Where(tx.Service.ID.Eq(serviceID)).First()
 			if err != nil {

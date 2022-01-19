@@ -2,7 +2,7 @@ package ginmid
 
 import (
 	"github.com/appleboy/gin-jwt/v2"
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/pkg/core"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"

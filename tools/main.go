@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/pkg/core"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"

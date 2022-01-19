@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"gorm.io/gen"
 )
 
@@ -9,7 +9,7 @@ func main() {
 	// specify the output directory (default: "./query")
 	// ### if you want to query without context constrain, set mode gen.WithoutContext ###
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "./dal/query",
+		OutPath: "./dao/dal/query",
 		Mode:    gen.WithoutContext,
 		/* Mode: gen.WithoutContext|gen.WithDefaultQuery*/
 		//if you want the nullable field generation property to be pointer type, set FieldNullable true

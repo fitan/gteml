@@ -2,7 +2,7 @@ package types
 
 import (
 	"database/sql"
-	"github.com/fitan/magic/dal/query"
+	query2 "github.com/fitan/magic/dao/dal/query"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +20,7 @@ type Storager interface {
 
 type WrapQuery interface {
 	TracerCore
-	RawQ() *query.Query
-	WrapQuery() *query.QueryCtx
-	Transaction(fc func(tx *query.Query) error, opts ...*sql.TxOptions) error
+	RawQ() *query2.Query
+	WrapQuery() *query2.QueryCtx
+	Transaction(fc func(tx *query2.Query) error, opts ...*sql.TxOptions) error
 }

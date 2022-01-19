@@ -2,8 +2,8 @@ package storage
 
 import (
 	"github.com/casbin/casbin/v2"
-	"github.com/fitan/magic/dal/query"
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
+	query2 "github.com/fitan/magic/dao/dal/query"
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 )
@@ -20,7 +20,7 @@ func NewRole(query *dbquery.WrapQuery, core types.ServiceCore, enforcer *casbin.
 
 func (r *Role) UnBindPermission(roleID uint, permissionID uint) (err error) {
 
-	err = r.query.Transaction(func(tx *query.Query) error {
+	err = r.query.Transaction(func(tx *query2.Query) error {
 		role, err := tx.Role.Where(tx.Role.ID.Eq(roleID)).First()
 		if err != nil {
 			return err
@@ -49,7 +49,7 @@ func (r *Role) UnBindPermission(roleID uint, permissionID uint) (err error) {
 
 func (r *Role) BindPermission(roleID uint, permissionID uint) (err error) {
 
-	err = r.query.Transaction(func(tx *query.Query) error {
+	err = r.query.Transaction(func(tx *query2.Query) error {
 		role, err := tx.Role.Where(tx.Role.ID.Eq(roleID)).First()
 		if err != nil {
 			return err
@@ -89,7 +89,7 @@ func (r *Role) Create(role *model.Role) error {
 
 func (r *Role) DeleteById(id uint) (err error) {
 
-	err = r.query.Transaction(func(tx *query.Query) error {
+	err = r.query.Transaction(func(tx *query2.Query) error {
 		role, err := tx.Role.Where(tx.Role.ID.Eq(id)).First()
 		if err != nil {
 			return err

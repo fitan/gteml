@@ -19,6 +19,10 @@ func (t *GetAppTransfer) Url() string {
 	return "/k8s/:namespace/app/:name"
 }
 
+func (t *GetAppTransfer) FuncName() string {
+	return "k8s.GetApp"
+}
+
 func (t *GetAppTransfer) Binder() types.GinXBinder {
 	return new(GetAppBinder)
 }
@@ -61,6 +65,10 @@ func (t *CreateWorkerTransfer) Method() string {
 
 func (t *CreateWorkerTransfer) Url() string {
 	return "/k8s/:namespace/app/:name"
+}
+
+func (t *CreateWorkerTransfer) FuncName() string {
+	return "k8s.CreateWorker"
 }
 
 func (t *CreateWorkerTransfer) Binder() types.GinXBinder {
@@ -111,6 +119,10 @@ func (t *GetPodsTransfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod"
 }
 
+func (t *GetPodsTransfer) FuncName() string {
+	return "k8s.GetPods"
+}
+
 func (t *GetPodsTransfer) Binder() types.GinXBinder {
 	return new(GetPodsBinder)
 }
@@ -151,6 +163,10 @@ func (t *WatchPodLogsTransfer) Method() string {
 
 func (t *WatchPodLogsTransfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs"
+}
+
+func (t *WatchPodLogsTransfer) FuncName() string {
+	return "k8s.WatchPodLogs"
 }
 
 func (t *WatchPodLogsTransfer) Binder() types.GinXBinder {
@@ -199,6 +215,10 @@ func (t *DownloadPodLogsTransfer) Method() string {
 
 func (t *DownloadPodLogsTransfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs/download"
+}
+
+func (t *DownloadPodLogsTransfer) FuncName() string {
+	return "k8s.DownloadPodLogs"
 }
 
 func (t *DownloadPodLogsTransfer) Binder() types.GinXBinder {
@@ -255,6 +275,10 @@ func (t *DownloadPodFileTransfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/file"
 }
 
+func (t *DownloadPodFileTransfer) FuncName() string {
+	return "k8s.DownloadPodFile"
+}
+
 func (t *DownloadPodFileTransfer) Binder() types.GinXBinder {
 	return new(DownloadPodFileBinder)
 }
@@ -309,6 +333,10 @@ func (t *DownloadPodFileV2Transfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2"
 }
 
+func (t *DownloadPodFileV2Transfer) FuncName() string {
+	return "k8s.DownloadPodFileV2"
+}
+
 func (t *DownloadPodFileV2Transfer) Binder() types.GinXBinder {
 	return new(DownloadPodFileV2Binder)
 }
@@ -361,6 +389,10 @@ func (t *PortforwardTransfer) Method() string {
 
 func (t *PortforwardTransfer) Url() string {
 	return "/k8s/:namespace/app/:name/pod/:podName/portforward"
+}
+
+func (t *PortforwardTransfer) FuncName() string {
+	return "k8s.Portforward"
 }
 
 func (t *PortforwardTransfer) Binder() types.GinXBinder {

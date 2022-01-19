@@ -27,6 +27,7 @@ type GinXTransfer interface {
 	Method() string
 	Url() string
 	Binder() GinXBinder
+	FuncName() string
 }
 
 type Option func(core *Core)

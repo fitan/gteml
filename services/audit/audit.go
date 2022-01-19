@@ -1,7 +1,7 @@
 package audit
 
 import (
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/pkg/types"
 )
 

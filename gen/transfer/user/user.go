@@ -23,6 +23,10 @@ func (t *BindUserPermissionTransfer) Url() string {
 	return "/user/:userId/permission"
 }
 
+func (t *BindUserPermissionTransfer) FuncName() string {
+	return "user.BindUserPermission"
+}
+
 func (t *BindUserPermissionTransfer) Binder() types.GinXBinder {
 	return new(BindUserPermissionBinder)
 }
@@ -75,6 +79,10 @@ func (t *UnBindUserPermissionTransfer) Url() string {
 	return "/user/:userId/permission"
 }
 
+func (t *UnBindUserPermissionTransfer) FuncName() string {
+	return "user.UnBindUserPermission"
+}
+
 func (t *UnBindUserPermissionTransfer) Binder() types.GinXBinder {
 	return new(UnBindUserPermissionBinder)
 }
@@ -120,6 +128,10 @@ func (t *GetUserByIDTransfer) Method() string {
 
 func (t *GetUserByIDTransfer) Url() string {
 	return "/user/:id"
+}
+
+func (t *GetUserByIDTransfer) FuncName() string {
+	return "user.GetUserByID"
 }
 
 func (t *GetUserByIDTransfer) Binder() types.GinXBinder {

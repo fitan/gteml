@@ -3,8 +3,8 @@ package permission
 import (
 	"net/http"
 
+	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/handler/permission"
-	"github.com/fitan/magic/model"
 	"github.com/fitan/magic/pkg/types"
 )
 
@@ -19,6 +19,10 @@ func (t *CreatePermissionTransfer) Method() string {
 
 func (t *CreatePermissionTransfer) Url() string {
 	return "/permission"
+}
+
+func (t *CreatePermissionTransfer) FuncName() string {
+	return "permission.CreatePermission"
 }
 
 func (t *CreatePermissionTransfer) Binder() types.GinXBinder {
@@ -61,6 +65,10 @@ func (t *GetPermissionByIdTransfer) Url() string {
 	return "/permission/:id"
 }
 
+func (t *GetPermissionByIdTransfer) FuncName() string {
+	return "permission.GetPermissionById"
+}
+
 func (t *GetPermissionByIdTransfer) Binder() types.GinXBinder {
 	return new(GetPermissionByIdBinder)
 }
@@ -99,6 +107,10 @@ func (t *DeletePermissionByIdTransfer) Method() string {
 
 func (t *DeletePermissionByIdTransfer) Url() string {
 	return "/permisssion/:id"
+}
+
+func (t *DeletePermissionByIdTransfer) FuncName() string {
+	return "permission.DeletePermissionById"
 }
 
 func (t *DeletePermissionByIdTransfer) Binder() types.GinXBinder {
@@ -141,6 +153,10 @@ func (t *UpdatePermissionTransfer) Method() string {
 
 func (t *UpdatePermissionTransfer) Url() string {
 	return "/permission"
+}
+
+func (t *UpdatePermissionTransfer) FuncName() string {
+	return "permission.UpdatePermission"
 }
 
 func (t *UpdatePermissionTransfer) Binder() types.GinXBinder {

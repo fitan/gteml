@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/fitan/magic/model"
+	"github.com/fitan/magic/dao/dal/model"
 	"gorm.io/gen/field"
 )
 

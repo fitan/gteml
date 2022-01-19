@@ -22,6 +22,10 @@ func (t *BindRolePermissionTransfer) Url() string {
 	return "/role/:roleId/permission"
 }
 
+func (t *BindRolePermissionTransfer) FuncName() string {
+	return "role.BindRolePermission"
+}
+
 func (t *BindRolePermissionTransfer) Binder() types.GinXBinder {
 	return new(BindRolePermissionBinder)
 }
@@ -70,6 +74,10 @@ func (t *UnBindRolePermissionTransfer) Method() string {
 
 func (t *UnBindRolePermissionTransfer) Url() string {
 	return "/role/:roleId/permission"
+}
+
+func (t *UnBindRolePermissionTransfer) FuncName() string {
+	return "role.UnBindRolePermission"
 }
 
 func (t *UnBindRolePermissionTransfer) Binder() types.GinXBinder {
