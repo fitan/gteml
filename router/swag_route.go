@@ -8,7 +8,7 @@ import (
 import "github.com/swaggo/gin-swagger" // gin-swagger middleware
 import "github.com/swaggo/files"
 
-func Swag(i gin.IRouter) {
+func swag(i gin.IRouter) {
 	core := core.GetCorePool().GetObj()
 	if core.GetConfig().GetMyConf().Swagger.Enable {
 		i.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

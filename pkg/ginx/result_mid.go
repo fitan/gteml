@@ -38,7 +38,6 @@ func (r *ResultWrapMid) Forever(core *types.Core) {
 	}
 
 	trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID()
-	core.GetTrace().Ctx()
 	wrapRes := GinXResult{
 		Data:    core.GinX.Response(),
 		TraceId: trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID().String(),

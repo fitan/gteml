@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"github.com/fitan/magic/gen/transfer/k8s"
 	"github.com/fitan/magic/gen/transfer/permission"
 	"github.com/fitan/magic/gen/transfer/role"
@@ -37,10 +36,11 @@ func Router() *gin.Engine {
 	//authorized := r.Group("/", jwtMid.MiddlewareFunc())
 	//registerRouter(authorized)
 	//LoginRoute(r, jwtMid)
-	g := r.Group("/api")
-	registerRouter(g)
-	Swag(r)
-	Ping(r)
+	//g := r.Group("/api")
+	registerRouter(r)
+	info(r)
+	swag(r)
+	ping(r)
 
 	return r
 }
@@ -52,5 +52,4 @@ func registerRouter(r gin.IRouter) {
 	user.Register(r, gReg)
 	k8s.Register(r, gReg)
 	permission.Register(r, gReg)
-	fmt.Printf("%v", ginx.CollectRouterSlice)
 }
