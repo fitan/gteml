@@ -1,20 +1,12 @@
 package types
 
 import (
-	"github.com/fitan/magic/dao/dal/model"
+	"github.com/fitan/magic/services/types"
 )
 
 type Serviceser interface {
-	User() Userer
-	RABC() RBAC
-	Audit() Audit
-	K8s() K8s
-}
-
-type Userer interface {
-	Create()
-	Update()
-	Delete()
-	Read() string
-	Login(username string, password string) (*model.User, error)
+	User() types.Userer
+	RABC() types.RBAC
+	Audit() types.Audit
+	K8s() types.K8s
 }

@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewUser(core types.ServiceCore) types.Userer {
+func NewUser(core types.ServiceCore) *User {
 	return &User{core}
 }
 

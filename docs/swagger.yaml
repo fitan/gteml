@@ -368,7 +368,7 @@ definitions:
           a resource at any point in time.
         type: string
     type: object
-  ginx.GinXResult:
+  ginx.XResult:
     properties:
       code:
         type: integer
@@ -1211,7 +1211,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   $ref: '#/definitions/v1beta1.Application'
@@ -1234,7 +1234,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1256,7 +1256,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1278,7 +1278,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   $ref: '#/definitions/model.Permission'
@@ -1300,7 +1300,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1328,7 +1328,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1355,7 +1355,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1375,7 +1375,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1398,7 +1398,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: object
@@ -1421,7 +1421,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   $ref: '#/definitions/model.User'
@@ -1450,7 +1450,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string
@@ -1478,7 +1478,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/ginx.GinXResult'
+            - $ref: '#/definitions/ginx.XResult'
             - properties:
                 data:
                   type: string

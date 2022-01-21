@@ -55,7 +55,7 @@ func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 			if value, ok := c.Get(types.CoreKey); ok {
 				core = value.(*types.Core)
 			} else {
-				c.JSON(http.StatusInternalServerError, GinXResult{
+				c.JSON(http.StatusInternalServerError, XResult{
 					Code: 5000,
 					Msg:  "gin ctx not found types.Core",
 					Data: nil,

@@ -3,7 +3,7 @@ BaseConf:
     ImportPath: |
       "cmdb/public"
     WrapFunc: "public.GinResult"
-    WrapResultType: "ginx.GinXResult"
+    WrapResultType: "ginx.XResult"
 Plugin:
   CallBack:
     -

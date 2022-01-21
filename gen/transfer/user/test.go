@@ -49,7 +49,7 @@ func (b *CreateBinder) BindVal(core *types.Core) (res interface{}, err error) {
 // @Accept  json
 // @Produce  json
 // @Param body body SwagCreateBody true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Router /user [post]
 func (b *CreateBinder) BindFn(core *types.Core) (interface{}, error) {
 	return user.Create(core, b.val)

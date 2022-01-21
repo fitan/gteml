@@ -82,7 +82,7 @@ func (a *Audit) Audit() gin.HandlerFunc {
 			core = value.(*types.Core)
 		} else {
 			err = errors.New("gin ctx not found type: types.Core")
-			ctx.JSON(http.StatusInternalServerError, ginx.GinXResult{
+			ctx.JSON(http.StatusInternalServerError, ginx.XResult{
 				Code: 5000,
 				Msg:  err.Error(),
 				Data: nil,

@@ -4,6 +4,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/fitan/magic/dao/dal/model"
 	query2 "github.com/fitan/magic/dao/dal/query"
+	types2 "github.com/fitan/magic/dao/types"
 	"github.com/fitan/magic/pkg/dbquery"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
@@ -14,7 +15,7 @@ import (
 	"strconv"
 )
 
-func NewUser(query *dbquery.WrapQuery, daoCore types.ServiceCore, enforcer *casbin.Enforcer) types.User {
+func NewUser(query *dbquery.WrapQuery, daoCore types.ServiceCore, enforcer *casbin.Enforcer) types2.User {
 	return &User{query: query, core: daoCore, enforcer: enforcer}
 }
 

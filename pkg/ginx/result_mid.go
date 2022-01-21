@@ -10,7 +10,7 @@ import (
 
 var SkipWrapError = errors.New("Skip ResultWrapMid")
 
-type GinXResult struct {
+type XResult struct {
 	Code    int         `json:"code"`
 	Msg     string      `json:"msg,omitempty"`
 	TraceId string      `json:"traceId,omitempty"`
@@ -38,7 +38,7 @@ func (r *ResultWrapMid) Forever(core *types.Core) {
 	}
 
 	trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID()
-	wrapRes := GinXResult{
+	wrapRes := XResult{
 		Data:    core.GinX.Response(),
 		TraceId: trace.SpanFromContext(core.GetTrace().Ctx()).SpanContext().TraceID().String(),
 	}
@@ -65,7 +65,7 @@ func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
 		return true
 	}
 	//if core.GinX.BindErr() != nil {
-	//	core.GinX.GinCtx().JSON(http.StatusOK, GinXResult{
+	//	core.GinX.GinCtx().JSON(http.StatusOK, XResult{
 	//		Code: 5003,
 	//		Msg:  errors.WithMessage(core.GinX.BindErr(), "BindValAfter").Error(),
 	//		Data: core.GinX.BindRes(),
@@ -82,7 +82,7 @@ func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
 		return true
 	}
 	//if core.GinX.BindErr() != nil {
-	//	core.GinX.GinCtx().JSON(http.StatusOK, GinXResult{
+	//	core.GinX.GinCtx().JSON(http.StatusOK, XResult{
 	//		Code: 5003,
 	//		Msg:  errors.WithMessage(core.GinX.BindErr(), "BindValBefor").Error(),
 	//		Data: core.GinX.BindRes(),
@@ -98,7 +98,7 @@ func (r *ResultWrapMid) BindFnAfter(core *types.Core) bool {
 	} else {
 		return true
 	}
-	//wrapRes := GinXResult{
+	//wrapRes := XResult{
 	//	Msg: errors.WithMessage(core.GinX.BindErr(), "BindFnAfter").Error(),
 	//	Data: core.GinX.BindRes(),
 	//}

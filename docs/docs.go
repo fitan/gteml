@@ -63,7 +63,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -104,7 +104,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -143,7 +143,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -182,7 +182,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -221,7 +221,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -269,7 +269,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -315,7 +315,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -352,7 +352,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -393,7 +393,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -433,7 +433,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -482,7 +482,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -529,7 +529,7 @@ var doc = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ginx.GinXResult"
+                                    "$ref": "#/definitions/ginx.XResult"
                                 },
                                 {
                                     "type": "object",
@@ -976,7 +976,7 @@ var doc = `{
                 }
             }
         },
-        "ginx.GinXResult": {
+        "ginx.XResult": {
             "type": "object",
             "properties": {
                 "code": {

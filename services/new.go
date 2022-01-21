@@ -6,6 +6,7 @@ import (
 	"github.com/fitan/magic/services/audit"
 	"github.com/fitan/magic/services/k8s"
 	"github.com/fitan/magic/services/rbac"
+	types2 "github.com/fitan/magic/services/types"
 	"github.com/fitan/magic/services/user"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -13,25 +14,25 @@ import (
 )
 
 type Services struct {
-	user  types.Userer
-	rabc  types.RBAC
-	audit types.Audit
-	k8s   types.K8s
+	user  types2.Userer
+	rabc  types2.RBAC
+	audit types2.Audit
+	k8s   types2.K8s
 }
 
-func (s *Services) Audit() types.Audit {
+func (s *Services) Audit() types2.Audit {
 	return s.audit
 }
 
-func (s *Services) RABC() types.RBAC {
+func (s *Services) RABC() types2.RBAC {
 	return s.rabc
 }
 
-func (s *Services) User() types.Userer {
+func (s *Services) User() types2.Userer {
 	return s.user
 }
 
-func (s *Services) K8s() types.K8s {
+func (s *Services) K8s() types2.K8s {
 	return s.k8s
 }
 

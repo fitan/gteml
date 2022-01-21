@@ -47,7 +47,7 @@ func (b *GetAppBinder) BindVal(core *types.Core) (res interface{}, err error) {
 // @Produce  json
 // @Param namespace path string true " "
 // @Param name path string true " "
-// @Success 200 {object} ginx.GinXResult{data=v1beta1.Application}
+// @Success 200 {object} ginx.XResult{data=v1beta1.Application}
 // @Description 获取app
 // @Router /k8s/:namespace/app/:name [get]
 func (b *GetAppBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -101,7 +101,7 @@ func (b *CreateWorkerBinder) BindVal(core *types.Core) (res interface{}, err err
 // @Param body body SwagCreateWorkerBody true " "
 // @Param namespace path string true " "
 // @Param name path string true " "
-// @Success 200 {object} ginx.GinXResult{data=bool}
+// @Success 200 {object} ginx.XResult{data=bool}
 // @Description 创建worker
 // @Router /k8s/:namespace/app/:name [post]
 func (b *CreateWorkerBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -147,7 +147,7 @@ func (b *GetPodsBinder) BindVal(core *types.Core) (res interface{}, err error) {
 // @Produce  json
 // @Param namespace path string true " "
 // @Param name path string true " "
-// @Success 200 {object} ginx.GinXResult{data=v1.PodList}
+// @Success 200 {object} ginx.XResult{data=v1.PodList}
 // @Description Get Pods
 // @Router /k8s/:namespace/app/:name/pod [get]
 func (b *GetPodsBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -195,7 +195,7 @@ func (b *WatchPodLogsBinder) BindVal(core *types.Core) (res interface{}, err err
 // @Param name path string true " "
 // @Param podName path string true " "
 // @Param containerName path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description Get pod logs
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs [get]
 func (b *WatchPodLogsBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -253,7 +253,7 @@ func (b *DownloadPodLogsBinder) BindVal(core *types.Core) (res interface{}, err 
 // @Param name path string true " "
 // @Param podName path string true " "
 // @Param containerName path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description download pod logs
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/logs/download [get]
 func (b *DownloadPodLogsBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -311,7 +311,7 @@ func (b *DownloadPodFileBinder) BindVal(core *types.Core) (res interface{}, err 
 // @Param name path string true " "
 // @Param podName path string true " "
 // @Param containerName path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description 下载pod里的文件
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file [get]
 func (b *DownloadPodFileBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -369,7 +369,7 @@ func (b *DownloadPodFileV2Binder) BindVal(core *types.Core) (res interface{}, er
 // @Param name path string true " "
 // @Param podName path string true " "
 // @Param containerName path string true " "
-// @Success 200 {object} ginx.GinXResult{data=int64}
+// @Success 200 {object} ginx.XResult{data=int64}
 // @Description 下载pod里的文件 V2
 // @Router /k8s/:namespace/app/:name/pod/:podName/container/:containerName/file/v2 [get]
 func (b *DownloadPodFileV2Binder) BindFn(core *types.Core) (interface{}, error) {
@@ -426,7 +426,7 @@ func (b *PortforwardBinder) BindVal(core *types.Core) (res interface{}, err erro
 // @Param namespace path string true " "
 // @Param name path string true " "
 // @Param podName path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description
 // @Router /k8s/:namespace/app/:name/pod/:podName/portforward [get]
 func (b *PortforwardBinder) BindFn(core *types.Core) (interface{}, error) {

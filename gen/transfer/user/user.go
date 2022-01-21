@@ -56,7 +56,7 @@ func (b *BindUserPermissionBinder) BindVal(core *types.Core) (res interface{}, e
 // @Produce  json
 // @Param body body SwagBindUserPermissionBody true " "
 // @Param userId path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description 给用户绑定角色和服务
 // @Router /user/:userId/permission [post]
 func (b *BindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -112,7 +112,7 @@ func (b *UnBindUserPermissionBinder) BindVal(core *types.Core) (res interface{},
 // @Produce  json
 // @Param body body SwagUnBindUserPermissionBody true " "
 // @Param userId path string true " "
-// @Success 200 {object} ginx.GinXResult{data=string}
+// @Success 200 {object} ginx.XResult{data=string}
 // @Description 用户解除绑定
 // @Router /user/:userId/permission [delete]
 func (b *UnBindUserPermissionBinder) BindFn(core *types.Core) (interface{}, error) {
@@ -157,7 +157,7 @@ func (b *GetUserByIDBinder) BindVal(core *types.Core) (res interface{}, err erro
 // @Accept  json
 // @Produce  json
 // @Param id path string true " "
-// @Success 200 {object} ginx.GinXResult{data=model.User}
+// @Success 200 {object} ginx.XResult{data=model.User}
 // @Description get user by id
 // @Router /user/:id [get]
 func (b *GetUserByIDBinder) BindFn(core *types.Core) (interface{}, error) {
