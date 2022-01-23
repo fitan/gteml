@@ -7,13 +7,13 @@ import (
 )
 
 type BaiduApi struct {
-	context *types.Core
+	context types.ServiceCore
 	client  *httpclient.TraceClient
 }
 
-func NewBaiduApi(c *types.Core, client *resty.Client) *BaiduApi {
+func NewBaiduApi(c types.ServiceCore, client *resty.Client) *BaiduApi {
 	return &BaiduApi{context: c, client: &httpclient.TraceClient{
-		Tracer: c.Tracer,
+		Tracer: c.GetTrace(),
 		Client: client,
 	}}
 }

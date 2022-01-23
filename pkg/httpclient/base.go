@@ -9,8 +9,7 @@ import (
 type option struct {
 	Host string
 
-	Tp        *trace.TracerProvider
-	TraceName string
+	Tp *trace.TracerProvider
 	// 记录所有的详细的http info, 否则只记录发生错误时的http info
 	TraceDebug bool
 
@@ -36,7 +35,7 @@ func NewClient(fs ...Option) *resty.Client {
 	}
 
 	client := resty.New().SetDebug(o.Debug).SetTimeout(o.TimeOut).SetRetryCount(o.RetryCount).SetRetryWaitTime(o.RetryWaitTime).SetRetryMaxWaitTime(o.RetryMaxWaitTime)
-	if o.TraceName != "" {
+	if o.Tp != nil {
 		client = client.EnableTrace()
 		client = client.OnBeforeRequest(BeforeTrace(o.Tp))
 		//client = client.OnBeforeRequest(ApmBeforeTrace())
@@ -54,10 +53,9 @@ func NewClient(fs ...Option) *resty.Client {
 	return client
 }
 
-func WithTrace(tp *trace.TracerProvider, traceName string, traceDebug bool) func(o *option) {
+func WithTrace(tp *trace.TracerProvider, traceDebug bool) func(o *option) {
 	return func(o *option) {
 		o.Tp = tp
-		o.TraceName = traceName
 		o.TraceDebug = traceDebug
 	}
 }

@@ -10,6 +10,8 @@ import (
 	"github.com/fitan/magic/pkg/prometheus"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"log"
+
 	//"go.elastic.co/apm/module/apmgin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
@@ -28,16 +30,15 @@ func Router() *gin.Engine {
 	pprof.Register(r)
 	//r.Use(ginmid.ReUserCore())
 
-	//jwtMid, err := ginmid.NewAuthMiddleware()
-	//if err != nil {
-	//	log.Panicln(err)
-	//}
+	jwtMid, err := ginmid.NewAuthMiddleware()
+	if err != nil {
+		log.Panicln(err)
+	}
 
-	//authorized := r.Group("/", jwtMid.MiddlewareFunc())
-	//registerRouter(authorized)
-	//LoginRoute(r, jwtMid)
+	authorized := r.Group("/", jwtMid.MiddlewareFunc())
+	registerRouter(authorized)
+	LoginRoute(r, jwtMid)
 	//g := r.Group("/api")
-	registerRouter(r)
 	info(r)
 	swag(r)
 	ping(r)

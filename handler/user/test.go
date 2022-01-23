@@ -58,6 +58,7 @@ func (s *SayHelloIn) ServiceID() (serviceID uint) {
 	return s.CtxKey.JwtUserID
 }
 
+// @GenApi /say [get]
 func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 
 	if in.Query.Say != "" {

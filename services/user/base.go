@@ -19,7 +19,7 @@ func (u *User) Login(username string, password string) (*model.User, error) {
 }
 
 func (u *User) ModifyPassword(id int, password string) error {
-	return u.Core.GetDao().Storage().Query().WrapQuery().User.ModifyPassword(id, password)
+	return u.Core.GetDao().Storage().Native().User.ModifyPassword(id, password)
 }
 
 func (u *User) Read() string {
@@ -48,7 +48,7 @@ func (u *User) Read() string {
 }
 
 func (u *User) FindApi() ([]model.ApiUser, error) {
-	return u.Core.GetDao().Storage().Query().WrapQuery().User.FindApi()
+	return u.Core.GetDao().Storage().Native().User.FindApi()
 }
 
 func (u *User) Create() {

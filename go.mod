@@ -12,7 +12,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.7.7
-	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0
@@ -22,8 +21,6 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pyroscope-io/pyroscope v0.2.2
-	github.com/satori/go.uuid v1.2.0 // indirect
-	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/objx v0.3.0 // indirect
@@ -34,6 +31,7 @@ require (
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelgorm v0.1.7
+	go-micro.dev/v4 v4.5.0 // indirect
 	go.elastic.co/apm v1.14.0
 	go.elastic.co/apm/module/apmhttp v1.14.0
 	go.elastic.co/apm/module/apmzap v1.14.0

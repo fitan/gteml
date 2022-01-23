@@ -36,7 +36,7 @@ func (s *Services) K8s() types2.K8s {
 	return s.k8s
 }
 
-func NewServices(core types.ServiceCore, enforcer *casbin.Enforcer, k8sClient *kubernetes.Clientset, runtimeClient client.Client, cfg *rest.Config) types.Serviceser {
+func NewServices(core types.ServiceCore, enforcer *casbin.Enforcer, k8sClient *kubernetes.Clientset, runtimeClient client.Client, cfg *rest.Config) types2.Serviceser {
 	return &Services{
 		user.NewUser(core),
 		rbac.NewRBAC(enforcer, core),

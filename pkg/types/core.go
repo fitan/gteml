@@ -1,5 +1,11 @@
 package types
 
+import (
+	apiTypes "github.com/fitan/magic/apis/types"
+	daoTypes "github.com/fitan/magic/dao/types"
+	serviceTypes "github.com/fitan/magic/services/types"
+)
+
 type Core struct {
 	Config Confer
 
@@ -13,11 +19,11 @@ type Core struct {
 
 	//Storage Storage
 
-	Dao DAOer
+	Dao daoTypes.DAOer
 
-	Services Serviceser
+	Services serviceTypes.Serviceser
 
-	Apis Apis
+	Apis apiTypes.Apis
 
 	Prom Promer
 
@@ -36,11 +42,11 @@ func (c *Core) GetCoreLog() CoreLoger {
 	return c.CoreLog
 }
 
-func (c *Core) GetServices() Serviceser {
+func (c *Core) GetServices() serviceTypes.Serviceser {
 	return c.Services
 }
 
-func (c *Core) GetApis() Apis {
+func (c *Core) GetApis() apiTypes.Apis {
 	return c.Apis
 }
 
@@ -48,7 +54,7 @@ func (c *Core) GetProm() Promer {
 	return c.Prom
 }
 
-func (c *Core) GetDao() DAOer {
+func (c *Core) GetDao() daoTypes.DAOer {
 	return c.Dao
 }
 
@@ -68,8 +74,8 @@ type ServiceCore interface {
 	GetTrace() Tracer
 	GetConfig() Confer
 	GetCoreLog() CoreLoger
-	GetServices() Serviceser
-	GetApis() Apis
+	GetServices() serviceTypes.Serviceser
+	GetApis() apiTypes.Apis
 	GetProm() Promer
-	GetDao() DAOer
+	GetDao() daoTypes.DAOer
 }

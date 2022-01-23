@@ -6,15 +6,15 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func NewTaoBaoApi(c *types.Core, client *resty.Client) *TaoBaoApi {
+func NewTaoBaoApi(c types.ServiceCore, client *resty.Client) *TaoBaoApi {
 	return &TaoBaoApi{
 		context: c,
-		client:  httpclient.NewTraceClient(c.Tracer, client),
+		client:  httpclient.NewTraceClient(c.GetTrace(), client),
 	}
 }
 
 type TaoBaoApi struct {
-	context *types.Core
+	context types.ServiceCore
 	client  *httpclient.TraceClient
 }
 

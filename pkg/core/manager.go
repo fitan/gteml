@@ -1,7 +1,6 @@
 package core
 
 import (
-	api2 "github.com/fitan/magic/api"
 	"github.com/fitan/magic/pkg/ginx"
 	"github.com/fitan/magic/pkg/types"
 	"sync"
@@ -40,7 +39,7 @@ func init() {
 		&daoReg{},
 		PromReg,
 		NewServiceRegister(),
-		&api2.ApisRegister{},
+		&ApisRegister{},
 		&VersionReg{},
 		&PoolReg{},
 	})

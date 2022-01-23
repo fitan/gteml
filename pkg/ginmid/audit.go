@@ -114,7 +114,7 @@ func (a *Audit) Audit() gin.HandlerFunc {
 		response := blw.body.String()
 		log.Info(response)
 		statusCode := ctx.Writer.Status()
-		err = core.GetDao().Storage().Query().WrapQuery().Audit.Create(&model.Audit{
+		err = core.GetDao().Storage().Native().Audit.Create(&model.Audit{
 			Url:        url,
 			Query:      query,
 			Method:     method,

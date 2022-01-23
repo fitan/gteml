@@ -9,13 +9,13 @@ log:
 
 trace:
   open: true
-  tracerProviderAddr: http://10.170.34.122:14268/api/traces
-#  tracerProviderAddr: http://localhost:14268/api/traces
+#  tracerProviderAddr: http://10.170.34.122:14268/api/traces
+  tracerProviderAddr: http://localhost:14268/api/traces
 pyroscope:
   open: false
   url: "http://localhost:4040"
 
-api:
+apis:
   baidu:
     url: http://www.baidu.com
     traceDebug: true
@@ -26,8 +26,8 @@ api:
     restyDebug: false
 
 mysql:
-  url: spider_dev:spider_dev123@tcp(10.170.34.22:3307)/gteml?charset=utf8mb4&parseTime=True&loc=Local
-#  url: root:123456@tcp(localhost:3306)/gteml?charset=utf8mb4&parseTime=True&loc=Local
+#  url: spider_dev:spider_dev123@tcp(10.170.34.22:3307)/gteml?charset=utf8mb4&parseTime=True&loc=Local
+  url: root:123456@tcp(localhost:3306)/gteml?charset=utf8mb4&parseTime=True&loc=Local
   maxIdleConns: 10
   maxOpenConns: 100
   connMaxLifetime: 1h

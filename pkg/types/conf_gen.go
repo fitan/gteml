@@ -5,7 +5,7 @@ type MyConf struct {
 	App       App       `yaml:"app"`
 	Log       Log       `yaml:"log"`
 	Pyroscope Pyroscope `yaml:"pyroscope"`
-	Api       Api       `yaml:"api"`
+	Apis      Apis      `yaml:"apis"`
 	Mysql     Mysql     `yaml:"mysql"`
 	Redis     Redis     `yaml:"redis"`
 	Trace     Trace     `yaml:"trace"`
@@ -68,7 +68,7 @@ type Rbac struct {
 	Model string `yaml:"model"`
 }
 
-type Api struct {
+type Apis struct {
 	Baidu  Baidu  `yaml:"baidu"`
 	Taobao Taobao `yaml:"taobao"`
 }
