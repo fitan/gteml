@@ -19,5 +19,5 @@ type TaobaoApi interface {
 }
 
 type GtemlApi interface {
-	GetRoot() (*resty.Response, error)
+	GetRoot(token string) (*resty.Response, error)
 }

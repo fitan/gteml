@@ -9,7 +9,7 @@ import (
 func NewApi(c types.ServiceCore, client *resty.Client) *Api {
 	return &Api{
 		context: c,
-		client:  httpclient.NewTraceClient(c.GetTrace(), client),
+		client:  httpclient.NewTraceClient(c.GetTrace(), client.SetDebug(true)),
 	}
 }
 
@@ -18,6 +18,6 @@ type Api struct {
 	client  *httpclient.TraceClient
 }
 
-func (t *Api) GetRoot() (*resty.Response, error) {
-	return t.client.R().Get("/say", "localhost")
+func (t *Api) GetRoot(token string) (*resty.Response, error) {
+	return t.client.R("getroot").SetHeader("Authorization", token).Get("/say")
 }

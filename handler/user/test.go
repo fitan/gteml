@@ -63,7 +63,8 @@ func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 
 	if in.Query.Say != "" {
 
-		req, err := core.GetApis().Gteml().GetRoot()
+		h := core.GetGinX().GinCtx().GetHeader("Authorization")
+		req, err := core.GetApis().Gteml().GetRoot(h)
 		if err != nil {
 			return "false", err
 		}

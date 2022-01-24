@@ -19,7 +19,6 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/consul/api v1.10.1
 	github.com/lib/pq v1.10.3 // indirect
-	github.com/micro/go-micro v1.18.0
 	github.com/oam-dev/kubevela-core-api v1.1.3
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1

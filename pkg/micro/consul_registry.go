@@ -10,10 +10,6 @@ import (
 var consulRegistry registry.Registry
 var once sync.Once
 
-func GetConsulRegistry() registry.Registry {
-	return consulRegistry
-}
-
 func ConsulRegistry(addr string) registry.Registry {
 	once.Do(
 		func() {

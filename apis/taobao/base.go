@@ -19,5 +19,5 @@ type Api struct {
 }
 
 func (t *Api) GetRoot() (*resty.Response, error) {
-	return t.client.R().Get("/", "淘宝根目录")
+	return t.client.R("request taobao root").Get("/")
 }

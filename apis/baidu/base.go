@@ -24,11 +24,11 @@ func (b *Api) GetSum() {
 }
 
 func (b *Api) GetRoot() (*resty.Response, error) {
-	res, err := b.client.R().Get("", "请求根目录")
+	res, err := b.client.R("request root").Get("")
 	return res, err
 }
 
 func (b *Api) GetRootNest() (*resty.Response, error) {
-	res, err := b.client.R().Get("/1", "请求根目录的子目录")
+	res, err := b.client.R("request 1").Get("/1")
 	return res, err
 }

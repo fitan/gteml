@@ -3,6 +3,7 @@ package httpclient
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/go-resty/resty/v2"
 	"go-micro.dev/v4/registry"
 	"go-micro.dev/v4/registry/cache"
@@ -82,6 +83,7 @@ func BeforeTrace(tp trace.TracerProvider) resty.RequestMiddleware {
 func BeforeMicroSelect(serviceName string, r registry.Registry, options ...selector.SelectOption) resty.RequestMiddleware {
 	s := selector.NewSelector(selector.Registry(cache.New(r)))
 	return func(client *resty.Client, request *resty.Request) error {
+		fmt.Println("selector", s)
 		next, err := s.Select(serviceName, options...)
 		if err != nil {
 			return err
@@ -90,7 +92,7 @@ func BeforeMicroSelect(serviceName string, r registry.Registry, options ...selec
 		if err != nil {
 			return err
 		}
-		client.SetHostURL(node.Address)
+		client.SetHostURL("http://" + node.Address)
 
 		return nil
 	}
