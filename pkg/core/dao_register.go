@@ -17,17 +17,17 @@ import (
 	"log"
 )
 
-type daoReg struct {
+type DaoRegister struct {
 	db       *gorm.DB
 	enforcer *casbin.Enforcer
 	query    *query2.Query
 }
 
-func (s *daoReg) Reload(c *types.Core) {
+func (s *DaoRegister) Reload(c *types.Core) {
 	s.db = nil
 }
 
-func (s *daoReg) GetObj(c *types.Core) *daoReg {
+func (s *DaoRegister) GetObj(c *types.Core) *DaoRegister {
 	if s.db == nil {
 		db, err := gorm.Open(mysql.Open(ConfReg.Confer.GetMyConf().Mysql.Url), &gorm.Config{})
 		//db, err := gorm.Open(mysqlapm.Open(ConfReg.Confer.GetMyConf().Mysql.Url))
@@ -62,16 +62,16 @@ func (s *daoReg) GetObj(c *types.Core) *daoReg {
 	return s
 }
 
-func (s *daoReg) With(o ...types.Option) types.Register {
+func (s *DaoRegister) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (s *daoReg) Set(c *types.Core) {
+func (s *DaoRegister) Set(c *types.Core) {
 	obj := s.GetObj(c)
 	wrapQuery := &dbquery.WrapQuery{c, obj.query}
 	c.Dao = dao.NewDAO(obj.db, wrapQuery, obj.enforcer, c)
 }
 
-func (s *daoReg) Unset(c *types.Core) {
+func (s *DaoRegister) Unset(c *types.Core) {
 
 }

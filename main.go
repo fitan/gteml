@@ -2,11 +2,17 @@ package main
 
 import (
 	"fmt"
+	httpServer "github.com/asim/go-micro/plugins/server/http/v4"
 	"github.com/fitan/magic/pkg/core"
-	router2 "github.com/fitan/magic/router"
+	micro2 "github.com/fitan/magic/pkg/micro"
+	"github.com/fitan/magic/router"
+	"github.com/gin-gonic/gin"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
+	"go-micro.dev/v4"
+	"go-micro.dev/v4/server"
 	"log"
 	"os"
+	"time"
 )
 
 var (
@@ -42,6 +48,7 @@ func main() {
 		fmt.Printf("GoLang Version: %s \n", goVersion)
 		return
 	}
+	core.NewCore()
 
 	if core.ConfReg.Confer.GetMyConf().Pyroscope.Open {
 		profiler.Start(
@@ -64,6 +71,29 @@ func main() {
 		)
 	}
 
-	err := router2.Router().Run()
-	log.Printf("gin run error %v\n", err)
+	r := router.Router()
+
+	srv := httpServer.NewServer(
+		server.Name("gteml"),
+		server.Address(":8080"),
+	)
+	gin.SetMode(gin.ReleaseMode)
+
+	hd := srv.NewHandler(r)
+	if err := srv.Handle(hd); err != nil {
+		log.Fatalln(err)
+	}
+
+	service := micro.NewService(
+		micro.Server(srv),
+		micro.Registry(micro2.ConsulRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*15),
+	)
+	service.Init()
+	err := service.Run()
+	if err != nil {
+		log.Printf("mircro run error %v\n", err)
+	}
+
 }

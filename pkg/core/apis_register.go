@@ -4,6 +4,7 @@ import (
 	"github.com/fitan/magic/apis"
 	apiTypes "github.com/fitan/magic/apis/types"
 	"github.com/fitan/magic/pkg/httpclient"
+	"github.com/fitan/magic/pkg/micro"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 )
@@ -11,6 +12,7 @@ import (
 type ApisRegister struct {
 	baiduClient  *resty.Client
 	taobaoClient *resty.Client
+	gtemlClient  *resty.Client
 }
 
 func (h *ApisRegister) getApis(c *types.Core) apiTypes.Apis {
@@ -28,7 +30,14 @@ func (h *ApisRegister) getApis(c *types.Core) apiTypes.Apis {
 			httpclient.WithDebug(c.GetConfig().GetMyConf().Apis.Taobao.RestyDebug))
 	}
 
-	return apis.NewApis(c, h.baiduClient, h.taobaoClient)
+	if h.gtemlClient == nil {
+		h.gtemlClient = httpclient.NewClient(
+			httpclient.WithMicroHost("gteml", micro.GetConsulRegistry()),
+			httpclient.WithTrace(c.Tracer.Tp(), c.GetConfig().GetMyConf().Apis.Taobao.TraceDebug),
+			httpclient.WithDebug(c.GetConfig().GetMyConf().Apis.Taobao.RestyDebug))
+	}
+
+	return apis.NewApis(c, h.baiduClient, h.taobaoClient, h.gtemlClient)
 }
 
 func (h *ApisRegister) Reload(c *types.Core) {

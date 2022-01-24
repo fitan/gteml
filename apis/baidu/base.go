@@ -6,29 +6,29 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type BaiduApi struct {
+type Api struct {
 	context types.ServiceCore
 	client  *httpclient.TraceClient
 }
 
-func NewBaiduApi(c types.ServiceCore, client *resty.Client) *BaiduApi {
-	return &BaiduApi{context: c, client: &httpclient.TraceClient{
+func NewApi(c types.ServiceCore, client *resty.Client) *Api {
+	return &Api{context: c, client: &httpclient.TraceClient{
 		Tracer: c.GetTrace(),
 		Client: client,
 	}}
 }
 
-func (b *BaiduApi) GetSum() {
+func (b *Api) GetSum() {
 	b.GetRoot()
 	b.GetRootNest()
 }
 
-func (b *BaiduApi) GetRoot() (*resty.Response, error) {
+func (b *Api) GetRoot() (*resty.Response, error) {
 	res, err := b.client.R().Get("", "请求根目录")
 	return res, err
 }
 
-func (b *BaiduApi) GetRootNest() (*resty.Response, error) {
+func (b *Api) GetRootNest() (*resty.Response, error) {
 	res, err := b.client.R().Get("/1", "请求根目录的子目录")
 	return res, err
 }

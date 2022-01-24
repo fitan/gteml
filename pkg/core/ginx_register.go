@@ -5,21 +5,21 @@ import (
 	"github.com/fitan/magic/pkg/types"
 )
 
-type ginXRegister struct {
+type GinXRegister struct {
 	EntryMid []types.Middleware
 }
 
-func (g *ginXRegister) Reload(c *types.Core) {
+func (g *GinXRegister) Reload(c *types.Core) {
 }
 
-func (g *ginXRegister) With(o ...types.Option) types.Register {
+func (g *GinXRegister) With(o ...types.Option) types.Register {
 	return g
 }
 
-func (g *ginXRegister) Set(c *types.Core) {
+func (g *GinXRegister) Set(c *types.Core) {
 	c.GinX = ginx.NewGin(ginx.WithEntryMid(&g.EntryMid))
 }
 
-func (g *ginXRegister) Unset(c *types.Core) {
+func (g *GinXRegister) Unset(c *types.Core) {
 	c.GinX.Reset()
 }

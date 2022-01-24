@@ -82,6 +82,7 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 			log.Error("panic", zap.Any("err", err), zap.String("stack", string(buf)))
 			log.Sync()
 
+			panic(err)
 			core.GinX.SetError(errors.New("系统错误，请联系管理员"))
 		}
 

@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"github.com/go-resty/resty/v2"
+	"go-micro.dev/v4/registry"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"time"
 )
@@ -12,6 +13,9 @@ type option struct {
 	Tp *trace.TracerProvider
 	// 记录所有的详细的http info, 否则只记录发生错误时的http info
 	TraceDebug bool
+
+	MicroServiceName string
+	MicroRegistry    registry.Registry
 
 	Debug            bool
 	TimeOut          time.Duration
@@ -50,6 +54,11 @@ func NewClient(fs ...Option) *resty.Client {
 	if o.Host != "" {
 		client = client.SetHostURL(o.Host)
 	}
+
+	if o.MicroServiceName != "" {
+		client = client.OnBeforeRequest(BeforeMicroSelect(o.MicroServiceName, o.MicroRegistry))
+	}
+
 	return client
 }
 
@@ -63,6 +72,13 @@ func WithTrace(tp *trace.TracerProvider, traceDebug bool) func(o *option) {
 func WithHost(host string) Option {
 	return func(o *option) {
 		o.Host = host
+	}
+}
+
+func WithMicroHost(serviceName string, r registry.Registry) Option {
+	return func(o *option) {
+		o.MicroServiceName = serviceName
+		o.MicroRegistry = r
 	}
 }
 

@@ -7,11 +7,11 @@ import (
 	"log"
 )
 
-type Trace struct {
+type TraceRegister struct {
 	tp *oteltrace.TracerProvider
 }
 
-func (t *Trace) get(c *types.Core) *Trace {
+func (t *TraceRegister) get(c *types.Core) *TraceRegister {
 	if t.tp == nil {
 		tp, err := trace.TracerProvider(ConfReg.Confer.GetMyConf().App.Name, ConfReg.Confer.GetMyConf().Trace.TracerProviderAddr)
 		if err != nil {
@@ -23,18 +23,18 @@ func (t *Trace) get(c *types.Core) *Trace {
 	return t
 }
 
-func (t *Trace) Reload(c *types.Core) {
+func (t *TraceRegister) Reload(c *types.Core) {
 	t.tp = nil
 }
 
-func (t *Trace) With(o ...types.Option) types.Register {
+func (t *TraceRegister) With(o ...types.Option) types.Register {
 	return nil
 }
 
-func (t *Trace) Set(c *types.Core) {
+func (t *TraceRegister) Set(c *types.Core) {
 	c.Tracer = trace.NewTrace(t.get(c).tp, ConfReg.Confer.GetMyConf().Trace.Open)
 }
 
-func (t *Trace) Unset(c *types.Core) {
+func (t *TraceRegister) Unset(c *types.Core) {
 	c.Tracer.UnSet()
 }

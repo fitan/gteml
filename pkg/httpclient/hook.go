@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
 	"go-micro.dev/v4/registry"
+	"go-micro.dev/v4/registry/cache"
 	"go-micro.dev/v4/selector"
 	"go.elastic.co/apm/module/apmhttp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -78,50 +79,19 @@ func BeforeTrace(tp trace.TracerProvider) resty.RequestMiddleware {
 	}
 }
 
-type NodeSelector struct {
-	opts selector.Options
-}
-
-func NewNodeSelector(service string, opts ...selector.SelectOption) (selector.Next, error) {
-	n := new(NodeSelector)
-	services, err := n.opts.Registry.GetService(service)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(services) == 0 {
-		return nil, selector.ErrNotFound
-	}
-
-	var sopts selector.SelectOptions
-	for _, opt := range opts {
-		opt(&sopts)
-	}
-
-	for _, filter := range sopts.Filters {
-		services = filter(services)
-	}
-
-	if len(services) == 0 {
-		return nil, selector.ErrNotFound
-	}
-
-	if len(services[0].Nodes) == 0 {
-		return nil, selector.ErrNotFound
-	}
-
-	return func() (*registry.Node, error) {
-		return services[0].Nodes[0], nil
-	}, nil
-}
-
-func BeforeMicroSelect(s selector.Next) resty.RequestMiddleware {
+func BeforeMicroSelect(serviceName string, r registry.Registry, options ...selector.SelectOption) resty.RequestMiddleware {
+	s := selector.NewSelector(selector.Registry(cache.New(r)))
 	return func(client *resty.Client, request *resty.Request) error {
-		node, err := s()
+		next, err := s.Select(serviceName, options...)
+		if err != nil {
+			return err
+		}
+		node, err := next()
 		if err != nil {
 			return err
 		}
 		client.SetHostURL(node.Address)
+
 		return nil
 	}
 }

@@ -4,19 +4,19 @@ import (
 	"github.com/fitan/magic/pkg/types"
 )
 
-type PoolReg struct {
+type PoolRegister struct {
 }
 
-func (p *PoolReg) With(o ...types.Option) types.Register {
+func (p *PoolRegister) With(o ...types.Option) types.Register {
 	return p
 }
 
-func (p *PoolReg) Reload(c *types.Core) {
+func (p *PoolRegister) Reload(c *types.Core) {
 }
 
-func (p *PoolReg) Set(c *types.Core) {
+func (p *PoolRegister) Set(c *types.Core) {
 	c.Pool = GetCorePool()
 }
 
-func (p *PoolReg) Unset(c *types.Core) {
+func (p *PoolRegister) Unset(c *types.Core) {
 }

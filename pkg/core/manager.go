@@ -23,25 +23,25 @@ import (
 var ConfReg *ConfRegister
 var PromReg *PromRegister
 
-func init() {
+func NewCore() {
 	ConfReg = NewConfReg()
 	PromReg = NewPromRegister()
 	GetCorePool().RegisterList([]types.Register{
 		ConfReg,
-		&Trace{},
-		&logRegister{},
-		&ginXRegister{
+		&TraceRegister{},
+		&LogRegister{},
+		&GinXRegister{
 			EntryMid: []types.Middleware{
 				&ginx.ResultWrapMid{},
 				&ginx.TraceMid{},
 			},
 		},
-		&daoReg{},
+		&DaoRegister{},
 		PromReg,
 		NewServiceRegister(),
 		&ApisRegister{},
-		&VersionReg{},
-		&PoolReg{},
+		&VersionRegister{},
+		&PoolRegister{},
 	})
 }
 

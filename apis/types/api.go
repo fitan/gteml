@@ -5,6 +5,7 @@ import "github.com/go-resty/resty/v2"
 type Apis interface {
 	Baidu() BaiduApi
 	Taobao() TaobaoApi
+	Gteml() GtemlApi
 }
 
 type BaiduApi interface {
@@ -14,5 +15,9 @@ type BaiduApi interface {
 }
 
 type TaobaoApi interface {
+	GetRoot() (*resty.Response, error)
+}
+
+type GtemlApi interface {
 	GetRoot() (*resty.Response, error)
 }

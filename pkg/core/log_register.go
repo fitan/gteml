@@ -32,11 +32,11 @@ func (c *CoreLog) Log() types.Logger {
 	return c.xlog
 }
 
-type logRegister struct {
+type LogRegister struct {
 	xlog *log.Xlog
 }
 
-func (l *logRegister) GetXlog() *log.Xlog {
+func (l *LogRegister) GetXlog() *log.Xlog {
 	if l.xlog == nil {
 		l.xlog = log.NewXlog(
 			log.WithLogLevel(zapcore.Level(ConfReg.Confer.GetMyConf().Log.Lervel)),
@@ -46,21 +46,21 @@ func (l *logRegister) GetXlog() *log.Xlog {
 	return l.xlog
 }
 
-func (l *logRegister) Reload(c *types.Core) {
+func (l *LogRegister) Reload(c *types.Core) {
 	l.xlog = nil
 }
 
-func (l *logRegister) With(o ...types.Option) types.Register {
+func (l *LogRegister) With(o ...types.Option) types.Register {
 	return l
 }
 
-func (l *logRegister) Set(c *types.Core) {
+func (l *LogRegister) Set(c *types.Core) {
 	c.CoreLog = &CoreLog{
 		core: c,
 		xlog: l.GetXlog(),
 	}
 }
 
-func (l *logRegister) Unset(c *types.Core) {
+func (l *LogRegister) Unset(c *types.Core) {
 	//c.CoreLog = nil
 }

@@ -30,23 +30,23 @@ func (v *Version) CompareVersion(c *types.Core) bool {
 	return v.Version() == c.LocalVersion
 }
 
-type VersionReg struct {
+type VersionRegister struct {
 	version types.Version
 }
 
-func (v *VersionReg) Reload(c *types.Core) {
+func (v *VersionRegister) Reload(c *types.Core) {
 }
 
-func (v *VersionReg) With(o ...types.Option) types.Register {
+func (v *VersionRegister) With(o ...types.Option) types.Register {
 	panic("implement me")
 }
 
-func (v *VersionReg) Set(c *types.Core) {
+func (v *VersionRegister) Set(c *types.Core) {
 	if v.version == nil {
 		v.version = NewVersion()
 	}
 	c.Version = v.version
 }
 
-func (v *VersionReg) Unset(c *types.Core) {
+func (v *VersionRegister) Unset(c *types.Core) {
 }

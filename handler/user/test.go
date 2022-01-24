@@ -62,7 +62,12 @@ func (s *SayHelloIn) ServiceID() (serviceID uint) {
 func SayHello(core *types.Core, in *SayHelloIn) (string, error) {
 
 	if in.Query.Say != "" {
-		return in.Query.Say, nil
+
+		req, err := core.GetApis().Gteml().GetRoot()
+		if err != nil {
+			return "false", err
+		}
+		return req.String(), nil
 	}
 
 	return core.GetServices().User().Read() + strconv.Itoa(int(in.CtxKey.JwtUserID)) + in.CtxKey.TestValue, nil

@@ -3,7 +3,7 @@ package ginmid
 import (
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/fitan/magic/dao/dal/model"
-	"github.com/fitan/magic/pkg/core"
+	core2 "github.com/fitan/magic/pkg/core"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -19,7 +19,7 @@ type loginValues struct {
 }
 
 func NewAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
-	core := core.GetCorePool().GetObj()
+	core := core2.GetCorePool().GetObj()
 	jwtConf := core.GetConfig().GetMyConf().Jwt
 	realm := jwtConf.Realm
 	key := jwtConf.SecretKey
