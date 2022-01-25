@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	httpServer "github.com/asim/go-micro/plugins/server/http/v4"
 	"github.com/fitan/magic/pkg/core"
@@ -9,9 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 	"go-micro.dev/v4"
+	"go-micro.dev/v4/registry"
 	"go-micro.dev/v4/server"
 	"log"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -75,7 +78,7 @@ func main() {
 
 	srv := httpServer.NewServer(
 		server.Name("gteml"),
-		server.Address(":8080"),
+		server.Address(":8081"),
 	)
 	gin.SetMode(gin.ReleaseMode)
 
@@ -84,12 +87,39 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	sc := make(chan os.Signal)
+	signal.Notify(sc, os.Interrupt, os.Kill)
+
+	consulReg := micro2.ConsulRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
 	service := micro.NewService(
+		micro.Context(ctx),
 		micro.Server(srv),
-		micro.Registry(micro2.ConsulRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)),
+		micro.Registry(consulReg),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
+		micro.HandleSignal(false),
 	)
+
+	go func() {
+		<-sc
+		id := service.Options().Server.Options().Name + "-" + service.Options().Server.Options().Id
+		err := consulReg.Deregister(
+			&registry.Service{
+				Name:    service.Options().Server.Options().Name,
+				Version: service.Options().Server.Options().Version,
+				Nodes:   []*registry.Node{&registry.Node{Id: id}},
+			},
+		)
+		if err != nil {
+			log.Printf("Deregisterr %v. err: %v\n", id, err)
+		} else {
+			log.Printf("Deregistering node: %v\n", id)
+		}
+		<-time.After(time.Second * 10)
+		cancel()
+	}()
+
 	service.Init()
 	err := service.Run()
 	if err != nil {
