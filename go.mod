@@ -6,8 +6,10 @@ require (
 	cuelang.org/go v0.2.2
 	github.com/Depado/ginprom v1.7.2
 	github.com/appleboy/gin-jwt/v2 v2.7.0
+	github.com/asim/go-micro/plugins/broker/redis/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/asim/go-micro/plugins/registry/consul/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/asim/go-micro/plugins/server/http/v4 v4.0.0-20220118152736-9e0be6c85d75
+	github.com/asim/go-micro/plugins/sync/consul/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/casbin/casbin/v2 v2.39.1
 	github.com/casbin/gorm-adapter/v3 v3.4.5
 	github.com/fsnotify/fsnotify v1.5.1
