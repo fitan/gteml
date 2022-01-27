@@ -128,17 +128,6 @@ func AfterTraceDebug() resty.ResponseMiddleware {
 	}
 }
 
-type DynamicHostHooker interface {
-	GetHost() string
-}
-
-func DynamicHostHook(hooker DynamicHostHooker) resty.PreRequestHook {
-	return func(client *resty.Client, request *http.Request) error {
-		request.Host = hooker.GetHost()
-		return nil
-	}
-}
-
 //func BeforSelectNode() resty.RequestMiddleware {
 //	return func(client *resty.Client, request *resty.Request) error {
 //	}

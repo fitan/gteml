@@ -32,7 +32,7 @@ func (h *ApisRegister) getApis(c *types.Core) apiTypes.Apis {
 
 	if h.gtemlClient == nil {
 		h.gtemlClient = httpclient.NewClient(
-			httpclient.WithMicroHost("gteml", micro.ConsulRegistry(c.GetConfig().GetMyConf().Consul.Addr)),
+			httpclient.WithMicroHost("gteml", micro.EtcdRegistry(c.GetConfig().GetMyConf().Consul.Addr)),
 			httpclient.WithTrace(c.Tracer.Tp(), c.GetConfig().GetMyConf().Apis.Taobao.TraceDebug),
 			httpclient.WithDebug(c.GetConfig().GetMyConf().Apis.Taobao.RestyDebug))
 	}

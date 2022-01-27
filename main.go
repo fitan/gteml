@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/asim/go-micro/plugins/broker/redis/v4"
 	httpServer "github.com/asim/go-micro/plugins/server/http/v4"
-	"github.com/asim/go-micro/plugins/sync/consul/v4"
 	"github.com/fitan/magic/pkg/core"
 	micro2 "github.com/fitan/magic/pkg/micro"
 	"github.com/fitan/magic/router"
@@ -15,7 +14,6 @@ import (
 	"go-micro.dev/v4/broker"
 	"go-micro.dev/v4/registry"
 	"go-micro.dev/v4/server"
-	"go-micro.dev/v4/sync"
 	"log"
 	"os"
 	"os/signal"
@@ -95,18 +93,18 @@ func main() {
 	sc := make(chan os.Signal)
 	signal.Notify(sc, os.Interrupt, os.Kill)
 
-	consulReg := micro2.ConsulRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
+	reg := micro2.EtcdRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
 	service := micro.NewService(
 		micro.Context(ctx),
 		micro.Server(srv),
-		micro.Registry(consulReg),
+		micro.Registry(reg),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
 		micro.HandleSignal(false),
 		micro.Broker(redis.NewBroker(broker.Addrs("localhost:6379"))),
 	)
-	defaultLock := "micro-sync-lock"
-	consulSync := consul.NewSync(sync.Nodes(core.ConfReg.Confer.GetMyConf().Consul.Addr))
+	//defaultLock := "micro-sync-lock"
+	//consulSync := consul.NewSync(sync.Nodes(core.ConfReg.Confer.GetMyConf().Consul.Addr))
 
 	go func() {
 		//err := consulSync.Lock(defaultLock)
@@ -114,17 +112,17 @@ func main() {
 		//	fmt.Printf("lock err: %v", err)
 		//}
 		//fmt.Println("lock ok")
-		leader, err := consulSync.Leader(defaultLock)
-		if err != nil {
-			fmt.Printf("leaderC")
-		}
-		go func() {
-			status := leader.Status()
-			for {
-				s := <-status
-				fmt.Printf("status: %v", s)
-			}
-		}()
+		//leader, err := consulSync.Leader(defaultLock)
+		//if err != nil {
+		//	fmt.Printf("leaderC")
+		//}
+		//go func() {
+		//	status := leader.Status()
+		//	for {
+		//		s := <-status
+		//		fmt.Printf("status: %v", s)
+		//	}
+		//}()
 
 		<-sc
 		//err = consulSync.Unlock(defaultLock)
@@ -133,7 +131,7 @@ func main() {
 		//}
 		//fmt.Println("unlock ok")
 		id := service.Options().Server.Options().Name + "-" + service.Options().Server.Options().Id
-		err = consulReg.Deregister(
+		err := reg.Deregister(
 			&registry.Service{
 				Name:    service.Options().Server.Options().Name,
 				Version: service.Options().Server.Options().Version,

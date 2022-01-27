@@ -4,6 +4,8 @@ import (
 	"github.com/go-resty/resty/v2"
 	"go-micro.dev/v4/registry"
 	"go.opentelemetry.io/otel/sdk/trace"
+	"net"
+	"net/http"
 	"time"
 )
 
@@ -39,6 +41,22 @@ func NewClient(fs ...Option) *resty.Client {
 	}
 
 	client := resty.New().SetDebug(o.Debug).SetTimeout(o.TimeOut).SetRetryCount(o.RetryCount).SetRetryWaitTime(o.RetryWaitTime).SetRetryMaxWaitTime(o.RetryMaxWaitTime)
+
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxIdleConnsPerHost:   10,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+
+	client.SetTransport(transport)
 	if o.Tp != nil {
 		client = client.EnableTrace()
 		client = client.OnBeforeRequest(BeforeTrace(o.Tp))
