@@ -10,7 +10,6 @@ require (
 	github.com/asim/go-micro/plugins/registry/consul/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/asim/go-micro/plugins/registry/etcd/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/asim/go-micro/plugins/server/http/v4 v4.0.0-20220118152736-9e0be6c85d75
-	github.com/asim/go-micro/plugins/sync/consul/v4 v4.0.0-20220118152736-9e0be6c85d75
 	github.com/casbin/casbin/v2 v2.39.1
 	github.com/casbin/gorm-adapter/v3 v3.4.5
 	github.com/fsnotify/fsnotify v1.5.1
@@ -21,6 +20,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/consul/api v1.10.1
+	github.com/hashicorp/go-hclog v0.16.2 // indirect
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/oam-dev/kubevela-core-api v1.1.3
 	github.com/opentracing/opentracing-go v1.2.0

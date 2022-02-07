@@ -80,7 +80,7 @@ func main() {
 
 	srv := httpServer.NewServer(
 		server.Name("gteml"),
-		server.Address(":8081"),
+		server.Address(core.ConfReg.Confer.GetMyConf().App.Addr),
 	)
 	gin.SetMode(gin.ReleaseMode)
 
@@ -93,7 +93,8 @@ func main() {
 	sc := make(chan os.Signal)
 	signal.Notify(sc, os.Interrupt, os.Kill)
 
-	reg := micro2.EtcdRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
+	//reg := micro2.EtcdRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
+	reg := micro2.ConsulRegistry(core.ConfReg.Confer.GetMyConf().Consul.Addr)
 	service := micro.NewService(
 		micro.Context(ctx),
 		micro.Server(srv),
@@ -107,29 +108,8 @@ func main() {
 	//consulSync := consul.NewSync(sync.Nodes(core.ConfReg.Confer.GetMyConf().Consul.Addr))
 
 	go func() {
-		//err := consulSync.Lock(defaultLock)
-		//if err != nil {
-		//	fmt.Printf("lock err: %v", err)
-		//}
-		//fmt.Println("lock ok")
-		//leader, err := consulSync.Leader(defaultLock)
-		//if err != nil {
-		//	fmt.Printf("leaderC")
-		//}
-		//go func() {
-		//	status := leader.Status()
-		//	for {
-		//		s := <-status
-		//		fmt.Printf("status: %v", s)
-		//	}
-		//}()
-
 		<-sc
-		//err = consulSync.Unlock(defaultLock)
-		//if err != nil {
-		//	fmt.Printf("unlock err %v", err)
-		//}
-		//fmt.Println("unlock ok")
+
 		id := service.Options().Server.Options().Name + "-" + service.Options().Server.Options().Id
 		err := reg.Deregister(
 			&registry.Service{
@@ -143,7 +123,7 @@ func main() {
 		} else {
 			log.Printf("Deregistering node: %v\n", id)
 		}
-		<-time.After(time.Second * 10)
+		<-time.After(time.Second * 5)
 		cancel()
 	}()
 
