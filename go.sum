@@ -161,8 +161,6 @@ github.com/asim/go-micro/plugins/registry/etcd/v4 v4.0.0-20220118152736-9e0be6c8
 github.com/asim/go-micro/plugins/registry/etcd/v4 v4.0.0-20220118152736-9e0be6c85d75/go.mod h1:maR33ztnKc7VeMioGfl1vq3Jm7fzztbNoRWTncu96sc=
 github.com/asim/go-micro/plugins/server/http/v4 v4.0.0-20220118152736-9e0be6c85d75 h1:ULuhDMrHjkEkj0dxWS+ZM9MD/9ywFPM7kaoEs4OjhSc=
 github.com/asim/go-micro/plugins/server/http/v4 v4.0.0-20220118152736-9e0be6c85d75/go.mod h1:LEsuhy4ZF3UGT9VSOoj/ZP0MZt4brlgwJVG7/LAac+I=
-github.com/asim/go-micro/plugins/sync/consul/v4 v4.0.0-20220118152736-9e0be6c85d75 h1:SUOFBizBal9xzEVze0Fik6HyjMgRO8b/ucysS+xlgOY=
-github.com/asim/go-micro/plugins/sync/consul/v4 v4.0.0-20220118152736-9e0be6c85d75/go.mod h1:bBuuHG7zlOGmrKvI7mwNG0YqNQ2R6MmTEAz9WOMlQ1E=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.15.78/go.mod h1:E3/ieXAlvM0XWO57iftYVDLLvQ824smPP3ATZkfNZeM=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
