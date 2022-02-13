@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -10,6 +11,43 @@ import (
 	"gorm.io/gorm/clause"
 	"net/http"
 )
+
+type CURD struct {
+}
+
+type Field struct {
+	Name string
+	Type string
+
+	// Create
+	EnableCreate bool
+	// 自己输入
+	Input bool
+	// 远程获取
+	RemoteAuto bool
+	RemoteFn   func(ctx *gin.Context)
+
+	// Table
+	EnableTable bool
+	// 别名
+	Lable string
+	// 可修改
+	EnableModify bool
+
+	// query
+	EnableQuery      bool
+	EnableEq         bool
+	EnableGt         bool
+	EnableLt         bool
+	EnableLte        bool
+	EnableIn         bool
+	EnableNotIn      bool
+	EnableBetween    bool
+	EnableNotBetween bool
+	EnableLike       bool
+	EnableNotLike    bool
+	EnableSort       bool
+}
 
 type Restful interface {
 	SetDB(db *gorm.DB)
@@ -72,7 +110,7 @@ type GetList struct {
 }
 
 func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
-	fmt.Printf("%V", *g)
+	spew.Dump(g)
 
 	if g.Sort != nil && g.Order != nil {
 		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
@@ -210,7 +248,8 @@ func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
 	}
 
 	var result []map[string]interface{}
-	err = b.db.Model(b.GetObj()).Scopes(scopes...).Count(&count).Find(&result).Count(&count).Error
+	err = b.db.Model(b.GetObj()).Count(&count).Scopes(scopes...).Find(&result).Error
+	fmt.Printf("count %v", count)
 	return result, errors.WithMessage(err, "db find")
 
 }
