@@ -34,6 +34,7 @@ func (s *DaoRegister) GetObj(c *types.Core) *DaoRegister {
 		if err != nil {
 			log.Panicf("mysql create db: %s", err.Error())
 		}
+		db = db.Debug()
 		db.Use(otelgorm.NewPlugin())
 
 		s.db = db

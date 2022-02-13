@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/pkg/core"
 	"github.com/go-resty/resty/v2"
@@ -92,6 +93,31 @@ var gormMigrate = &cobra.Command{
 	},
 }
 
+var gormGenFake = &cobra.Command{
+	Use: "gen-fake",
+	Run: func(cmd *cobra.Command, args []string) {
+		conf := core.NewConfReg()
+		client, err := gorm.Open(mysql.Open(conf.Confer.GetMyConf().Mysql.Url), &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: true,
+		})
+		if err != nil {
+			log.Fatalf("failed connecting to mysql: %v", err)
+		}
+		for i := 0; i < 1000; i++ {
+			err = client.Create(&model.User{
+				Name:     gofakeit.Name(),
+				Email:    gofakeit.Email(),
+				PassWord: gofakeit.Password(true, true, true, true, true, 8),
+				Token:    gofakeit.UUID(),
+				Enable:   false,
+			}).Error
+			if err != nil {
+				log.Fatalf("create err: %v", err.Error())
+			}
+		}
+	},
+}
+
 func main() {
 	genConfSrc = genconf.Flags().StringP("src", "s", "", "")
 	genConfDest = genconf.Flags().StringP("dest", "d", "", "")
@@ -99,5 +125,9 @@ func main() {
 	rootCmd.AddCommand(genconf)
 	rootCmd.AddCommand(migrate)
 	rootCmd.AddCommand(gormMigrate)
-	rootCmd.Execute()
+	rootCmd.AddCommand(gormGenFake)
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatalf("execute err: %v", err.Error())
+	}
 }

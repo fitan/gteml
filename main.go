@@ -53,7 +53,6 @@ func main() {
 		fmt.Printf("GoLang Version: %s \n", goVersion)
 		return
 	}
-	core.NewCore()
 
 	if core.ConfReg.Confer.GetMyConf().Pyroscope.Open {
 		profiler.Start(

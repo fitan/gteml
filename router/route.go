@@ -5,12 +5,17 @@ import (
 	"github.com/fitan/magic/gen/transfer/permission"
 	"github.com/fitan/magic/gen/transfer/role"
 	"github.com/fitan/magic/gen/transfer/user"
+	"github.com/fitan/magic/handler/restapi"
+	"github.com/fitan/magic/pkg/core"
 	"github.com/fitan/magic/pkg/ginmid"
 	"github.com/fitan/magic/pkg/ginx"
 	"github.com/fitan/magic/pkg/prometheus"
+	"github.com/fitan/magic/pkg/rest"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 
 	//"go.elastic.co/apm/module/apmgin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
@@ -20,6 +25,15 @@ func Router() *gin.Engine {
 	//r := gin.New()
 
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "X-Total-Count"},
+		ExposeHeaders:    []string{"X-Total-Count"},
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+		AllowAllOrigins:  true,
+	}))
 	r.Use(otelgin.Middleware("ginhttp"))
 
 	//r.Use(apmgin.Middleware(r))
@@ -42,6 +56,10 @@ func Router() *gin.Engine {
 	info(r)
 	swag(r)
 	ping(r)
+
+	u := &restapi.User{BaseRest: &rest.BaseRest{Objer: &restapi.UserObj{}}}
+	u.SetDB(core.GetCorePool().GetObj().GetDao().Storage().DB())
+	rest.RegisterRestApi(r, u, "/rest/users")
 
 	return r
 }

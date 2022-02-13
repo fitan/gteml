@@ -19,6 +19,10 @@ type Storage struct {
 	query      *dbquery.WrapQuery
 }
 
+func (s *Storage) DB() *gorm.DB {
+	return s.db
+}
+
 func (s *Storage) Permission() types2.Permission {
 	return s.permission
 }

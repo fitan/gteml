@@ -23,6 +23,10 @@ import (
 var ConfReg *ConfRegister
 var PromReg *PromRegister
 
+func init() {
+	NewCore()
+}
+
 func NewCore() {
 	ConfReg = NewConfReg()
 	PromReg = NewPromRegister()
