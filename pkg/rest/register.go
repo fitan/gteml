@@ -31,4 +31,18 @@ func RegisterRestApi(r gin.IRouter, rest Restful, path string) {
 	r.DELETE(path, func(ctx *gin.Context) {
 		rest.Wrap(ctx, rest.DeleteMany)
 	})
+
+	// 查询某个字段 一般用作 ui input 的 selecte 或者 autoComplete
+	r.GET(path+"/fields/:fieldName", func(ctx *gin.Context) {
+		rest.Wrap(ctx, rest.GetField)
+	})
+
+	r.GET(path+"/fields", func(ctx *gin.Context) {
+		rest.Wrap(ctx, rest.GetFields)
+	})
+
+	// 关联查询
+	r.GET("path"+"/:id/relations/:relationName", func(ctx *gin.Context) {
+		rest.Wrap(ctx, rest.Relations)
+	})
 }

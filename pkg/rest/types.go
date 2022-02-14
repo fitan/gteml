@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -63,6 +62,12 @@ type Restful interface {
 	UpdateMany(ctx *gin.Context) (interface{}, error)
 	Delete(ctx *gin.Context) (interface{}, error)
 	DeleteMany(ctx *gin.Context) (interface{}, error)
+
+	GetField(ctx *gin.Context) (interface{}, error)
+	GetFields(ctx *gin.Context) (interface{}, error)
+
+	// 关联查询
+	Relations(ctx *gin.Context) (interface{}, error)
 }
 
 type Objer interface {
@@ -101,7 +106,7 @@ type GetList struct {
 	Limit  *int    `json:"limit" form:"_limit"`
 	Sort   *string `json:"sort" form:"_sort"`
 	Order  *string `json:"order" form:"_order"`
-	Filter *string `json:"filter" form:"filter"`
+	Filter *string `json:"filter" form:"_filter"`
 	// GetMany must
 	Ids []int `json:"ids" form:"ids"`
 	// GetManyReference must
@@ -110,8 +115,6 @@ type GetList struct {
 }
 
 func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
-	spew.Dump(g)
-
 	if g.Sort != nil && g.Order != nil {
 		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
 			return db.Order(fmt.Sprintf("%v %v", *g.Sort, *g.Order))
@@ -151,16 +154,6 @@ func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 }
 
 type filter map[string]string
-
-type pagination struct {
-	Page    int `json:"page"`
-	PerPage int `json:"limit"`
-}
-
-type sort struct {
-	Sort  string `json:"sort"`
-	Order string `json:"order"`
-}
 
 type GetManyByIds struct {
 	Ids []int `json:"filter" form:"ids"`
@@ -266,44 +259,6 @@ func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
 	return result, err
 }
 
-//func (b *BaseRest) GetMany(ctx *gin.Context) (interface{}, error) {
-//	var getMany GetMany
-//	err := ctx.BindQuery(&getMany)
-//	if err != nil {
-//		return nil, errors.WithStack(err)
-//	}
-//
-//	var result []map[string]interface{}
-//	err = b.db.Model(b.GetObj()).Find(&result, getMany.Ids).Error
-//	return result, err
-//}
-
-//func (b *BaseRest) GetManyReference(ctx *gin.Context) (interface{}, error) {
-//	var getManyReference GetManyReference
-//	err := ctx.BindQuery(&getManyReference)
-//	if err != nil {
-//		return nil, errors.WithStack(err)
-//	}
-//
-//	obj := b.GetObj()
-//	err = b.db.First(obj,getManyReference.Id).Error
-//	if err != nil {
-//		return nil, errors.WithStack(err)
-//	}
-//
-//	scopes, err := getManyReference.Scopes()
-//	if err != nil {
-//		return nil, errors.WithStack(err)
-//	}
-//
-//	var result []map[string]interface{}
-//	err = b.db.Model(obj).Scopes(scopes...).Association(getManyReference.Target).Find(&result)
-//	if err != nil {
-//		return nil, errors.WithStack(err)
-//	}
-//	return result, nil
-//}
-
 func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 	obj := b.GetObj()
 	err := ctx.BindJSON(obj)
@@ -400,4 +355,151 @@ func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
 		return nil, errors.WithStack(err)
 	}
 	return delete.Ids, nil
+}
+
+type QueryField struct {
+	Key       *string `json:"query" form:"_key"`
+	FieldName string  `json:"name" uri:"fieldName"`
+}
+
+func (q *QueryField) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+		db = db.Select("id", q.FieldName)
+		if q.Key != nil {
+			db = db.Where(fmt.Sprintf("%s LIKE ?", q.FieldName), "%"+*q.Key+"%")
+		}
+		return db
+	})
+	return scopes, nil
+
+}
+
+func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
+	var queryField QueryField
+	err := ctx.Bind(&queryField)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err := queryField.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
+	var result []map[string]interface{}
+	err = b.db.Model(b.GetObj()).Scopes(scopes...).Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+type QueryFields struct {
+	Key    *string  `json:"query" form:"_key"`
+	Fields []string `json:"name" form:"_fields"`
+}
+
+func (q *QueryFields) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+		db = db.Select("id").Select(q.Fields)
+		if q.Key != nil {
+			for _, v := range q.Fields {
+				db = db.Where(fmt.Sprintf("%s LIKE ?", v), "%"+*q.Key+"%")
+			}
+		}
+		return db
+	})
+	return scopes, nil
+
+}
+
+func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
+	var queryFields QueryFields
+	err := ctx.Bind(&queryFields)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err := queryFields.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
+	var result []map[string]interface{}
+	err = b.db.Scopes(scopes...).Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+type GetRelation struct {
+	Id           int64   `json:"id" uri:"id"`
+	RelationName string  `json:"relationName" uri:"relationName"`
+	Page         *int    `json:"page" form:"_page"`
+	Limit        *int    `json:"limit" form:"_limit"`
+	Sort         *string `json:"sort" form:"_sort"`
+	Order        *string `json:"order" form:"_order"`
+	Filter       *string `json:"filter" form:"_filter"`
+}
+
+func (g *GetRelation) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	if g.Sort != nil && g.Order != nil {
+		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+			return db.Order(fmt.Sprintf("%v %v", *g.Sort, *g.Order))
+		})
+	}
+
+	if g.Page != nil && g.Limit != nil {
+		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+			return db.Limit(*g.Limit).Offset((*g.Page - 1) * *g.Limit)
+		})
+	}
+
+	if g.Filter != nil {
+		var filter filter
+		err = json.Unmarshal([]byte(*g.Filter), &filter)
+		if err != nil {
+			return
+		}
+
+		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+			save := db
+			for k, v := range filter {
+				save = save.Where(fmt.Sprintf("%s = ?", k), v)
+			}
+			return save
+		})
+	}
+	return
+}
+
+// 一对多查询
+func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
+
+	var getRelation GetRelation
+	err := ctx.Bind(&getRelation)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err := getRelation.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
+	obj := b.GetObj()
+
+	err = b.db.Find(obj, getRelation.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var result []map[string]interface{}
+	err = b.db.Model(obj).Scopes(scopes...).Association(getRelation.RelationName).Find(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
