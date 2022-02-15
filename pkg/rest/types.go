@@ -3,9 +3,9 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/http"
@@ -55,8 +55,6 @@ type Restful interface {
 	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
 	GetList(ctx *gin.Context) (interface{}, error)
 	GetOne(ctx *gin.Context) (interface{}, error)
-	//GetMany(ctx *gin.Context) (interface{},error)
-	//GetManyReference(ctx *gin.Context) (interface{},error)
 	Create(ctx *gin.Context) (interface{}, error)
 	Update(ctx *gin.Context) (interface{}, error)
 	UpdateMany(ctx *gin.Context) (interface{}, error)
@@ -66,7 +64,6 @@ type Restful interface {
 	GetField(ctx *gin.Context) (interface{}, error)
 	GetFields(ctx *gin.Context) (interface{}, error)
 
-	// 关联查询
 	Relations(ctx *gin.Context) (interface{}, error)
 }
 
@@ -76,15 +73,15 @@ type Objer interface {
 }
 
 type BaseRest struct {
-	db *gorm.DB
+	DB *gorm.DB
 	Objer
 }
 
-type GetOne struct {
+type GetOneById struct {
 	Id int64 `json:"id" uri:"id" form:"id"`
 }
 
-func (g *GetOne) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (g *GetOneById) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
 		return db.Where("id = ?", g.Id)
 	})
@@ -93,7 +90,7 @@ func (g *GetOne) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 
 type GetManyReference struct {
 	GetList
-	GetOne
+	GetOneById
 	Target string `json:"target" form:"target"`
 }
 
@@ -109,9 +106,6 @@ type GetList struct {
 	Filter *string `json:"filter" form:"_filter"`
 	// GetMany must
 	Ids []int `json:"ids" form:"ids"`
-	// GetManyReference must
-	Target *string `json:"target" form:"target"`
-	Id     *int64  `json:"id" form:"id"`
 }
 
 func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
@@ -153,14 +147,10 @@ func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	return
 }
 
-type filter map[string]string
+type filter map[string]interface{}
 
 type GetManyByIds struct {
-	Ids []int `json:"filter" form:"ids"`
-}
-
-type Ids struct {
-	Id []int64 `json:"id"`
+	Ids []int64 `json:"ids" form:"ids"`
 }
 
 func (g *GetManyByIds) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
@@ -173,16 +163,8 @@ func (g *GetManyByIds) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error)
 }
 
 func (b *BaseRest) SetDB(db *gorm.DB) {
-	b.db = db
+	b.DB = db
 }
-
-//func (b *BaseRest) GetObj() interface{} {
-//	return nil
-//}
-//
-//func (b *BaseRest) GetObjs() interface{} {
-//	return nil
-//}
 
 func (b *BaseRest) Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error)) {
 	data, err := fn(ctx)
@@ -220,42 +202,27 @@ func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
 	}
 
 	var count int64
-	defer func() {
-		ctx.Header("X-Total-Count", cast.ToString(count))
-	}()
-	// GetManyReference
-	if getList.Target != nil && getList.Id != nil {
-		obj := b.GetObj()
-		err = b.db.First(obj, *getList.Id).Error
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-
-		var result []map[string]interface{}
-		err = b.db.Model(obj).Scopes(scopes...).Count(&count).Association(*getList.Target).Find(&result)
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-		return result, nil
-
-	}
 
 	var result []map[string]interface{}
-	err = b.db.Model(b.GetObj()).Count(&count).Scopes(scopes...).Find(&result).Error
-	fmt.Printf("count %v", count)
-	return result, errors.WithMessage(err, "db find")
+	err = b.DB.Model(b.GetObj()).Count(&count).Scopes(scopes...).Find(&result).Error
+	return map[string]interface{}{"list": result, "count": count}, errors.WithMessage(err, "DB find")
 
 }
 
 func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
-	var id GetOne
-	err := ctx.BindUri(&id)
+	var getOneById GetOneById
+	err := ctx.BindUri(&getOneById)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
+	scopes, err := getOneById.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
 	var result map[string]interface{}
-	err = b.db.Model(b.GetObj()).First(&result, "id = ?", id.Id).Error
+	err = b.DB.Model(b.GetObj()).Scopes(scopes...).First(&result).Error
 	return result, err
 }
 
@@ -266,7 +233,7 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	err = b.db.Create(obj).Error
+	err = b.DB.Create(obj).Error
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -274,8 +241,8 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 }
 
 func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
-	var update GetOne
-	err := ctx.BindUri(&update)
+	var getOneById GetOneById
+	err := ctx.BindUri(&getOneById)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -286,8 +253,13 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 		return nil, errors.WithStack(err)
 	}
 
+	scopes, err := getOneById.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
 	obj := b.GetObj()
-	err = b.db.Model(obj).Clauses(clause.Returning{}).Where("id = ?", update.Id).Updates(m).Error
+	err = b.DB.Model(obj).Clauses(clause.Returning{}).Scopes(scopes...).Updates(m).Error
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -296,13 +268,13 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 }
 
 func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
-	var update GetManyByIds
-	err := ctx.BindQuery(&update)
+	var getManyByIds GetManyByIds
+	err := ctx.BindQuery(&getManyByIds)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	scopes, err := update.Scopes()
+	scopes, err := getManyByIds.Scopes()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -314,7 +286,7 @@ func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
 	}
 
 	objs := b.GetObjs()
-	err = b.db.Model(objs).Clauses(clause.Returning{}).Scopes(scopes...).Updates(m).Error
+	err = b.DB.Model(objs).Clauses(clause.Returning{}).Scopes(scopes...).Updates(m).Error
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -323,14 +295,19 @@ func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
 }
 
 func (b *BaseRest) Delete(ctx *gin.Context) (interface{}, error) {
-	var delete GetOne
-	err := ctx.BindUri(&delete)
+	var getOneById GetOneById
+	err := ctx.BindUri(&getOneById)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
+	scopes, err := getOneById.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
 	obj := b.GetObj()
-	err = b.db.Clauses(clause.Returning{}).Delete(obj, delete.Id).Error
+	err = b.DB.Clauses(clause.Returning{}).Scopes(scopes...).Delete(obj).Error
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -338,35 +315,35 @@ func (b *BaseRest) Delete(ctx *gin.Context) (interface{}, error) {
 }
 
 func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
-	var delete GetManyByIds
-	err := ctx.BindQuery(&delete)
+	var getManyByIds GetManyByIds
+	err := ctx.BindQuery(&getManyByIds)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	scopes, err := delete.Scopes()
+	scopes, err := getManyByIds.Scopes()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	obj := b.GetObj()
-	err = b.db.Where("1 = 1").Scopes(scopes...).Delete(obj).Error
+	err = b.DB.Where("1 = 1").Scopes(scopes...).Delete(obj).Error
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return delete.Ids, nil
+	return getManyByIds.Ids, nil
 }
 
 type QueryField struct {
-	Key       *string `json:"query" form:"_key"`
-	FieldName string  `json:"name" uri:"fieldName"`
+	KeyWord *string `json:"query" form:"_keyWord"`
+	Name    string  `uri:"name"`
 }
 
 func (q *QueryField) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
-		db = db.Select("id", q.FieldName)
-		if q.Key != nil {
-			db = db.Where(fmt.Sprintf("%s LIKE ?", q.FieldName), "%"+*q.Key+"%")
+		db = db.Select("id", q.Name)
+		if q.KeyWord != nil {
+			db = db.Where(fmt.Sprintf("%s LIKE ?", q.Name), "%"+*q.KeyWord+"%")
 		}
 		return db
 	})
@@ -376,10 +353,11 @@ func (q *QueryField) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 
 func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 	var queryField QueryField
-	err := ctx.Bind(&queryField)
+	err := ctx.ShouldBind(&queryField)
 	if err != nil {
 		return nil, err
 	}
+	spew.Dump(queryField)
 
 	scopes, err := queryField.Scopes()
 	if err != nil {
@@ -387,7 +365,7 @@ func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 	}
 
 	var result []map[string]interface{}
-	err = b.db.Model(b.GetObj()).Scopes(scopes...).Find(&result).Error
+	err = b.DB.Model(b.GetObj()).Scopes(scopes...).Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -395,16 +373,16 @@ func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 }
 
 type QueryFields struct {
-	Key    *string  `json:"query" form:"_key"`
-	Fields []string `json:"name" form:"_fields"`
+	KeyWord *string  `json:"query" form:"_keyWord"`
+	Fields  []string `json:"name" form:"_fields"`
 }
 
 func (q *QueryFields) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
 		db = db.Select("id").Select(q.Fields)
-		if q.Key != nil {
+		if q.KeyWord != nil {
 			for _, v := range q.Fields {
-				db = db.Where(fmt.Sprintf("%s LIKE ?", v), "%"+*q.Key+"%")
+				db = db.Where(fmt.Sprintf("%s LIKE ?", v), "%"+*q.KeyWord+"%")
 			}
 		}
 		return db
@@ -415,7 +393,7 @@ func (q *QueryFields) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) 
 
 func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
 	var queryFields QueryFields
-	err := ctx.Bind(&queryFields)
+	err := ctx.ShouldBind(&queryFields)
 	if err != nil {
 		return nil, err
 	}
@@ -426,7 +404,7 @@ func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
 	}
 
 	var result []map[string]interface{}
-	err = b.db.Scopes(scopes...).Find(&result).Error
+	err = b.DB.Scopes(scopes...).Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -478,7 +456,7 @@ func (g *GetRelation) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) 
 func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 
 	var getRelation GetRelation
-	err := ctx.Bind(&getRelation)
+	err := ctx.ShouldBind(&getRelation)
 	if err != nil {
 		return nil, err
 	}
@@ -490,16 +468,17 @@ func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 
 	obj := b.GetObj()
 
-	err = b.db.Find(obj, getRelation.Id).Error
+	err = b.DB.Find(obj, getRelation.Id).Error
 	if err != nil {
 		return nil, err
 	}
 
 	var result []map[string]interface{}
-	err = b.db.Model(obj).Scopes(scopes...).Association(getRelation.RelationName).Find(&result)
+	var count int64
+	err = b.DB.Model(obj).Count(&count).Scopes(scopes...).Association(getRelation.RelationName).Find(&result)
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return map[string]interface{}{"list": result, "count": count}, nil
 }
