@@ -8,6 +8,35 @@ import (
 type UserObj struct {
 }
 
+func (u *UserObj) GetModelObj() interface{} {
+	return &model.User{}
+}
+
+func (u *UserObj) GetModelObjs() interface{} {
+	data := make([]model.User, 0, 0)
+	return &data
+}
+
+func (u *UserObj) GetFirstObj() interface{} {
+	return u.GetModelObj()
+}
+
+func (u *UserObj) GetFindObj() interface{} {
+	return u.GetModelObj()
+}
+
+func (u *UserObj) GetUpdateObj() interface{} {
+	return u.GetModelObj()
+}
+
+func (u *UserObj) GetCreateObj() interface{} {
+	return u.GetModelObj()
+}
+
+func NewUserObj() rest.Objer {
+	return &UserObj{}
+}
+
 func (u *UserObj) GetObj() interface{} {
 	return &model.User{}
 }
