@@ -8,6 +8,10 @@ import (
 type UserObj struct {
 }
 
+func (u *UserObj) GetTableName() string {
+	return "users"
+}
+
 func (u *UserObj) GetModelObj() interface{} {
 	return &model.User{}
 }
@@ -22,7 +26,7 @@ func (u *UserObj) GetFirstObj() interface{} {
 }
 
 func (u *UserObj) GetFindObj() interface{} {
-	return u.GetModelObj()
+	return u.GetModelObjs()
 }
 
 func (u *UserObj) GetUpdateObj() interface{} {
@@ -31,19 +35,6 @@ func (u *UserObj) GetUpdateObj() interface{} {
 
 func (u *UserObj) GetCreateObj() interface{} {
 	return u.GetModelObj()
-}
-
-func NewUserObj() rest.Objer {
-	return &UserObj{}
-}
-
-func (u *UserObj) GetObj() interface{} {
-	return &model.User{}
-}
-
-func (u *UserObj) GetObjs() interface{} {
-	objs := make([]model.User, 0, 0)
-	return &objs
 }
 
 type User struct {

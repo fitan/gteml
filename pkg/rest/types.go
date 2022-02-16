@@ -50,6 +50,7 @@ type Field struct {
 
 type Restful interface {
 	Objer
+	FieldConfer
 	SetDB(db *gorm.DB)
 	GetDB() *gorm.DB
 	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
@@ -67,18 +68,14 @@ type Restful interface {
 	Relations(ctx *gin.Context) (interface{}, error)
 }
 
-type Objer interface {
-	GetModelObj() interface{}
-	GetModelObjs() interface{}
-	GetFirstObj() interface{}
-	GetFindObj() interface{}
-	GetUpdateObj() interface{}
-	GetCreateObj() interface{}
-}
-
 type BaseRest struct {
 	DB *gorm.DB
 	Objer
+	FieldConfer
+}
+
+func NewBaseRest(DB *gorm.DB, objer Objer, fieldConfer FieldConfer) *BaseRest {
+	return &BaseRest{DB: DB, Objer: objer, FieldConfer: fieldConfer}
 }
 
 type GetOneById struct {
@@ -109,7 +106,7 @@ type GetList struct {
 	Order  *string `json:"order" form:"_order"`
 	Filter *string `json:"filter" form:"_filter"`
 	// GetMany must
-	Ids []int `json:"ids" form:"ids"`
+	Ids []int `json:"ids" form:"_ids"`
 }
 
 func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
@@ -154,7 +151,7 @@ func (g *GetList) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 type filter map[string]interface{}
 
 type GetManyByIds struct {
-	Ids []int64 `json:"ids" form:"ids"`
+	Ids []int64 `json:"ids" form:"_ids"`
 }
 
 func (g *GetManyByIds) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
@@ -243,6 +240,10 @@ func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
 	return result, err
 }
 
+func (b *BaseRest) CreateField() (s []string, o []string) {
+	return []string{"*"}, []string{"id", "updated_at", "deleted_at", "created_at"}
+}
+
 func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 	obj := b.GetModelObj()
 	err := ctx.BindJSON(obj)
@@ -250,11 +251,16 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	err = b.GetDB().Create(obj).Error
+	s, o := b.CreateField()
+	err = b.GetDB().Select(s).Omit(o...).Create(obj).Error
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
+}
+
+func (b *BaseRest) UpdateField() (s []string, o []string) {
+	return []string{"*"}, []string{"id", "updated_at", "deleted_at", "created_at"}
 }
 
 func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
@@ -276,12 +282,13 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 	}
 
 	obj := b.GetModelObj()
-	err = b.GetDB().Model(obj).Clauses(clause.Returning{}).Scopes(scopes...).Save(data).Error
+	s, o := b.UpdateField()
+	err = b.GetDB().Model(obj).Select(s).Omit(o...).Scopes(scopes...).Updates(data).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return obj, nil
+	return "ok", nil
 }
 
 func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
@@ -296,7 +303,7 @@ func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	data := b.GetUpdateObj()
+	data := b.GetModelObj()
 	err = ctx.BindJSON(data)
 	if err != nil {
 		return nil, err
@@ -343,7 +350,7 @@ func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
 	}
 
 	obj := b.GetModelObj()
-	err = b.GetDB().Where("1 = 1").Scopes(scopes...).Delete(obj).Error
+	err = b.GetDB().Scopes(scopes...).Delete(obj).Error
 	if err != nil {
 		return nil, err
 	}
@@ -472,11 +479,20 @@ func (g *GetRelation) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) 
 	return
 }
 
+type RelationConf struct {
+	TableName string
+	Objer     Objer
+}
+
 // 一对多查询
 func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 
 	var getRelation GetRelation
-	err := ctx.ShouldBind(&getRelation)
+	err := ctx.ShouldBindUri(&getRelation)
+	if err != nil {
+		return nil, err
+	}
+	err = ctx.ShouldBind(&getRelation)
 	if err != nil {
 		return nil, err
 	}
@@ -494,8 +510,18 @@ func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 	}
 
 	var result []map[string]interface{}
-	var count int64
-	err = b.GetDB().Model(obj).Count(&count).Scopes(scopes...).Association(getRelation.RelationName).Find(&result)
+
+	tableNameArry := []rune(getRelation.RelationName)
+	if tableNameArry[0] >= 97 && tableNameArry[0] <= 122 {
+		tableNameArry[0] -= 32
+	}
+	tableName := string(tableNameArry)
+	//tableName := b.GetDB().Config.NamingStrategy.TableName(getRelation.RelationName)
+	//fmt.Printf("tableName: " + tableName)
+
+	count := b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Count()
+
+	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(&result)
 	if err != nil {
 		return nil, err
 	}
