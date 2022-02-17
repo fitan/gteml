@@ -541,7 +541,7 @@ func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	obj := b.GetFindObj()
+	obj := b.GetFirstObj()
 	err = ctx.ShouldBindJSON(obj)
 	if err != nil {
 		return nil, err
