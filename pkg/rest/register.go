@@ -48,8 +48,14 @@ func RegisterRestApi(r gin.IRouter, rest Restful, path string) {
 		rest.Wrap(ctx, rest.GetFields)
 	})
 
-	// /path/1/relateion/roles?_page
+	// /path/1/relateions/roles?_page
 	r.GET(path+"/:id/relations/:relationName", func(ctx *gin.Context) {
 		rest.Wrap(ctx, rest.Relations)
+	})
+
+	// /path/1/relations?_fields=xx
+	r.POST(path+"/:id/relations", func(ctx *gin.Context) {
+		rest.Wrap(ctx, rest.Relations)
+
 	})
 }

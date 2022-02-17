@@ -9,7 +9,7 @@ type UserObj struct {
 }
 
 func (u *UserObj) GetTableName() string {
-	return "users"
+	return "Users"
 }
 
 func (u *UserObj) GetModelObj() interface{} {
@@ -29,14 +29,16 @@ func (u *UserObj) GetFindObj() interface{} {
 	return u.GetModelObjs()
 }
 
-func (u *UserObj) GetUpdateObj() interface{} {
-	return u.GetModelObj()
+type UsersFieldConf struct {
+	rest.BaseFieldConf
 }
 
-func (u *UserObj) GetCreateObj() interface{} {
-	return u.GetModelObj()
-}
-
-type User struct {
-	*rest.BaseRest
+func (u *UsersFieldConf) RelationField() map[string]rest.RelationFielder {
+	return map[string]rest.RelationFielder{"roles": struct {
+		rest.Objer
+		rest.FieldConfer
+	}{
+		&RolesObj{},
+		&RolesFieldConf{},
+	}}
 }

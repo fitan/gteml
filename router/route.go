@@ -57,7 +57,7 @@ func Router() *gin.Engine {
 	swag(r)
 	ping(r)
 
-	b := rest.NewBaseRest(core.GetCorePool().GetObj().GetDao().Storage().DB(), &restapi.UserObj{}, &rest.BaseFieldConf{})
+	b := rest.NewBaseRest(core.GetCorePool().GetObj().GetDao().Storage().DB(), &restapi.UserObj{}, &restapi.UsersFieldConf{})
 	rest.RegisterRestApi(r, b, "/rest/users")
 
 	return r

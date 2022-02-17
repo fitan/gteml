@@ -1,8 +1,15 @@
 package restapi
 
-import "github.com/fitan/magic/dao/dal/model"
+import (
+	"github.com/fitan/magic/dao/dal/model"
+	"github.com/fitan/magic/pkg/rest"
+)
 
 type RolesObj struct {
+}
+
+func (r *RolesObj) GetTableName() string {
+	return "Roles"
 }
 
 func (r *RolesObj) GetModelObj() interface{} {
@@ -11,7 +18,7 @@ func (r *RolesObj) GetModelObj() interface{} {
 
 func (r *RolesObj) GetModelObjs() interface{} {
 	i := make([]model.Role, 0, 0)
-	return i
+	return &i
 }
 
 func (r *RolesObj) GetFirstObj() interface{} {
@@ -24,4 +31,12 @@ func (r *RolesObj) GetFindObj() interface{} {
 
 func NewRolesObj() *RolesObj {
 	return &RolesObj{}
+}
+
+type RolesFieldConf struct {
+	rest.BaseFieldConf
+}
+
+func (r *RolesFieldConf) RelationField() map[string]rest.RelationFielder {
+	return nil
 }

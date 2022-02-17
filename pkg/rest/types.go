@@ -66,6 +66,7 @@ type Restful interface {
 	GetFields(ctx *gin.Context) (interface{}, error)
 
 	Relations(ctx *gin.Context) (interface{}, error)
+	RelationCreate(ctx *gin.Context) (interface{}, error)
 }
 
 type BaseRest struct {
@@ -252,6 +253,8 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 	}
 
 	s, o := b.CreateField()
+	// 禁止关联创建，防止误创建。如果要创建使用relattioncreate
+	o = append(o, clause.Associations)
 	err = b.GetDB().Select(s).Omit(o...).Create(obj).Error
 	if err != nil {
 		return nil, err
@@ -438,7 +441,12 @@ func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
 	return result, nil
 }
 
-type GetRelation struct {
+type RelationCreate struct {
+	Id     int64    `json:"id" uri:"id"`
+	Fields []string `json:"fields" form:"_fields"`
+}
+
+type RelationGet struct {
 	Id           int64   `json:"id" uri:"id"`
 	RelationName string  `json:"relationName" uri:"relationName"`
 	Page         *int    `json:"page" form:"_page"`
@@ -448,7 +456,7 @@ type GetRelation struct {
 	Filter       *string `json:"filter" form:"_filter"`
 }
 
-func (g *GetRelation) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (g *RelationGet) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	if g.Sort != nil && g.Order != nil {
 		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
 			return db.Order(fmt.Sprintf("%v %v", *g.Sort, *g.Order))
@@ -479,15 +487,10 @@ func (g *GetRelation) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) 
 	return
 }
 
-type RelationConf struct {
-	TableName string
-	Objer     Objer
-}
-
 // 一对多查询
 func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 
-	var getRelation GetRelation
+	var getRelation RelationGet
 	err := ctx.ShouldBindUri(&getRelation)
 	if err != nil {
 		return nil, err
@@ -509,22 +512,61 @@ func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	var result []map[string]interface{}
-
-	tableNameArry := []rune(getRelation.RelationName)
-	if tableNameArry[0] >= 97 && tableNameArry[0] <= 122 {
-		tableNameArry[0] -= 32
+	rc, ok := b.FieldConfer.RelationField()[getRelation.RelationName]
+	if !ok {
+		return nil, fmt.Errorf("%v relation field permission denied", getRelation.RelationName)
 	}
-	tableName := string(tableNameArry)
-	//tableName := b.GetDB().Config.NamingStrategy.TableName(getRelation.RelationName)
-	//fmt.Printf("tableName: " + tableName)
+
+	tableName := rc.GetTableName()
+	result := rc.GetFindObj()
 
 	count := b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Count()
 
-	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(&result)
+	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(result)
 	if err != nil {
 		return nil, err
 	}
 
 	return map[string]interface{}{"list": result, "count": count}, nil
+}
+
+func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
+	var relationCreate RelationCreate
+	err := ctx.ShouldBindUri(&relationCreate)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.ShouldBindQuery(&relationCreate)
+	if err != nil {
+		return nil, err
+	}
+	obj := b.GetFindObj()
+	err = ctx.ShouldBindJSON(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	err = b.GetDB().First(obj, relationCreate.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	db := b.GetDB()
+	if len(relationCreate.Fields) == 0 {
+		db = db.Omit(clause.Associations)
+	} else {
+		for _, f := range relationCreate.Fields {
+			if rf, ok := b.RelationField()[f]; ok {
+				db = db.Select(rf.GetTableName())
+			}
+		}
+	}
+
+	err = db.Create(obj).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return obj, nil
 }
