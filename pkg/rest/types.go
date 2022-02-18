@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -67,6 +66,7 @@ type Restful interface {
 
 	Relations(ctx *gin.Context) (interface{}, error)
 	RelationCreate(ctx *gin.Context) (interface{}, error)
+	RelationUpdate(ctx *gin.Context) (interface{}, error)
 }
 
 type BaseRest struct {
@@ -209,9 +209,9 @@ func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
 
 	var count int64
 
-	var result []map[string]interface{}
-	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(&result).Error
-	return map[string]interface{}{"list": result, "count": count}, errors.WithMessage(err, "DB find")
+	objs := b.GetFindObj()
+	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(objs).Error
+	return map[string]interface{}{"list": objs, "count": count}, errors.WithMessage(err, "DB find")
 
 }
 
@@ -236,9 +236,9 @@ func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	var result map[string]interface{}
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).First(&result).Error
-	return result, err
+	obj := b.GetFirstObj()
+	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).First(obj).Error
+	return obj, err
 }
 
 func (b *BaseRest) CreateField() (s []string, o []string) {
@@ -387,19 +387,18 @@ func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	spew.Dump(queryField)
 
 	scopes, err := queryField.Scopes()
 	if err != nil {
 		return nil, err
 	}
 
-	var result []map[string]interface{}
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(&result).Error
+	objs := b.GetFindObj()
+	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return objs, nil
 }
 
 type QueryFields struct {
@@ -433,12 +432,12 @@ func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	var result []map[string]interface{}
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(&result).Error
+	objs := b.GetFindObj()
+	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return objs, nil
 }
 
 type RelationCreate struct {
@@ -512,7 +511,7 @@ func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	rc, ok := b.FieldConfer.RelationField()[getRelation.RelationName]
+	rc, ok := b.FieldConfer.RelationsField()[getRelation.RelationName]
 	if !ok {
 		return nil, fmt.Errorf("%v relation field permission denied", getRelation.RelationName)
 	}
@@ -552,18 +551,75 @@ func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
+	//s,o := b.UpdateField()
+
 	db := b.GetDB()
+
 	if len(relationCreate.Fields) == 0 {
-		db = db.Omit(clause.Associations)
+		return nil, errors.New("Field does not exist: _fields")
 	} else {
 		for _, f := range relationCreate.Fields {
-			if rf, ok := b.RelationField()[f]; ok {
+			if rf, ok := b.RelationsField()[f]; ok {
 				db = db.Select(rf.GetTableName())
+				//s = append(s,rf.GetTableName())
 			}
 		}
 	}
 
 	err = db.Create(obj).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return obj, nil
+}
+
+func (b *BaseRest) RelationUpdate(ctx *gin.Context) (interface{}, error) {
+	var relationUpdate RelationCreate
+	err := ctx.ShouldBindUri(&relationUpdate)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.ShouldBindQuery(&relationUpdate)
+	if err != nil {
+		return nil, err
+	}
+	obj := b.GetFirstObj()
+	err = ctx.ShouldBindJSON(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	err = b.GetDB().First(obj, relationUpdate.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	s, o := b.UpdateField()
+
+	if len(relationUpdate.Fields) == 0 {
+		return nil, errors.New("Field does not exist: _fields")
+	} else {
+		for _, f := range relationUpdate.Fields {
+			if rf, ok := b.RelationsField()[f]; ok {
+				tableName := rf.GetTableName()
+				s = append(s, tableName)
+
+				rfS, rfO := rf.UpdateField()
+				for _, v := range rfS {
+					s = append(s, tableName+"."+v)
+				}
+
+				for _, v := range rfO {
+					o = append(o, tableName+"."+v)
+				}
+
+			}
+		}
+	}
+
+	err = b.GetDB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
 	if err != nil {
 		return nil, err
 	}

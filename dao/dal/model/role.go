@@ -11,10 +11,10 @@ import "gorm.io/gorm"
 
 type Role struct {
 	gorm.Model
-	Name        string
-	OnlyKey     string
-	Enabled     bool
-	Description string
-	Level       int
-	Permissions []Permission `gorm:"many2many:role_permissions"`
+	Name        string       `json:"name"`
+	OnlyKey     string       `json:"onlyKey"`
+	Enabled     bool         `json:"enabled"`
+	Description string       `json:"description"`
+	Level       int          `json:"level"`
+	Permissions []Permission `gorm:"many2many:role_permissions" json:"permissions"`
 }

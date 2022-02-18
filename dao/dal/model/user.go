@@ -14,15 +14,15 @@ import (
 
 type User struct {
 	gorm.Model
-	Name string
+	Name string `json:"name"`
 	//唯一
-	Email    string
-	PassWord string
-	Token    string
-	Enable   bool
+	Email    string `json:"email"`
+	PassWord string `json:"passWord"`
+	Token    string `json:"token"`
+	Enable   bool   `json:"enable"`
 
-	Roles    []Role    `gorm:"many2many:user_roles"`
-	Services []Service `gorm:"many2many:user_services"`
+	Roles    []Role    `gorm:"many2many:user_roles" json:"roles"`
+	Services []Service `gorm:"many2many:user_services" json:"services"`
 }
 
 type ApiUser struct {

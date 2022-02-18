@@ -37,6 +37,6 @@ type RolesFieldConf struct {
 	rest.BaseFieldConf
 }
 
-func (r *RolesFieldConf) RelationField() map[string]rest.RelationFielder {
+func (r *RolesFieldConf) RelationsField() map[string]rest.RelationFielder {
 	return nil
 }

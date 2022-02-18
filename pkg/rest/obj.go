@@ -15,7 +15,7 @@ type ModelObjer interface {
 type FieldConfer interface {
 	CreateField() (s []string, o []string)
 	UpdateField() (s []string, o []string)
-	RelationField() map[string]RelationFielder
+	RelationsField() map[string]RelationFielder
 }
 
 type BaseModelObj struct {
@@ -56,13 +56,13 @@ type BaseFieldConf struct {
 }
 
 func (f *BaseFieldConf) CreateField() (s []string, o []string) {
-	return []string{"*"}, []string{"id", "updated_at", "deleted_at", "created_at"}
+	return []string{"*"}, []string{"deleted_at", "created_at"}
 }
 
 func (f *BaseFieldConf) UpdateField() (s []string, o []string) {
-	return []string{"*"}, []string{"id", "updated_at", "deleted_at", "created_at"}
+	return []string{"*"}, []string{"deleted_at", "created_at"}
 }
 
-func (f *BaseFieldConf) RelationField() map[string]RelationFielder {
+func (f *BaseFieldConf) RelationsField() map[string]RelationFielder {
 	return map[string]RelationFielder{}
 }

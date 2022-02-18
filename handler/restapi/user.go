@@ -33,7 +33,7 @@ type UsersFieldConf struct {
 	rest.BaseFieldConf
 }
 
-func (u *UsersFieldConf) RelationField() map[string]rest.RelationFielder {
+func (u *UsersFieldConf) RelationsField() map[string]rest.RelationFielder {
 	return map[string]rest.RelationFielder{"roles": struct {
 		rest.Objer
 		rest.FieldConfer
