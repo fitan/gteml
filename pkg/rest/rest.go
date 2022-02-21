@@ -22,15 +22,34 @@ type RestfulV1 interface {
 	GetListAfter(ctx *gin.Context, data interface{}, err error) (interface{}, error)
 
 	GetOneBind(ctx *gin.Context) (GetOneById, error)
-	GetOneBefore(ctx *gin.Context, req GetOneById) (interface{}, error)
-	GetOne(ctx *gin.Context) (interface{}, error)
+	GetOneBefore(ctx *gin.Context, req GetOneById) error
+	GetOne(ctx *gin.Context, req GetOneById) (interface{}, error)
 	GetOneAfter(ctx *gin.Context, data interface{}, err error) (interface{}, error)
 
+	CreateBind(ctx *gin.Context) (interface{}, error)
+	CreateBefore(ctx *gin.Context, req interface{}) (interface{}, error)
 	Create(ctx *gin.Context) (interface{}, error)
-	Update(ctx *gin.Context) (interface{}, error)
-	UpdateMany(ctx *gin.Context) (interface{}, error)
-	Delete(ctx *gin.Context) (interface{}, error)
+	CreateAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
+
+	UpdateBind(ctx *gin.Context) (interface{}, error)
+	UpdateBefore(ctx *gin.Context, req interface{}) (interface{}, error)
+	Update(ctx *gin.Context, req interface{}) (interface{}, error)
+	UpdateAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
+
+	//UpdateManyBind(ctx *gin.Context) (interface{}, error)
+	//UpdateManyBefore(ctx *gin.Context, req interface{}) (interface{}, error)
+	//UpdateMany(ctx *gin.Context, req interface{}) (interface{}, error)
+	//UpdateManyAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
+
+	DeleteBind(ctx *gin.Context) (interface{}, error)
+	DeleteBefore(ctx *gin.Context, req interface{}) (interface{}, error)
+	Delete(ctx *gin.Context, req interface{}) (interface{}, error)
+	DeleteAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
+
+	DeleteManyBind(ctx *gin.Context) (interface{}, error)
+	DeleteManyBefore(ctx *gin.Context, req interface{}) (interface{}, error)
 	DeleteMany(ctx *gin.Context) (interface{}, error)
+	DeleteManyAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
 
 	GetField(ctx *gin.Context) (interface{}, error)
 	GetFields(ctx *gin.Context) (interface{}, error)
