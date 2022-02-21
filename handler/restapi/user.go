@@ -6,6 +6,7 @@ import (
 )
 
 type UserObj struct {
+	rest.BaseFieldConf
 }
 
 func (u *UserObj) GetTableName() string {
@@ -29,16 +30,7 @@ func (u *UserObj) GetFindObj() interface{} {
 	return u.GetModelObjs()
 }
 
-type UsersFieldConf struct {
-	rest.BaseFieldConf
-}
+func (u *UserObj) RelationsField() map[string]rest.RelationFielder {
+	return map[string]rest.RelationFielder{"roles": &RolesObj{}, "services": &ServiceObj{}}
 
-func (u *UsersFieldConf) RelationsField() map[string]rest.RelationFielder {
-	return map[string]rest.RelationFielder{"roles": struct {
-		rest.Objer
-		rest.FieldConfer
-	}{
-		&RolesObj{},
-		&RolesFieldConf{},
-	}}
 }

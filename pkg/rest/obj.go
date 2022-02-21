@@ -4,6 +4,7 @@ type Objer interface {
 	ModelObjer
 	GetFirstObj() interface{}
 	GetFindObj() interface{}
+	FieldConfer
 }
 
 type ModelObjer interface {
@@ -52,15 +53,20 @@ type RelationFielder interface {
 	FieldConfer
 }
 
+type RelationField struct {
+	Objer
+	FieldConfer
+}
+
 type BaseFieldConf struct {
 }
 
 func (f *BaseFieldConf) CreateField() (s []string, o []string) {
-	return []string{"*"}, []string{"deleted_at", "created_at"}
+	return []string{"*"}, []string{}
 }
 
 func (f *BaseFieldConf) UpdateField() (s []string, o []string) {
-	return []string{"*"}, []string{"deleted_at", "created_at"}
+	return []string{"*"}, []string{}
 }
 
 func (f *BaseFieldConf) RelationsField() map[string]RelationFielder {
