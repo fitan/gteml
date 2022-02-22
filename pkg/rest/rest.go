@@ -10,74 +10,43 @@ import (
 	"net/http"
 )
 
-type RestfulV1 interface {
-	Objer
-	FieldConfer
-	GetDB() *gorm.DB
-	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
-
-	GetListBind(ctx *gin.Context) (GetList, error)
-	GetListBefore(ctx *gin.Context, req GetList) error
-	GetList(ctx *gin.Context, req GetList) (interface{}, error)
-	GetListAfter(ctx *gin.Context, data interface{}, err error) (interface{}, error)
-
-	GetOneBind(ctx *gin.Context) (GetOneById, error)
-	GetOneBefore(ctx *gin.Context, req GetOneById) error
-	GetOne(ctx *gin.Context, req GetOneById) (interface{}, error)
-	GetOneAfter(ctx *gin.Context, data interface{}, err error) (interface{}, error)
-
-	CreateBind(ctx *gin.Context) (interface{}, error)
-	CreateBefore(ctx *gin.Context, req interface{}) (interface{}, error)
-	Create(ctx *gin.Context) (interface{}, error)
-	CreateAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
-
-	UpdateBind(ctx *gin.Context) (interface{}, error)
-	UpdateBefore(ctx *gin.Context, req interface{}) (interface{}, error)
-	Update(ctx *gin.Context, req interface{}) (interface{}, error)
-	UpdateAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
-
-	//UpdateManyBind(ctx *gin.Context) (interface{}, error)
-	//UpdateManyBefore(ctx *gin.Context, req interface{}) (interface{}, error)
-	//UpdateMany(ctx *gin.Context, req interface{}) (interface{}, error)
-	//UpdateManyAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
-
-	DeleteBind(ctx *gin.Context) (interface{}, error)
-	DeleteBefore(ctx *gin.Context, req interface{}) (interface{}, error)
-	Delete(ctx *gin.Context, req interface{}) (interface{}, error)
-	DeleteAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
-
-	DeleteManyBind(ctx *gin.Context) (interface{}, error)
-	DeleteManyBefore(ctx *gin.Context, req interface{}) (interface{}, error)
-	DeleteMany(ctx *gin.Context) (interface{}, error)
-	DeleteManyAfter(ctx *gin.Context, req interface{}, err error) (interface{}, error)
-
-	GetField(ctx *gin.Context) (interface{}, error)
-	GetFields(ctx *gin.Context) (interface{}, error)
-
-	Relations(ctx *gin.Context) (interface{}, error)
-	RelationCreate(ctx *gin.Context) (interface{}, error)
-	RelationUpdate(ctx *gin.Context) (interface{}, error)
+type Hook interface {
+	Before(ctx *gin.Context, req interface{}, body interface{}) error
+	After(ctx *gin.Context, data interface{}, err error) (interface{}, error)
 }
+
+type GetListHook Hook
+type GetOneHook Hook
+type CreateHook Hook
+type UpdateHook Hook
+type DeleteHook Hook
+type DeleteManyCycle Hook
+type RelationGetHook Hook
+type RelationCreateHook Hook
+type RelationUpdateHook Hook
 
 type Restful interface {
 	Objer
 	FieldConfer
-	GetDB() *gorm.DB
 	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
-
+	GetDB() *gorm.DB
+	GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetList(ctx *gin.Context) (interface{}, error)
-
+	GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetOne(ctx *gin.Context) (interface{}, error)
+	CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	Create(ctx *gin.Context) (interface{}, error)
+	UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	Update(ctx *gin.Context) (interface{}, error)
-	UpdateMany(ctx *gin.Context) (interface{}, error)
+	DeleteScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	Delete(ctx *gin.Context) (interface{}, error)
+	DeleteManyScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	DeleteMany(ctx *gin.Context) (interface{}, error)
-
+	GetFieldScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetField(ctx *gin.Context) (interface{}, error)
+	GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetFields(ctx *gin.Context) (interface{}, error)
-
-	Relations(ctx *gin.Context) (interface{}, error)
+	RelationGet(ctx *gin.Context) (interface{}, error)
 	RelationCreate(ctx *gin.Context) (interface{}, error)
 	RelationUpdate(ctx *gin.Context) (interface{}, error)
 }
@@ -106,18 +75,16 @@ func (b *BaseRest) GetDB() *gorm.DB {
 	return b.DB
 }
 
-func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getList GetList
-	err := ctx.BindQuery(&getList)
+	err = ctx.BindQuery(&getList)
 	if err != nil {
-		return nil, errors.WithMessage(err, "bindQuery")
+		return
 	}
-	scopes, err := getList.Scopes()
+	scopes, err = getList.Scopes()
 	if err != nil {
-		return nil, errors.WithMessage(err, "getList.Scopes")
+		return
 	}
-
-	var count int64
 
 	if slices.StringContains(getList.Includes, "_all") {
 		for _, r := range b.RelationsField() {
@@ -137,21 +104,38 @@ func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
 			})
 		}
 	}
-
-	objs := b.GetFindObj()
-	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(objs).Error
-	return map[string]interface{}{"list": objs, "count": count}, errors.WithMessage(err, "DB find")
-
+	return
 }
 
-func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
-	var getOneById GetOneById
-	err := ctx.BindUri(&getOneById)
+func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
+	scopes, err := b.GetListScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	scopes, err := getOneById.Scopes()
+	var count int64
+	objs := b.GetFindObj()
+	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(objs).Error
+	return map[string]interface{}{"list": objs, "count": count}, err
+}
+
+func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	var getOneById GetOneById
+	err = ctx.BindUri(&getOneById)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err = getOneById.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
+	scopes, err := b.GetOneScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -161,6 +145,16 @@ func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
 	return obj, err
 }
 
+func (b *BaseRest) CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	s, o := b.Objer.CreateField()
+	// 禁止关联创建，防止误创建。如果要创建使用relattioncreate
+	o = append(o, clause.Associations)
+	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+		return db.Select(s).Omit(o...)
+	})
+	return
+}
+
 func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 	obj := b.GetModelObj()
 	err := ctx.BindJSON(obj)
@@ -168,102 +162,101 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	s, o := b.Objer.CreateField()
-	// 禁止关联创建，防止误创建。如果要创建使用relattioncreate
-	o = append(o, clause.Associations)
-	err = b.GetDB().Select(s).Omit(o...).Create(obj).Error
+	scopes, err := b.CreateScopes(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = b.GetDB().Scopes(scopes...).Create(obj).Error
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
 }
 
-func (b *BaseRest) UpdateField() (s []string, o []string) {
-	return []string{"*"}, []string{"id", "updated_at", "deleted_at", "created_at"}
+func (b *BaseRest) UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	var getOneById GetOneById
+	err = ctx.BindUri(&getOneById)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err = getOneById.Scopes()
+	if err != nil {
+		return nil, err
+	}
+
+	s, o := b.Objer.UpdateField()
+	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
+		return db.Select(s).Omit(o...)
+	})
+
+	return
 }
 
 func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
-	var getOneById GetOneById
-	err := ctx.BindUri(&getOneById)
-	if err != nil {
-		return nil, err
-	}
 
 	data := b.GetModelObj()
-	err = ctx.BindJSON(data)
+	err := ctx.BindJSON(data)
 	if err != nil {
 		return nil, err
 	}
 
-	scopes, err := getOneById.Scopes()
+	scopes, err := b.UpdateScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	obj := b.GetModelObj()
-	s, o := b.UpdateField()
-	err = b.GetDB().Model(obj).Select(s).Omit(o...).Scopes(scopes...).Updates(data).Error
+	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Updates(data).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return "ok", nil
+	return data, nil
 }
 
-func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
-	var getManyByIds GetManyByIds
-	err := ctx.BindQuery(&getManyByIds)
+//func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
+//	var getManyByIds GetManyByIds
+//	err := ctx.BindQuery(&getManyByIds)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	scopes, err := getManyByIds.Scopes()
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	data := b.GetModelObj()
+//	err = ctx.BindJSON(data)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Save(data).Error
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return "ok", nil
+//}
+
+func (b *BaseRest) DeleteScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	var getOneById GetOneById
+	err = ctx.BindUri(&getOneById)
 	if err != nil {
 		return nil, err
 	}
 
-	scopes, err := getManyByIds.Scopes()
+	scopes, err = getOneById.Scopes()
 	if err != nil {
 		return nil, err
 	}
-
-	data := b.GetModelObj()
-	err = ctx.BindJSON(data)
-	if err != nil {
-		return nil, err
-	}
-
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Save(data).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return "ok", nil
+	return
 }
 
 func (b *BaseRest) Delete(ctx *gin.Context) (interface{}, error) {
-	var getOneById GetOneById
-	err := ctx.BindUri(&getOneById)
-	if err != nil {
-		return nil, err
-	}
-
-	scopes, err := getOneById.Scopes()
-	if err != nil {
-		return nil, err
-	}
-
-	obj := b.GetModelObj()
-	err = b.GetDB().Clauses(clause.Returning{}).Scopes(scopes...).Delete(obj).Error
-	if err != nil {
-		return nil, err
-	}
-	return obj, nil
-}
-
-func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
-	var getManyByIds GetManyByIds
-	err := ctx.BindQuery(&getManyByIds)
-	if err != nil {
-		return nil, err
-	}
-
-	scopes, err := getManyByIds.Scopes()
+	scopes, err := b.DeleteScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -273,12 +266,40 @@ func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return getManyByIds.Ids, nil
+	return obj, nil
 }
 
-func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) DeleteManyScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+	var getManyByIds GetManyByIds
+	err = ctx.BindQuery(&getManyByIds)
+	if err != nil {
+		return nil, err
+	}
+
+	scopes, err = getManyByIds.Scopes()
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
+	scopes, err := b.DeleteManyScopes(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	objs := b.GetModelObjs()
+	err = b.GetDB().Scopes(scopes...).Delete(objs).Error
+	if err != nil {
+		return nil, err
+	}
+	return objs, nil
+}
+
+func (b *BaseRest) GetFieldScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var queryField QueryField
-	err := ctx.ShouldBindUri(&queryField)
+	err = ctx.ShouldBindUri(&queryField)
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +308,15 @@ func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	scopes, err := queryField.Scopes()
+	scopes, err = queryField.Scopes()
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
+	scopes, err := b.GetFieldScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -300,14 +329,22 @@ func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
 	return objs, nil
 }
 
-func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var queryFields QueryFields
-	err := ctx.ShouldBind(&queryFields)
+	err = ctx.ShouldBind(&queryFields)
 	if err != nil {
 		return nil, err
 	}
 
-	scopes, err := queryFields.Scopes()
+	scopes, err = queryFields.Scopes()
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
+	scopes, err := b.GetFieldsScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +363,7 @@ type RelationCreate struct {
 }
 
 // 一对多查询
-func (b *BaseRest) Relations(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationGet(ctx *gin.Context) (interface{}, error) {
 
 	var getRelation RelationGet
 	err := ctx.ShouldBindUri(&getRelation)
@@ -390,8 +427,6 @@ func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	//s,o := b.UpdateField()
-
 	db := b.GetDB()
 
 	if len(relationCreate.Fields) == 0 {
@@ -435,7 +470,7 @@ func (b *BaseRest) RelationUpdate(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	s, o := b.UpdateField()
+	s, o := b.Objer.UpdateField()
 
 	if len(relationUpdate.Fields) == 0 {
 		return nil, errors.New("Field does not exist: _fields")

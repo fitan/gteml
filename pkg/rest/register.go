@@ -22,10 +22,10 @@ func RegisterRestApi(r gin.IRouter, rest Restful, path string) {
 		rest.Wrap(ctx, rest.Update)
 	})
 
-	// /path?ids=1?ids=2
-	r.PUT(path, func(ctx *gin.Context) {
-		rest.Wrap(ctx, rest.UpdateMany)
-	})
+	//// /path?ids=1?ids=2
+	//r.PUT(path, func(ctx *gin.Context) {
+	//	rest.Wrap(ctx, rest.UpdateMany)
+	//})
 
 	// /path/1
 	r.DELETE(path+"/:id", func(ctx *gin.Context) {
@@ -50,7 +50,7 @@ func RegisterRestApi(r gin.IRouter, rest Restful, path string) {
 
 	// /path/1/relateions/roles?_page
 	r.GET(path+"/:id/relations/:relationName", func(ctx *gin.Context) {
-		rest.Wrap(ctx, rest.Relations)
+		rest.Wrap(ctx, rest.RelationGet)
 	})
 
 	// /path/1/relations?_fields=xx

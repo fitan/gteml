@@ -99,7 +99,7 @@ type QueryField struct {
 
 func (q *QueryField) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
-		db = db.Select("id", q.Name)
+		db = db.Distinct(q.Name).Select("id", q.Name)
 		if q.KeyWord != nil {
 			db = db.Where(fmt.Sprintf("%s LIKE ?", q.Name), "%"+*q.KeyWord+"%")
 		}
@@ -115,7 +115,9 @@ type QueryFields struct {
 
 func (q *QueryFields) Scopes() (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
-		db = db.Select(append([]string{"id"}, q.Fields...))
+		var cy []interface{}
+		cy = append(cy, q.Fields)
+		db = db.Distinct(cy...).Select(append([]string{"id"}, q.Fields...))
 		if q.KeyWord != nil {
 			for _, v := range q.Fields {
 				db = db.Where(fmt.Sprintf("%s LIKE ?", v), "%"+*q.KeyWord+"%")
