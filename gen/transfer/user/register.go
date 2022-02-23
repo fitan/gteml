@@ -7,6 +7,8 @@ import (
 
 func Register(r gin.IRouter, reg *ginx.GinXHandlerRegister) {
 
+	reg.Register(r, &RestUsersTransfer{}, ginx.WithHandlerName("RestUsers"))
+
 	reg.Register(r, &CreateTransfer{}, ginx.WithHandlerName("Create"))
 
 	reg.Register(r, &SayHelloTransfer{}, ginx.WithHandlerName("SayHello"))

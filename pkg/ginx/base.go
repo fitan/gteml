@@ -78,7 +78,7 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			log := core.GetCoreLog().TraceLog("pkg.ginx.wrapMid.recover")
+			log := core.GetCoreLog().TraceLog("pkg.ginX.wrapMid.recover")
 			log.Error("panic", zap.Any("err", err), zap.String("stack", string(buf)))
 			log.Sync()
 
@@ -103,7 +103,7 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 
 	if g.entryMiddleware != nil {
 		for _, fn := range *g.entryMiddleware {
-			if !fn.BindValBefor(core) {
+			if !fn.BindValBefore(core) {
 				return
 			}
 		}
@@ -111,7 +111,7 @@ func (g *GinX) BindTransfer(core *types.Core, i types.GinXBinder) {
 
 	if g.handlerMiddleware != nil {
 		for _, fn := range *g.handlerMiddleware {
-			if !fn.BindValBefor(core) {
+			if !fn.BindValBefore(core) {
 				return
 			}
 		}

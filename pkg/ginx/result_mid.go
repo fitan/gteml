@@ -75,7 +75,7 @@ func (r *ResultWrapMid) BindValAfter(core *types.Core) bool {
 	//return true
 }
 
-func (r *ResultWrapMid) BindValBefor(core *types.Core) bool {
+func (r *ResultWrapMid) BindValBefore(core *types.Core) bool {
 	if core.GinX.LastError() != nil {
 		return false
 	} else {

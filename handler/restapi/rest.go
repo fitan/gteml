@@ -1,8 +1,10 @@
 package restapi
 
 import (
+	"github.com/fitan/magic/pkg/core"
 	"github.com/fitan/magic/pkg/rest"
 	"github.com/gin-gonic/gin"
+	"sync"
 )
 
 type ApiRest struct {
@@ -28,4 +30,30 @@ func (a *ApiRest) Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{},
 	res["code"] = 2000
 	ctx.JSON(200, res)
 	return
+}
+
+type RestfulObj struct {
+	Users    *ApiRest
+	Roles    *ApiRest
+	Services *ApiRest
+}
+
+func NewRestfulObj() *RestfulObj {
+	db := core.GetCorePool().GetObj().Dao.Storage().DB()
+	return &RestfulObj{
+		Users:    &ApiRest{rest.NewBaseRest(db, &UserObj{})},
+		Roles:    &ApiRest{rest.NewBaseRest(db, &RolesObj{})},
+		Services: &ApiRest{rest.NewBaseRest(db, &ServiceObj{})},
+	}
+}
+
+var restfulAll *RestfulObj
+var once sync.Once
+
+func GetRestfulAll() *RestfulObj {
+	once.Do(
+		func() {
+			restfulAll = NewRestfulObj()
+		})
+	return restfulAll
 }

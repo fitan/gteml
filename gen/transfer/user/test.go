@@ -9,6 +9,45 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
+type RestUsersTransfer struct {
+}
+
+func (t *RestUsersTransfer) Method() string {
+	return http.MethodGet
+}
+
+func (t *RestUsersTransfer) Url() string {
+	return "/restful/users"
+}
+
+func (t *RestUsersTransfer) FuncName() string {
+	return "user.RestUsers"
+}
+
+func (t *RestUsersTransfer) Binder() types.GinXBinder {
+	return new(RestUsersBinder)
+}
+
+type RestUsersBinder struct {
+	val *user.RestUsersIn
+}
+
+func (b *RestUsersBinder) BindVal(core *types.Core) (res interface{}, err error) {
+	in := &user.RestUsersIn{}
+	b.val = in
+
+	return b.val, err
+}
+
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} ginx.XResult{data=[]model.User}
+// @Description 获取Users
+// @Router /restful/users [get]
+func (b *RestUsersBinder) BindFn(core *types.Core) (interface{}, error) {
+	return user.RestUsers(core, b.val)
+}
+
 type SwagCreateBody struct {
 	Hello string `json:"hello"`
 }

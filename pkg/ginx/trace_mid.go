@@ -42,7 +42,7 @@ func (t *TraceMid) BindValAfter(core *types.Core) bool {
 	return true
 }
 
-func (t *TraceMid) BindValBefor(core *types.Core) bool {
+func (t *TraceMid) BindValBefore(core *types.Core) bool {
 	return true
 }
 

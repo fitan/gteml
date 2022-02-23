@@ -33,7 +33,7 @@ type GinXTransfer interface {
 type Option func(core *Core)
 
 type Middleware interface {
-	BindValBefor(core *Core) bool
+	BindValBefore(core *Core) bool
 	BindValAfter(core *Core) bool
 	BindFnAfter(core *Core) bool
 	Forever(core *Core)

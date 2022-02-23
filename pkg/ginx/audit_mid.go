@@ -9,7 +9,7 @@ import (
 type Audit struct {
 }
 
-func (a *Audit) BindValBefor(core *types.Core) bool {
+func (a *Audit) BindValBefore(core *types.Core) bool {
 	return true
 }
 

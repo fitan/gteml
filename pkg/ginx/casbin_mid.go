@@ -12,7 +12,7 @@ type CasbinVerifyer interface {
 type CasbinVerifyMid struct {
 }
 
-func (c *CasbinVerifyMid) BindValBefor(core *types.Core) bool {
+func (c *CasbinVerifyMid) BindValBefore(core *types.Core) bool {
 	return true
 }
 

@@ -8,7 +8,7 @@ import (
 type TestMid struct {
 }
 
-func (t *TestMid) BindValBefor(core *types.Core) bool {
+func (t *TestMid) BindValBefore(core *types.Core) bool {
 	core.GinX.SetError(errors.New("TestMid: BindValBefor"))
 	return true
 }
