@@ -31,7 +31,7 @@ type Restful interface {
 	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
 	GetDB() *gorm.DB
 	GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetList(ctx *gin.Context) (interface{}, error)
+	GetList(ctx *gin.Context) (*GetListRes, error)
 	GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetOne(ctx *gin.Context) (interface{}, error)
 	CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
@@ -49,6 +49,11 @@ type Restful interface {
 	RelationGet(ctx *gin.Context) (interface{}, error)
 	RelationCreate(ctx *gin.Context) (interface{}, error)
 	RelationUpdate(ctx *gin.Context) (interface{}, error)
+}
+
+type GetListRes struct {
+	Count int64       `json:"count"`
+	List  interface{} `json:"list"`
 }
 
 type BaseRest struct {
@@ -107,7 +112,7 @@ func (b *BaseRest) GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *
 	return
 }
 
-func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetList(ctx *gin.Context) (*GetListRes, error) {
 	scopes, err := b.GetListScopes(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +121,7 @@ func (b *BaseRest) GetList(ctx *gin.Context) (interface{}, error) {
 	var count int64
 	objs := b.GetFindObj()
 	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(objs).Error
-	return map[string]interface{}{"list": objs, "count": count}, err
+	return &GetListRes{List: objs, Count: count}, err
 }
 
 func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {

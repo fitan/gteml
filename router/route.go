@@ -49,8 +49,10 @@ func Router() *gin.Engine {
 		log.Panicln(err)
 	}
 
-	authorized := r.Group("/", jwtMid.MiddlewareFunc())
-	registerRouter(authorized)
+	_ = r.Group("/", jwtMid.MiddlewareFunc())
+	//registerRouter(authorized)
+	registerRouter(r)
+
 	LoginRoute(r, jwtMid)
 	//g := r.Group("/api")
 	info(r)

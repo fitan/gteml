@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/handler/restapi"
+	"github.com/fitan/magic/pkg/rest"
 	"github.com/fitan/magic/pkg/types"
 	"strconv"
 )
@@ -12,10 +12,13 @@ type RestUsersIn struct {
 
 // @Description 获取Users
 // @GenApi /restful/users [get]
-func RestUsers(core *types.Core, in *RestUsersIn) (*[]model.User, error) {
+func RestUsers(core *types.Core, in *RestUsersIn) (*rest.GetListRes, error) {
 	rest := restapi.GetRestfulAll()
 	res, err := rest.Users.GetList(core.GinX.GinCtx())
-	return res.(*[]model.User), err
+	if err != nil {
+		return nil, err
+	}
+	return res, err
 }
 
 type CreateIn struct {
