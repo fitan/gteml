@@ -13,7 +13,7 @@ type Core struct {
 
 	CoreLog CoreLoger
 
-	log Logger
+	Logger Logger
 
 	Tracer Tracer
 
@@ -64,16 +64,16 @@ func (c *Core) GetTrace() Tracer {
 	return c.Tracer
 }
 
+func (c *Core) Log() Logger {
+	return c.Logger
+}
+
 func (c *Core) GetGinX() GinXer {
 	return c.GinX
 }
 
 func (c *Core) GinCtx() *gin.Context {
 	return c.GinX.GinCtx()
-}
-
-func (c *Core) Log() Logger {
-	return c.log
 }
 
 func (c *Core) DB() *gorm.DB {
@@ -92,4 +92,7 @@ type ServiceCore interface {
 	GetApis() apiTypes.Apis
 	GetProm() Promer
 	GetDao() daoTypes.DAOer
+	Log() Logger
+	GinCtx() *gin.Context
+	DB() *gorm.DB
 }

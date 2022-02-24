@@ -10,7 +10,7 @@ package types
 //}
 //
 //func (c *CorePool) Set(ctx *Core) {
-//	log.Println("ctx pool: ", c)
+//	Logger.Println("ctx pool: ", c)
 //	for _, v := range c.registerList {
 //		v.Set(ctx)
 //	}

@@ -76,15 +76,15 @@ func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 
 				if core.CoreLog.IsOpenTrace() {
 					// 设置tracelog
-					core.Log = core.CoreLog.TraceLog(core.GinX.GinCtx().GetString(FnName))
+					core.Logger = core.CoreLog.TraceLog(core.GinX.GinCtx().GetString(FnName))
 					// 如果打开trace则end
-					defer core.Log.Sync()
+					defer core.Logger.Sync()
 				} else {
-					core.Log = core.CoreLog.Log()
+					core.Logger = core.CoreLog.Log()
 				}
 			} else {
 				// 普通log
-				core.Log = core.CoreLog.Log()
+				core.Logger = core.CoreLog.Log()
 			}
 
 			core.GinX.BindTransfer(core, transfer.Binder())

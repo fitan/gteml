@@ -11,7 +11,7 @@ type MyConf struct {
 	Rbac      Rbac      `yaml:"rbac"`
 	Swagger   Swagger   `yaml:"swagger"`
 	Consul    Consul    `yaml:"consul"`
-	Log       Log       `yaml:"log"`
+	Log       Log       `yaml:"Logger"`
 	Trace     Trace     `yaml:"trace"`
 }
 

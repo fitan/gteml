@@ -3,8 +3,16 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fitan/magic/pkg/types"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+type Context interface {
+	Log() types.Logger
+	GinCtx() *gin.Context
+	DB() *gorm.DB
+}
 
 type GetOneById struct {
 	Id int64 `uri:"id"`

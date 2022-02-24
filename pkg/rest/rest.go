@@ -11,8 +11,8 @@ import (
 )
 
 type Hook interface {
-	Before(ctx *gin.Context, req interface{}, body interface{}) error
-	After(ctx *gin.Context, data interface{}, err error) (interface{}, error)
+	Before(ctx Context, req interface{}, body interface{}) error
+	After(ctx Context, data interface{}, err error) (interface{}, error)
 }
 
 type GetListHook Hook
@@ -29,28 +29,27 @@ type Restful interface {
 	Objer
 	FieldConfer
 	Wrap(ctx *gin.Context, data interface{}, err error)
-	GetDB() *gorm.DB
-	GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetList(ctx *gin.Context, objs interface{}, count *int64) (interface{}, error)
-	GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetOne(ctx *gin.Context, obj interface{}) (interface{}, error)
-	CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	Create(ctx *gin.Context) (interface{}, error)
-	UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	Update(ctx *gin.Context) (interface{}, error)
-	DeleteScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	Delete(ctx *gin.Context) (interface{}, error)
-	DeleteManyScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	DeleteMany(ctx *gin.Context) (interface{}, error)
-	GetFieldScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetField(ctx *gin.Context) (interface{}, error)
-	GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetFields(ctx *gin.Context) (interface{}, error)
-	RelationGet(ctx *gin.Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error)
-	RelationCreate(ctx *gin.Context, relationName string) (interface{}, error)
-	RelationUpdate(ctx *gin.Context, relationName string) (interface{}, error)
-	RelationsCreate(ctx *gin.Context) (interface{}, error)
-	RelationsUpdate(ctx *gin.Context) (interface{}, error)
+	GetListScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	GetList(ctx Context, objs interface{}, count *int64) (interface{}, error)
+	GetOneScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	GetOne(ctx Context, obj interface{}) (interface{}, error)
+	CreateScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	Create(ctx Context) (interface{}, error)
+	UpdateScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	Update(ctx Context) (interface{}, error)
+	DeleteScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	Delete(ctx Context) (interface{}, error)
+	DeleteManyScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	DeleteMany(ctx Context) (interface{}, error)
+	GetFieldScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	GetField(ctx Context) (interface{}, error)
+	GetFieldsScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
+	GetFields(ctx Context) (interface{}, error)
+	RelationGet(ctx Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error)
+	RelationCreate(ctx Context, relationName string) (interface{}, error)
+	RelationUpdate(ctx Context, relationName string) (interface{}, error)
+	RelationsCreate(ctx Context) (interface{}, error)
+	RelationsUpdate(ctx Context) (interface{}, error)
 }
 
 type GetListRes struct {
@@ -77,13 +76,9 @@ func (b *BaseRest) Wrap(ctx *gin.Context, data interface{}, err error) {
 	return
 }
 
-func (b *BaseRest) GetDB() *gorm.DB {
-	return b.DB
-}
-
-func (b *BaseRest) GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) GetListScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getList GetList
-	err = ctx.BindQuery(&getList)
+	err = ctx.GinCtx().BindQuery(&getList)
 	if err != nil {
 		return
 	}
@@ -113,7 +108,7 @@ func (b *BaseRest) GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *
 	return
 }
 
-func (b *BaseRest) GetList(ctx *gin.Context, objs interface{}, count *int64) (interface{}, error) {
+func (b *BaseRest) GetList(ctx Context, objs interface{}, count *int64) (interface{}, error) {
 	scopes, err := b.GetListScopes(ctx)
 	if err != nil {
 		return nil, err
@@ -122,7 +117,7 @@ func (b *BaseRest) GetList(ctx *gin.Context, objs interface{}, count *int64) (in
 	if objs == nil {
 		objs = b.GetFindObj()
 	}
-	db := b.GetDB().Model(b.GetModelObj())
+	db := ctx.DB().Model(b.GetModelObj())
 	if count != nil {
 		db = db.Count(count)
 	}
@@ -130,9 +125,9 @@ func (b *BaseRest) GetList(ctx *gin.Context, objs interface{}, count *int64) (in
 	return objs, err
 }
 
-func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) GetOneScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getOneById GetOneById
-	err = ctx.BindUri(&getOneById)
+	err = ctx.GinCtx().BindUri(&getOneById)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +140,7 @@ func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *g
 	return
 }
 
-func (b *BaseRest) GetOne(ctx *gin.Context, obj interface{}) (interface{}, error) {
+func (b *BaseRest) GetOne(ctx Context, obj interface{}) (interface{}, error) {
 	scopes, err := b.GetOneScopes(ctx)
 	if err != nil {
 		return nil, err
@@ -154,11 +149,11 @@ func (b *BaseRest) GetOne(ctx *gin.Context, obj interface{}) (interface{}, error
 	if obj == nil {
 		obj = b.GetFirstObj()
 	}
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).First(obj).Error
+	err = ctx.DB().Model(b.GetModelObj()).Scopes(scopes...).First(obj).Error
 	return obj, err
 }
 
-func (b *BaseRest) CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) CreateScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	s, o := b.Objer.CreateField()
 	// 禁止关联创建，防止误创建。如果要创建使用relattioncreate
 	o = append(o, clause.Associations)
@@ -168,9 +163,9 @@ func (b *BaseRest) CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *g
 	return
 }
 
-func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) Create(ctx Context) (interface{}, error) {
 	obj := b.GetModelObj()
-	err := ctx.BindJSON(obj)
+	err := ctx.GinCtx().BindJSON(obj)
 	if err != nil {
 		return nil, err
 	}
@@ -180,16 +175,16 @@ func (b *BaseRest) Create(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	err = b.GetDB().Scopes(scopes...).Create(obj).Error
+	err = ctx.DB().Scopes(scopes...).Create(obj).Error
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
 }
 
-func (b *BaseRest) UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) UpdateScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getOneById GetOneById
-	err = ctx.BindUri(&getOneById)
+	err = ctx.GinCtx().BindUri(&getOneById)
 	if err != nil {
 		return nil, err
 	}
@@ -207,10 +202,10 @@ func (b *BaseRest) UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *g
 	return
 }
 
-func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) Update(ctx Context) (interface{}, error) {
 
 	data := b.GetModelObj()
-	err := ctx.BindJSON(data)
+	err := ctx.GinCtx().BindJSON(data)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +215,7 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Updates(data).Error
+	err = ctx.DB().Model(b.GetModelObj()).Scopes(scopes...).Updates(data).Error
 	if err != nil {
 		return nil, err
 	}
@@ -228,9 +223,9 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 	return data, nil
 }
 
-//func (b *BaseRest) UpdateMany(ctx *gin.Context) (interface{}, error) {
+//func (b *BaseRest) UpdateMany(ctx Context) (interface{}, error) {
 //	var getManyByIds GetManyByIds
-//	err := ctx.BindQuery(&getManyByIds)
+//	err := ctx.GinCtx().BindQuery(&getManyByIds)
 //	if err != nil {
 //		return nil, err
 //	}
@@ -241,12 +236,12 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 //	}
 //
 //	data := b.GetModelObj()
-//	err = ctx.BindJSON(data)
+//	err = ctx.GinCtx().BindJSON(data)
 //	if err != nil {
 //		return nil, err
 //	}
 //
-//	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Save(data).Error
+//	err = ctx.DB().Model(b.GetModelObj()).Scopes(scopes...).Save(data).Error
 //	if err != nil {
 //		return nil, err
 //	}
@@ -254,9 +249,9 @@ func (b *BaseRest) Update(ctx *gin.Context) (interface{}, error) {
 //	return "ok", nil
 //}
 
-func (b *BaseRest) DeleteScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) DeleteScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getOneById GetOneById
-	err = ctx.BindUri(&getOneById)
+	err = ctx.GinCtx().BindUri(&getOneById)
 	if err != nil {
 		return nil, err
 	}
@@ -268,23 +263,23 @@ func (b *BaseRest) DeleteScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *g
 	return
 }
 
-func (b *BaseRest) Delete(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) Delete(ctx Context) (interface{}, error) {
 	scopes, err := b.DeleteScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	obj := b.GetModelObj()
-	err = b.GetDB().Scopes(scopes...).Delete(obj).Error
+	err = ctx.DB().Scopes(scopes...).Delete(obj).Error
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
 }
 
-func (b *BaseRest) DeleteManyScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) DeleteManyScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var getManyByIds GetManyByIds
-	err = ctx.BindQuery(&getManyByIds)
+	err = ctx.GinCtx().BindQuery(&getManyByIds)
 	if err != nil {
 		return nil, err
 	}
@@ -296,27 +291,27 @@ func (b *BaseRest) DeleteManyScopes(ctx *gin.Context) (scopes []func(db *gorm.DB
 	return
 }
 
-func (b *BaseRest) DeleteMany(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) DeleteMany(ctx Context) (interface{}, error) {
 	scopes, err := b.DeleteManyScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	objs := b.GetModelObjs()
-	err = b.GetDB().Scopes(scopes...).Delete(objs).Error
+	err = ctx.DB().Scopes(scopes...).Delete(objs).Error
 	if err != nil {
 		return nil, err
 	}
 	return objs, nil
 }
 
-func (b *BaseRest) GetFieldScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) GetFieldScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var queryField QueryField
-	err = ctx.ShouldBindUri(&queryField)
+	err = ctx.GinCtx().ShouldBindUri(&queryField)
 	if err != nil {
 		return nil, err
 	}
-	err = ctx.ShouldBindQuery(&queryField)
+	err = ctx.GinCtx().ShouldBindQuery(&queryField)
 	if err != nil {
 		return nil, err
 	}
@@ -328,23 +323,23 @@ func (b *BaseRest) GetFieldScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) 
 	return
 }
 
-func (b *BaseRest) GetField(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetField(ctx Context) (interface{}, error) {
 	scopes, err := b.GetFieldScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	objs := b.GetFindObj()
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
+	err = ctx.DB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
 	if err != nil {
 		return nil, err
 	}
 	return objs, nil
 }
 
-func (b *BaseRest) GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
+func (b *BaseRest) GetFieldsScopes(ctx Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
 	var queryFields QueryFields
-	err = ctx.ShouldBind(&queryFields)
+	err = ctx.GinCtx().ShouldBind(&queryFields)
 	if err != nil {
 		return nil, err
 	}
@@ -356,14 +351,14 @@ func (b *BaseRest) GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB)
 	return
 }
 
-func (b *BaseRest) GetFields(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetFields(ctx Context) (interface{}, error) {
 	scopes, err := b.GetFieldsScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	objs := b.GetFindObj()
-	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
+	err = ctx.DB().Model(b.GetModelObj()).Scopes(scopes...).Find(objs).Error
 	if err != nil {
 		return nil, err
 	}
@@ -381,14 +376,14 @@ type RelationsCommon struct {
 }
 
 // 一对多查询
-func (b *BaseRest) RelationGet(ctx *gin.Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error) {
+func (b *BaseRest) RelationGet(ctx Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error) {
 
 	var getRelation RelationGet
-	err := ctx.ShouldBindUri(&getRelation)
+	err := ctx.GinCtx().ShouldBindUri(&getRelation)
 	if err != nil {
 		return nil, err
 	}
-	err = ctx.ShouldBind(&getRelation)
+	err = ctx.GinCtx().ShouldBind(&getRelation)
 	if err != nil {
 		return nil, err
 	}
@@ -400,7 +395,7 @@ func (b *BaseRest) RelationGet(ctx *gin.Context, relationName string, relationOb
 
 	obj := b.GetModelObj()
 
-	err = b.GetDB().Find(obj, getRelation.Id).Error
+	err = ctx.DB().Find(obj, getRelation.Id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -417,13 +412,13 @@ func (b *BaseRest) RelationGet(ctx *gin.Context, relationName string, relationOb
 	tableName := rc.GetTableName()
 
 	if count != nil {
-		*count = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Count()
+		*count = ctx.DB().Model(obj).Scopes(scopes...).Association(tableName).Count()
 	}
 	if relationObjs == nil {
 		relationObjs = rc.GetFindObj()
 	}
 
-	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(relationObjs)
+	err = ctx.DB().Model(obj).Scopes(scopes...).Association(tableName).Find(relationObjs)
 	if err != nil {
 		return nil, err
 	}
@@ -431,20 +426,20 @@ func (b *BaseRest) RelationGet(ctx *gin.Context, relationName string, relationOb
 	return relationObjs, nil
 }
 
-func (b *BaseRest) RelationCreate(ctx *gin.Context, relationName string) (interface{}, error) {
+func (b *BaseRest) RelationCreate(ctx Context, relationName string) (interface{}, error) {
 	var relationCommon RelationsCommon
-	err := ctx.ShouldBindUri(&relationCommon)
+	err := ctx.GinCtx().ShouldBindUri(&relationCommon)
 	if err != nil {
 		return nil, err
 	}
 
 	obj := b.GetFirstObj()
-	err = ctx.ShouldBindJSON(obj)
+	err = ctx.GinCtx().ShouldBindJSON(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	err = b.GetDB().First(obj, relationCommon.Id).Error
+	err = ctx.DB().First(obj, relationCommon.Id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -457,27 +452,27 @@ func (b *BaseRest) RelationCreate(ctx *gin.Context, relationName string) (interf
 	if !ok {
 		return nil, fmt.Errorf("relationName does not exist: %v", relationName)
 	}
-	err = b.GetDB().Model(obj).Select(rf.GetTableName()).Create(obj).Error
+	err = ctx.DB().Model(obj).Select(rf.GetTableName()).Create(obj).Error
 	if err != nil {
 		return nil, err
 	}
 	return obj, nil
 }
 
-func (b *BaseRest) RelationUpdate(ctx *gin.Context, relationName string) (interface{}, error) {
+func (b *BaseRest) RelationUpdate(ctx Context, relationName string) (interface{}, error) {
 	var relationCommon RelationsCommon
-	err := ctx.ShouldBindUri(&relationCommon)
+	err := ctx.GinCtx().ShouldBindUri(&relationCommon)
 	if err != nil {
 		return nil, err
 	}
 
 	obj := b.GetFirstObj()
-	err = ctx.ShouldBindJSON(obj)
+	err = ctx.GinCtx().ShouldBindJSON(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	err = b.GetDB().First(obj, relationCommon.Id).Error
+	err = ctx.DB().First(obj, relationCommon.Id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -503,7 +498,7 @@ func (b *BaseRest) RelationUpdate(ctx *gin.Context, relationName string) (interf
 		o = append(o, tableName+"."+v)
 	}
 
-	err = b.GetDB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
+	err = ctx.DB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
 	if err != nil {
 		return nil, err
 	}
@@ -511,29 +506,29 @@ func (b *BaseRest) RelationUpdate(ctx *gin.Context, relationName string) (interf
 
 }
 
-func (b *BaseRest) RelationsCreate(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationsCreate(ctx Context) (interface{}, error) {
 	var relationCreate RelationCreate
-	err := ctx.ShouldBindUri(&relationCreate)
+	err := ctx.GinCtx().ShouldBindUri(&relationCreate)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ctx.ShouldBindQuery(&relationCreate)
+	err = ctx.GinCtx().ShouldBindQuery(&relationCreate)
 	if err != nil {
 		return nil, err
 	}
 	obj := b.GetFirstObj()
-	err = ctx.ShouldBindJSON(obj)
+	err = ctx.GinCtx().ShouldBindJSON(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	err = b.GetDB().First(obj, relationCreate.Id).Error
+	err = ctx.DB().First(obj, relationCreate.Id).Error
 	if err != nil {
 		return nil, err
 	}
 
-	db := b.GetDB()
+	db := ctx.DB()
 
 	if len(relationCreate.Fields) == 0 {
 		return nil, errors.New("Field does not exist: _fields")
@@ -554,24 +549,24 @@ func (b *BaseRest) RelationsCreate(ctx *gin.Context) (interface{}, error) {
 	return obj, nil
 }
 
-func (b *BaseRest) RelationsUpdate(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationsUpdate(ctx Context) (interface{}, error) {
 	var relationUpdate RelationCreate
-	err := ctx.ShouldBindUri(&relationUpdate)
+	err := ctx.GinCtx().ShouldBindUri(&relationUpdate)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ctx.ShouldBindQuery(&relationUpdate)
+	err = ctx.GinCtx().ShouldBindQuery(&relationUpdate)
 	if err != nil {
 		return nil, err
 	}
 	obj := b.GetFirstObj()
-	err = ctx.ShouldBindJSON(obj)
+	err = ctx.GinCtx().ShouldBindJSON(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	err = b.GetDB().First(obj, relationUpdate.Id).Error
+	err = ctx.DB().First(obj, relationUpdate.Id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -599,7 +594,7 @@ func (b *BaseRest) RelationsUpdate(ctx *gin.Context) (interface{}, error) {
 		}
 	}
 
-	err = b.GetDB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
+	err = ctx.DB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
 	if err != nil {
 		return nil, err
 	}

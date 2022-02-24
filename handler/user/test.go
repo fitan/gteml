@@ -16,7 +16,7 @@ type RestGetListUsersIn struct {
 func RestUsers(core *types.Core, in *RestGetListUsersIn) (*rest.GetListRes, error) {
 	restful := restapi.GetRestfulAll()
 	var count int64
-	res, err := restful.Users.GetList(core.GinX.GinCtx(), nil, &count)
+	res, err := restful.Users.GetList(core, nil, &count)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ type RestGetOneUsersIn struct {
 // @GenApi /restful/users/:id [get]
 func RestGetOneUsers(core *types.Core, in *RestGetOneUsersIn) (interface{}, error) {
 	var res model.User
-	_, err := restapi.GetRestfulAll().Users.GetOne(core.GinX.GinCtx(), &res)
+	_, err := restapi.GetRestfulAll().Users.GetOne(core, &res)
 	return res, err
 }
 

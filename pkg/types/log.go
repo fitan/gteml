@@ -10,6 +10,7 @@ type CoreLoger interface {
 	//TraceLog(spanName string) Logger
 	Log() Logger
 	TraceLog(spanName string) Logger
+	//SetLog(spanName string) Logger
 	//ApmLog(spanName string) Logger
 }
 
