@@ -4,6 +4,8 @@ import (
 	apiTypes "github.com/fitan/magic/apis/types"
 	daoTypes "github.com/fitan/magic/dao/types"
 	serviceTypes "github.com/fitan/magic/services/types"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type Core struct {
@@ -11,7 +13,7 @@ type Core struct {
 
 	CoreLog CoreLoger
 
-	Log Logger
+	log Logger
 
 	Tracer Tracer
 
@@ -64,6 +66,18 @@ func (c *Core) GetTrace() Tracer {
 
 func (c *Core) GetGinX() GinXer {
 	return c.GinX
+}
+
+func (c *Core) GinCtx() *gin.Context {
+	return c.GinX.GinCtx()
+}
+
+func (c *Core) Log() Logger {
+	return c.log
+}
+
+func (c *Core) DB() *gorm.DB {
+	return c.Dao.Storage().DB()
 }
 
 type TracerCore interface {

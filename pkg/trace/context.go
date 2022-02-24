@@ -64,21 +64,21 @@ func (t *Trace) SpanCtx(name string) context.Context {
 	return spanCtx
 }
 
-func (t *Trace) ApmSpanCtx(name string, spanType string) (context.Context, *apm.Span) {
-	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
-	t.ctx = nextCtx
-	t.apmSpans = append(t.apmSpans, span)
-	//if t.apmSpanCtx == nil {
-	//	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
-	//	t.apmSpanCtx = nextCtx
-	//	t.apmSpans = append(t.apmSpans, span)
-	//} else {
-	//	span, nextCtx := apm.StartSpan(t.apmSpanCtx, name, spanType)
-	//	t.apmSpanCtx = nextCtx
-	//	t.apmSpans = append(t.apmSpans, span)
-	//}
-	return t.ctx, span
-}
+//func (t *Trace) ApmSpanCtx(name string, spanType string) (context.Context, *apm.Span) {
+//	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
+//	t.ctx = nextCtx
+//	t.apmSpans = append(t.apmSpans, span)
+//	//if t.apmSpanCtx == nil {
+//	//	span, nextCtx := apm.StartSpan(t.Ctx(), name, spanType)
+//	//	t.apmSpanCtx = nextCtx
+//	//	t.apmSpans = append(t.apmSpans, span)
+//	//} else {
+//	//	span, nextCtx := apm.StartSpan(t.apmSpanCtx, name, spanType)
+//	//	t.apmSpanCtx = nextCtx
+//	//	t.apmSpans = append(t.apmSpans, span)
+//	//}
+//	return t.ctx, span
+//}
 
 func (t *Trace) End() {
 	for _, s := range t.apmSpans {

@@ -122,7 +122,7 @@ func main() {
 		} else {
 			log.Printf("Deregistering node: %v\n", id)
 		}
-		<-time.After(time.Second * 5)
+		//<-time.After(time.Second * 5)
 		cancel()
 	}()
 

@@ -29,11 +29,11 @@ func (t *RestUsersTransfer) Binder() types.GinXBinder {
 }
 
 type RestUsersBinder struct {
-	val *user.RestUsersIn
+	val *user.RestGetListUsersIn
 }
 
 func (b *RestUsersBinder) BindVal(core *types.Core) (res interface{}, err error) {
-	in := &user.RestUsersIn{}
+	in := &user.RestGetListUsersIn{}
 	b.val = in
 
 	return b.val, err

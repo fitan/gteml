@@ -20,7 +20,7 @@ type Storage struct {
 }
 
 func (s *Storage) DB() *gorm.DB {
-	return s.db
+	return s.db.WithContext(s.core.GetTrace().Ctx())
 }
 
 func (s *Storage) Permission() types2.Permission {

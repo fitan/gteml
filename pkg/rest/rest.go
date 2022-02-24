@@ -28,12 +28,12 @@ type RelationUpdateHook Hook
 type Restful interface {
 	Objer
 	FieldConfer
-	Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error))
+	Wrap(ctx *gin.Context, data interface{}, err error)
 	GetDB() *gorm.DB
 	GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetList(ctx *gin.Context) (*GetListRes, error)
+	GetList(ctx *gin.Context, objs interface{}, count *int64) (interface{}, error)
 	GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
-	GetOne(ctx *gin.Context) (interface{}, error)
+	GetOne(ctx *gin.Context, obj interface{}) (interface{}, error)
 	CreateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	Create(ctx *gin.Context) (interface{}, error)
 	UpdateScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
@@ -46,9 +46,11 @@ type Restful interface {
 	GetField(ctx *gin.Context) (interface{}, error)
 	GetFieldsScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error)
 	GetFields(ctx *gin.Context) (interface{}, error)
-	RelationGet(ctx *gin.Context) (interface{}, error)
-	RelationCreate(ctx *gin.Context) (interface{}, error)
-	RelationUpdate(ctx *gin.Context) (interface{}, error)
+	RelationGet(ctx *gin.Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error)
+	RelationCreate(ctx *gin.Context, relationName string) (interface{}, error)
+	RelationUpdate(ctx *gin.Context, relationName string) (interface{}, error)
+	RelationsCreate(ctx *gin.Context) (interface{}, error)
+	RelationsUpdate(ctx *gin.Context) (interface{}, error)
 }
 
 type GetListRes struct {
@@ -65,8 +67,7 @@ func NewBaseRest(DB *gorm.DB, objer Objer) *BaseRest {
 	return &BaseRest{DB: DB, Objer: objer}
 }
 
-func (b *BaseRest) Wrap(ctx *gin.Context, fn func(ctx *gin.Context) (interface{}, error)) {
-	data, err := fn(ctx)
+func (b *BaseRest) Wrap(ctx *gin.Context, data interface{}, err error) {
 	if err != nil {
 		ctx.JSON(http.StatusOK, err.Error())
 		return
@@ -112,16 +113,21 @@ func (b *BaseRest) GetListScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *
 	return
 }
 
-func (b *BaseRest) GetList(ctx *gin.Context) (*GetListRes, error) {
+func (b *BaseRest) GetList(ctx *gin.Context, objs interface{}, count *int64) (interface{}, error) {
 	scopes, err := b.GetListScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var count int64
-	objs := b.GetFindObj()
-	err = b.GetDB().Model(b.GetModelObj()).Count(&count).Scopes(scopes...).Find(objs).Error
-	return &GetListRes{List: objs, Count: count}, err
+	if objs == nil {
+		objs = b.GetFindObj()
+	}
+	db := b.GetDB().Model(b.GetModelObj())
+	if count != nil {
+		db = db.Count(count)
+	}
+	err = db.Scopes(scopes...).Find(objs).Error
+	return objs, err
 }
 
 func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *gorm.DB, err error) {
@@ -139,13 +145,15 @@ func (b *BaseRest) GetOneScopes(ctx *gin.Context) (scopes []func(db *gorm.DB) *g
 	return
 }
 
-func (b *BaseRest) GetOne(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) GetOne(ctx *gin.Context, obj interface{}) (interface{}, error) {
 	scopes, err := b.GetOneScopes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	obj := b.GetFirstObj()
+	if obj == nil {
+		obj = b.GetFirstObj()
+	}
 	err = b.GetDB().Model(b.GetModelObj()).Scopes(scopes...).First(obj).Error
 	return obj, err
 }
@@ -367,8 +375,13 @@ type RelationCreate struct {
 	Fields []string `json:"fields" form:"_fields"`
 }
 
+type RelationsCommon struct {
+	Id           int64  `uri:"id"`
+	RelationName string `uri:"relationName"`
+}
+
 // 一对多查询
-func (b *BaseRest) RelationGet(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationGet(ctx *gin.Context, relationName string, relationObjs interface{}, count *int64) (interface{}, error) {
 
 	var getRelation RelationGet
 	err := ctx.ShouldBindUri(&getRelation)
@@ -392,25 +405,113 @@ func (b *BaseRest) RelationGet(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	rc, ok := b.RelationsField()[getRelation.RelationName]
+	if relationName == "" {
+		relationName = getRelation.RelationName
+	}
+
+	rc, ok := b.RelationsField()[relationName]
 	if !ok {
 		return nil, fmt.Errorf("%v relation field permission denied", getRelation.RelationName)
 	}
 
 	tableName := rc.GetTableName()
-	result := rc.GetFindObj()
 
-	count := b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Count()
+	if count != nil {
+		*count = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Count()
+	}
+	if relationObjs == nil {
+		relationObjs = rc.GetFindObj()
+	}
 
-	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(result)
+	err = b.GetDB().Model(obj).Scopes(scopes...).Association(tableName).Find(relationObjs)
 	if err != nil {
 		return nil, err
 	}
 
-	return map[string]interface{}{"list": result, "count": count}, nil
+	return relationObjs, nil
 }
 
-func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationCreate(ctx *gin.Context, relationName string) (interface{}, error) {
+	var relationCommon RelationsCommon
+	err := ctx.ShouldBindUri(&relationCommon)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := b.GetFirstObj()
+	err = ctx.ShouldBindJSON(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	err = b.GetDB().First(obj, relationCommon.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if relationName == "" {
+		relationName = relationCommon.RelationName
+	}
+
+	rf, ok := b.RelationsField()[relationName]
+	if !ok {
+		return nil, fmt.Errorf("relationName does not exist: %v", relationName)
+	}
+	err = b.GetDB().Model(obj).Select(rf.GetTableName()).Create(obj).Error
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (b *BaseRest) RelationUpdate(ctx *gin.Context, relationName string) (interface{}, error) {
+	var relationCommon RelationsCommon
+	err := ctx.ShouldBindUri(&relationCommon)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := b.GetFirstObj()
+	err = ctx.ShouldBindJSON(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	err = b.GetDB().First(obj, relationCommon.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if relationName == "" {
+		relationName = relationCommon.RelationName
+	}
+
+	rf, ok := b.RelationsField()[relationName]
+	if !ok {
+		return nil, fmt.Errorf("relationName does not exist: %v", relationName)
+	}
+
+	tableName := rf.GetTableName()
+	s, o := b.Objer.UpdateField()
+
+	s = append(s, tableName)
+	rfS, rfO := rf.UpdateField()
+	for _, v := range rfS {
+		s = append(s, tableName+"."+v)
+	}
+	for _, v := range rfO {
+		o = append(o, tableName+"."+v)
+	}
+
+	err = b.GetDB().Session(&gorm.Session{FullSaveAssociations: true}).Select(s).Omit(o...).Updates(obj).Error
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+
+}
+
+func (b *BaseRest) RelationsCreate(ctx *gin.Context) (interface{}, error) {
 	var relationCreate RelationCreate
 	err := ctx.ShouldBindUri(&relationCreate)
 	if err != nil {
@@ -453,7 +554,7 @@ func (b *BaseRest) RelationCreate(ctx *gin.Context) (interface{}, error) {
 	return obj, nil
 }
 
-func (b *BaseRest) RelationUpdate(ctx *gin.Context) (interface{}, error) {
+func (b *BaseRest) RelationsUpdate(ctx *gin.Context) (interface{}, error) {
 	var relationUpdate RelationCreate
 	err := ctx.ShouldBindUri(&relationUpdate)
 	if err != nil {

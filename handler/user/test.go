@@ -1,23 +1,39 @@
 package user
 
 import (
+	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/handler/restapi"
 	"github.com/fitan/magic/pkg/rest"
 	"github.com/fitan/magic/pkg/types"
 	"strconv"
 )
 
-type RestUsersIn struct {
+type RestGetListUsersIn struct {
 }
 
 // @Description 获取Users
 // @GenApi /restful/users [get]
-func RestUsers(core *types.Core, in *RestUsersIn) (*rest.GetListRes, error) {
-	rest := restapi.GetRestfulAll()
-	res, err := rest.Users.GetList(core.GinX.GinCtx())
+func RestUsers(core *types.Core, in *RestGetListUsersIn) (*rest.GetListRes, error) {
+	restful := restapi.GetRestfulAll()
+	var count int64
+	res, err := restful.Users.GetList(core.GinX.GinCtx(), nil, &count)
 	if err != nil {
 		return nil, err
 	}
+	return &rest.GetListRes{
+		Count: count,
+		List:  res,
+	}, err
+}
+
+type RestGetOneUsersIn struct {
+}
+
+// @Description 获取User
+// @GenApi /restful/users/:id [get]
+func RestGetOneUsers(core *types.Core, in *RestGetOneUsersIn) (interface{}, error) {
+	var res model.User
+	_, err := restapi.GetRestfulAll().Users.GetOne(core.GinX.GinCtx(), &res)
 	return res, err
 }
 
@@ -29,8 +45,8 @@ type CreateIn struct {
 
 // @GenApi /user [post]
 func Create(c *types.Core, in *CreateIn) (string, error) {
-	//c.Log.Info("这是 create的开始")
-	//c.Log.Sync()
+	//c.log.Info("这是 create的开始")
+	//c.log.Sync()
 	//
 	//log := c.CoreLog.TraceLog("nest 嵌套")
 	//log.Info("嵌套info： fsfdf fsdfsd ")

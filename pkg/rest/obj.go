@@ -66,7 +66,8 @@ func (f *BaseFieldConf) CreateField() (s []string, o []string) {
 }
 
 func (f *BaseFieldConf) UpdateField() (s []string, o []string) {
-	return []string{"*"}, []string{}
+	//return []string{"*"}, []string{"CreatedAt"}
+	return []string{"*"}, []string{"created_at"}
 }
 
 func (f *BaseFieldConf) RelationsField() map[string]RelationFielder {
