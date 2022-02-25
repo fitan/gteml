@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/fitan/magic/dao/dal/model"
 	"github.com/fitan/magic/handler/restapi"
-	"github.com/fitan/magic/pkg/rest"
+	"github.com/fitan/magic/pkg/restcommon"
 	"github.com/fitan/magic/pkg/types"
 	"strconv"
 )
@@ -13,14 +13,14 @@ type RestGetListUsersIn struct {
 
 // @Description 获取Users
 // @GenApi /restful/users [get]
-func RestUsers(core *types.Core, in *RestGetListUsersIn) (*rest.GetListRes, error) {
+func RestUsers(core *types.Core, in *RestGetListUsersIn) (*restcommon.GetListRes, error) {
 	restful := restapi.GetRestfulAll()
 	var count int64
 	res, err := restful.Users.GetList(core, nil, &count)
 	if err != nil {
 		return nil, err
 	}
-	return &rest.GetListRes{
+	return &restcommon.GetListRes{
 		Count: count,
 		List:  res,
 	}, err

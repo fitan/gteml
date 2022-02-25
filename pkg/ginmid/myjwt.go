@@ -20,7 +20,7 @@ type loginValues struct {
 
 func NewAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 	core := core2.GetCorePool().GetObj()
-	jwtConf := core.GetConfig().GetMyConf().Jwt
+	jwtConf := core.GetConfig().Jwt
 	realm := jwtConf.Realm
 	key := jwtConf.SecretKey
 

@@ -7,7 +7,7 @@ import (
 )
 
 type WrapQuery struct {
-	types.TracerCore
+	types.ServiceCore
 	*query.Query
 }
 

@@ -1,4 +1,4 @@
-package rest
+package restcommon
 
 type Objer interface {
 	ModelObjer

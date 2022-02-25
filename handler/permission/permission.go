@@ -11,7 +11,8 @@ type CreatePermissionIn struct {
 
 // @GenApi /permission [post]
 func CreatePermission(core *types.Core, in *CreatePermissionIn) (res string, err error) {
-	err = core.GetDao().Storage().Permission().Create(&in.Body)
+	core.GetDao()
+	err = core.GetDao().Permission().Create(&in.Body)
 	if err != nil {
 		res = "fail"
 		return
@@ -33,7 +34,7 @@ func (g *GetPermissionByIdIn) ServiceID() (serviceID uint) {
 
 // @GenApi /permission/:id [get]
 func GetPermissionById(core *types.Core, in *GetPermissionByIdIn) (res *model.Permission, err error) {
-	res, err = core.GetDao().Storage().Permission().GetByID(in.Uri.Id)
+	res, err = core.GetDao().Permission().GetByID(in.Uri.Id)
 	return
 }
 
@@ -45,7 +46,7 @@ type DeletePermissionByIdIn struct {
 
 // @GenApi /permisssion/:id [delete]
 func DeletePermissionById(core *types.Core, in *DeletePermissionByIdIn) (res string, err error) {
-	err = core.GetDao().Storage().Permission().DeleteByID(in.Uri.Id)
+	err = core.GetDao().Permission().DeleteByID(in.Uri.Id)
 	if err != nil {
 		res = "fail"
 		return
@@ -61,7 +62,7 @@ type UpdatePermissionIn struct {
 
 // @GenApi /permission [put]
 func UpdatePermission(core *types.Core, in *UpdatePermissionIn) (res string, err error) {
-	err = core.GetDao().Storage().Permission().UpdateById(&in.Body)
+	err = core.GetDao().Permission().UpdateById(&in.Body)
 	if err != nil {
 		res = "fail"
 		return

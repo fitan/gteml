@@ -10,7 +10,7 @@ import (
 	"github.com/fitan/magic/pkg/ginmid"
 	"github.com/fitan/magic/pkg/ginx"
 	"github.com/fitan/magic/pkg/prometheus"
-	"github.com/fitan/magic/pkg/rest"
+	"github.com/fitan/magic/pkg/restcommon"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -59,13 +59,13 @@ func Router() *gin.Engine {
 	swag(r)
 	ping(r)
 
-	db := core.GetCorePool().GetObj().GetDao().Storage().DB()
-	userRest := rest.NewBaseRest(db, &restapi.UserObj{})
-	roleRest := rest.NewBaseRest(db, &restapi.RolesObj{})
-	serviceRest := rest.NewBaseRest(db, &restapi.ServiceObj{})
-	rest.RegisterRestApi(r, restapi.NewApiRest(userRest), "/rest/users")
-	rest.RegisterRestApi(r, restapi.NewApiRest(roleRest), "/rest/roles")
-	rest.RegisterRestApi(r, restapi.NewApiRest(serviceRest), "/rest/services")
+	db := core.GetCorePool().GetObj().GetDao().DB()
+	userRest := restcommon.NewBaseRest(db, &restapi.UserObj{})
+	roleRest := restcommon.NewBaseRest(db, &restapi.RolesObj{})
+	serviceRest := restcommon.NewBaseRest(db, &restapi.ServiceObj{})
+	restcommon.RegisterRestApi(r, restapi.NewApiRest(userRest), "/rest/users")
+	restcommon.RegisterRestApi(r, restapi.NewApiRest(roleRest), "/rest/roles")
+	restcommon.RegisterRestApi(r, restapi.NewApiRest(serviceRest), "/rest/services")
 
 	return r
 }

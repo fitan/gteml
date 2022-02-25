@@ -18,9 +18,9 @@ func (a *Audit) InsetAudit(audit *model.Audit) error {
 	defer func() {
 		log.Sync()
 	}()
-	return a.core.GetDao().Storage().Native().Audit.Create(audit)
+	return a.core.GetDao().Native().Audit.Create(audit)
 }
 
 func (a *Audit) Find(key string, page, pageSize int) ([]*model.Audit, int64, error) {
-	return a.core.GetDao().Storage().Audit().Find(key, page, pageSize)
+	return a.core.GetDao().Audit().Find(key, page, pageSize)
 }

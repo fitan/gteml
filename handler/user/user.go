@@ -19,7 +19,7 @@ type BindUserPermissionIn struct {
 // @Description 给用户绑定角色和服务
 // @GenApi /user/:userId/permission [post]
 func BindUserPermission(core *types.Core, in *BindUserPermissionIn) (string, error) {
-	err := core.GetDao().Storage().User().BindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
+	err := core.GetDao().User().BindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
 	if err != nil {
 		return "fail", err
 	}
@@ -41,7 +41,7 @@ type UnBindUserPermissionIn struct {
 // @Description 用户解除绑定
 // @GenApi /user/:userId/permission [delete]
 func UnBindUserPermission(core *types.Core, in *UnBindUserPermissionIn) (string, error) {
-	err := core.GetDao().Storage().User().UnBindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
+	err := core.GetDao().User().UnBindPermission(in.Uri.UserID, in.Body.RoleID, in.Body.DomainID)
 	if err != nil {
 		return "fail", err
 	}
@@ -58,5 +58,5 @@ type GetUserByIDIn struct {
 // @Description get user by id
 // @GenApi /user/:id [get]
 func GetUserByID(core *types.Core, in *GetUserByIDIn) (*model.User, error) {
-	return core.GetDao().Storage().User().ById(in.Uri.ID)
+	return core.GetDao().User().ById(in.Uri.ID)
 }

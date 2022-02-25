@@ -2,11 +2,11 @@ package restapi
 
 import (
 	"github.com/fitan/magic/dao/dal/model"
-	"github.com/fitan/magic/pkg/rest"
+	"github.com/fitan/magic/pkg/restcommon"
 )
 
 type UserObj struct {
-	rest.BaseFieldConf
+	restcommon.BaseFieldConf
 }
 
 func (u *UserObj) GetTableName() string {
@@ -30,7 +30,7 @@ func (u *UserObj) GetFindObj() interface{} {
 	return u.GetModelObjs()
 }
 
-func (u *UserObj) RelationsField() map[string]rest.RelationFielder {
-	return map[string]rest.RelationFielder{"roles": &RolesObj{}, "services": &ServiceObj{}}
+func (u *UserObj) RelationsField() map[string]restcommon.RelationFielder {
+	return map[string]restcommon.RelationFielder{"roles": &RolesObj{}, "services": &ServiceObj{}}
 
 }

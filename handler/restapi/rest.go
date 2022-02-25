@@ -2,16 +2,16 @@ package restapi
 
 import (
 	"github.com/fitan/magic/pkg/core"
-	"github.com/fitan/magic/pkg/rest"
+	"github.com/fitan/magic/pkg/restcommon"
 	"github.com/gin-gonic/gin"
 	"sync"
 )
 
 type ApiRest struct {
-	rest.Restful
+	restcommon.Restful
 }
 
-func NewApiRest(baseRest rest.Restful) *ApiRest {
+func NewApiRest(baseRest restcommon.Restful) *ApiRest {
 	return &ApiRest{Restful: baseRest}
 }
 
@@ -38,11 +38,11 @@ type RestfulObj struct {
 }
 
 func NewRestfulObj() *RestfulObj {
-	db := core.GetCorePool().GetObj().Dao.Storage().DB()
+	db := core.GetCorePool().GetObj().Dao.DB()
 	return &RestfulObj{
-		Users:    &ApiRest{rest.NewBaseRest(db, &UserObj{})},
-		Roles:    &ApiRest{rest.NewBaseRest(db, &RolesObj{})},
-		Services: &ApiRest{rest.NewBaseRest(db, &ServiceObj{})},
+		Users:    &ApiRest{restcommon.NewBaseRest(db, &UserObj{})},
+		Roles:    &ApiRest{restcommon.NewBaseRest(db, &RolesObj{})},
+		Services: &ApiRest{restcommon.NewBaseRest(db, &ServiceObj{})},
 	}
 }
 

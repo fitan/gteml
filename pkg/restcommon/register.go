@@ -1,4 +1,4 @@
-package rest
+package restcommon
 
 import (
 	"github.com/fitan/magic/pkg/types"

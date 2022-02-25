@@ -2,11 +2,11 @@ package restapi
 
 import (
 	"github.com/fitan/magic/dao/dal/model"
-	"github.com/fitan/magic/pkg/rest"
+	"github.com/fitan/magic/pkg/restcommon"
 )
 
 type ServiceObj struct {
-	rest.BaseRest
+	restcommon.BaseRest
 }
 
 func (s *ServiceObj) GetTableName() string {
@@ -29,6 +29,6 @@ func (s *ServiceObj) GetFindObj() interface{} {
 	return s.GetModelObjs()
 }
 
-func (s *ServiceObj) RelationsField() map[string]rest.RelationFielder {
-	return map[string]rest.RelationFielder{}
+func (s *ServiceObj) RelationsField() map[string]restcommon.RelationFielder {
+	return map[string]restcommon.RelationFielder{}
 }

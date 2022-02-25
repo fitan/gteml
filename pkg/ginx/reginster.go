@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/fitan/magic/pkg/types"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"path"
 )
 
@@ -51,18 +50,19 @@ func ginXHandlerRegister(i gin.IRouter, transfer types.GinXTransfer, o ...GinXHa
 	CollectRouter(i, transfer)
 	i.Handle(
 		transfer.Method(), transfer.Url(), func(c *gin.Context) {
-			var core *types.Core
-			if value, ok := c.Get(types.CoreKey); ok {
-				core = value.(*types.Core)
-			} else {
-				c.JSON(http.StatusInternalServerError, XResult{
-					Code: 5000,
-					Msg:  "gin ctx not found types.Core",
-					Data: nil,
-				})
-				return
-				//core = coreSrc.GetCorePool().GetObj()
-			}
+			//var core *types.Core
+			core := c.MustGet(types.CoreKey).(*types.Core)
+			//if value, ok := c.Get(types.CoreKey); ok {
+			//	core = value.(*types.Core)
+			//} else {
+			//	c.JSON(http.StatusInternalServerError, XResult{
+			//		Code: 5000,
+			//		Msg:  "gin ctx not found types.Core",
+			//		Data: nil,
+			//	})
+			//	return
+			//	core = coreSrc.GetCorePool().GetObj()
+			//}
 			// 加载中间件option
 			for _, f := range o {
 				err := f(core)

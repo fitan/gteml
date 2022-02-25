@@ -15,11 +15,11 @@ type User struct {
 }
 
 func (u *User) Login(username string, password string) (*model.User, error) {
-	return u.Core.GetDao().Storage().User().CheckPassword(username, password)
+	return u.Core.GetDao().User().CheckPassword(username, password)
 }
 
 func (u *User) ModifyPassword(id int, password string) error {
-	return u.Core.GetDao().Storage().Native().User.ModifyPassword(id, password)
+	return u.Core.GetDao().Native().User.ModifyPassword(id, password)
 }
 
 func (u *User) Read() string {
@@ -27,7 +27,7 @@ func (u *User) Read() string {
 	//defer log.Sync()
 	//
 	//log := u.Core.GetCoreLog().ApmLog("user.read")
-	req, _ := u.Core.GetDao().Storage().User().ById(1)
+	req, _ := u.Core.GetDao().User().ById(1)
 
 	log := u.Core.GetCoreLog().TraceLog("read")
 	log.Error("this is read", zap.String("read", "read"), zap.Any("carry", map[string]interface{}{"method1": "1", "method2": "2"}))
@@ -42,13 +42,13 @@ func (u *User) Read() string {
 
 	_, _ = u.Core.GetApis().Taobao().GetRoot()
 
-	u.Core.GetDao().Storage().User().CheckPassword("admin", "admin")
+	u.Core.GetDao().User().CheckPassword("admin", "admin")
 
 	return req.Email
 }
 
 func (u *User) FindApi() ([]model.ApiUser, error) {
-	return u.Core.GetDao().Storage().Native().User.FindApi()
+	return u.Core.GetDao().Native().User.FindApi()
 }
 
 func (u *User) Create() {

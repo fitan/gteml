@@ -38,7 +38,7 @@ func (c *CasbinVerifyMid) BindValAfter(core *types.Core) bool {
 
 	serviceID := casbinVerify.ServiceID()
 
-	err := core.GetDao().Storage().User().CheckUserPermission(userIDuint, serviceID, ginX.GinCtx().FullPath(), ginX.GinCtx().Request.Method)
+	err := core.GetDao().User().CheckUserPermission(userIDuint, serviceID, ginX.GinCtx().FullPath(), ginX.GinCtx().Request.Method)
 	if err != nil {
 		ginX.SetError(err)
 		return false

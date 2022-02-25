@@ -10,7 +10,7 @@ import "github.com/swaggo/files"
 
 func swag(i gin.IRouter) {
 	core := core2.GetCorePool().GetObj()
-	if core.GetConfig().GetMyConf().Swagger.Enable {
+	if core.GetConfig().Swagger.Enable {
 		i.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 }

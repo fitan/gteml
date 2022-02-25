@@ -16,7 +16,7 @@ type RolePermissionIn struct {
 
 // @GenApi /role/:roleId/permission [post]
 func BindRolePermission(core *types.Core, in *RolePermissionIn) (string, error) {
-	err := core.GetDao().Storage().Role().BindPermission(in.Uri.RoleID, in.Body.PermissionID)
+	err := core.GetDao().Role().BindPermission(in.Uri.RoleID, in.Body.PermissionID)
 	if err != nil {
 		return "fail", err
 	}
@@ -26,7 +26,7 @@ func BindRolePermission(core *types.Core, in *RolePermissionIn) (string, error) 
 
 // @GenApi /role/:roleId/permission [delete]
 func UnBindRolePermission(core *types.Core, in *RolePermissionIn) (string, error) {
-	err := core.GetDao().Storage().Role().UnBindPermission(in.Uri.RoleID, in.Body.PermissionID)
+	err := core.GetDao().Role().UnBindPermission(in.Uri.RoleID, in.Body.PermissionID)
 	if err != nil {
 		return "fail", err
 	}

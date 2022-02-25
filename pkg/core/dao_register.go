@@ -69,8 +69,8 @@ func (s *DaoRegister) With(o ...types.Option) types.Register {
 
 func (s *DaoRegister) Set(c *types.Core) {
 	obj := s.GetObj(c)
-	wrapQuery := &dbquery.WrapQuery{c, obj.query}
-	c.Dao = dao.NewDAO(obj.db, wrapQuery, obj.enforcer, c)
+	wrapQuery := &dbquery.WrapQuery{ServiceCore: c, Query: obj.query}
+	c.Dao = dao.NewStorage(obj.db, wrapQuery, obj.enforcer, c)
 }
 
 func (s *DaoRegister) Unset(c *types.Core) {
