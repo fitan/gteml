@@ -1,9 +1,7 @@
 package model
 
-import "gorm.io/gorm"
-
 type Service struct {
-	gorm.Model
+	Model
 	Name        string
 	Alias       string
 	Description string

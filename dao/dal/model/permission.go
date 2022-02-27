@@ -7,12 +7,8 @@
 
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type Permission struct {
-	gorm.Model
+	Model
 	ParentId    uint
 	Icon        string
 	Menu        bool

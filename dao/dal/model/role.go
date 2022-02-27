@@ -7,10 +7,8 @@
 
 package model
 
-import "gorm.io/gorm"
-
 type Role struct {
-	gorm.Model
+	Model
 	Name        string       `json:"name"`
 	OnlyKey     string       `json:"onlyKey"`
 	Enabled     bool         `json:"enabled"`

@@ -9,7 +9,6 @@ import (
 	"github.com/fitan/magic/pkg/types"
 	"github.com/pkg/errors"
 	"gorm.io/gen/field"
-	"gorm.io/gorm"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -125,15 +124,15 @@ func (u *User) UnBindPermission(userID, roleID, serviceID uint) (err error) {
 				}
 			}
 
-			user := &model.User{Model: gorm.Model{ID: userID}}
-			err = tx.User.Roles.Model(user).Delete(&model.Role{Model: gorm.Model{ID: roleID}})
-			//err = tx.Model(user).Association("Roles").Delete(&model.Role{Model: gorm.Model{ID: roleID}})
+			user := &model.User{Model: model.Model{ID: userID}}
+			err = tx.User.Roles.Model(user).Delete(&model.Role{Model: model.Model{ID: roleID}})
+			//err = tx.Model(user).Association("Roles").Delete(&model.Role{Model: model.Model{ID: roleID}})
 			if err != nil {
 				return err
 			}
 
-			//err = tx.Model(user).Association("Services").Delete(&model.Service{Model: gorm.Model{ID: serviceID}})
-			err = tx.User.Services.Model(user).Delete(&model.Service{Model: gorm.Model{ID: serviceID}})
+			//err = tx.Model(user).Association("Services").Delete(&model.Service{Model: model.Model{ID: serviceID}})
+			err = tx.User.Services.Model(user).Delete(&model.Service{Model: model.Model{ID: serviceID}})
 
 			if err != nil {
 				return err
@@ -205,13 +204,13 @@ func (u *User) BindPermission(userID, roleID, serviceID uint) (err error) {
 					return err
 				}
 			}
-			user := &model.User{Model: gorm.Model{ID: userID}}
-			err = tx.User.Roles.Model(user).Append(&model.Role{Model: gorm.Model{ID: roleID}})
+			user := &model.User{Model: model.Model{ID: userID}}
+			err = tx.User.Roles.Model(user).Append(&model.Role{Model: model.Model{ID: roleID}})
 			if err != nil {
 				return err
 			}
 
-			err = tx.User.Services.Model(user).Append(&model.Service{Model: gorm.Model{ID: serviceID}})
+			err = tx.User.Services.Model(user).Append(&model.Service{Model: model.Model{ID: serviceID}})
 
 			if err != nil {
 				return err

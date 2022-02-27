@@ -93,7 +93,7 @@ func (b *GetPermissionByIdBinder) BindVal(core *types.Core) (res interface{}, er
 // @Produce  json
 // @Param id path string true " "
 // @Success 200 {object} ginx.XResult{data=model.Permission}
-// @Router /permission/:id [get]
+// @Router /permission/{id} [get]
 func (b *GetPermissionByIdBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.GetPermissionById(core, b.val)
 }
@@ -137,7 +137,7 @@ func (b *DeletePermissionByIdBinder) BindVal(core *types.Core) (res interface{},
 // @Produce  json
 // @Param id path string true " "
 // @Success 200 {object} ginx.XResult{data=string}
-// @Router /permisssion/:id [delete]
+// @Router /permisssion/{id} [delete]
 func (b *DeletePermissionByIdBinder) BindFn(core *types.Core) (interface{}, error) {
 	return permission.DeletePermissionById(core, b.val)
 }

@@ -56,7 +56,7 @@ func (b *BindRolePermissionBinder) BindVal(core *types.Core) (res interface{}, e
 // @Param body body SwagBindRolePermissionBody true " "
 // @Param roleId path string true " "
 // @Success 200 {object} ginx.XResult{data=string}
-// @Router /role/:roleId/permission [post]
+// @Router /role/{roleId}/permission [post]
 func (b *BindRolePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return role.BindRolePermission(core, b.val)
 }
@@ -110,7 +110,7 @@ func (b *UnBindRolePermissionBinder) BindVal(core *types.Core) (res interface{},
 // @Param body body SwagUnBindRolePermissionBody true " "
 // @Param roleId path string true " "
 // @Success 200 {object} ginx.XResult{data=string}
-// @Router /role/:roleId/permission [delete]
+// @Router /role/{roleId}/permission [delete]
 func (b *UnBindRolePermissionBinder) BindFn(core *types.Core) (interface{}, error) {
 	return role.UnBindRolePermission(core, b.val)
 }

@@ -1,9 +1,7 @@
 package model
 
-import "gorm.io/gorm"
-
 type Audit struct {
-	gorm.Model
+	Model
 	Url        string
 	Query      string
 	Method     string

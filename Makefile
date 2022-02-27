@@ -27,7 +27,7 @@ gen-fake:
 	go run tools/main.go gen-fake
 
 swag:
-	swag init  --parseDependency
+	swag init  --parseDependency --parseDepth 3
 
 gen-api:
 	genapi  gen -t api -n handler

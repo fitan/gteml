@@ -9,11 +9,10 @@ package model
 
 import (
 	"gorm.io/gen"
-	"gorm.io/gorm"
 )
 
 type User struct {
-	gorm.Model
+	Model
 	Name string `json:"name"`
 	//唯一
 	Email    string `json:"email"`
@@ -26,7 +25,7 @@ type User struct {
 }
 
 type ApiUser struct {
-	gorm.Model
+	Model
 	Name string
 	//唯一
 	Email  string
