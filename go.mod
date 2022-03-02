@@ -29,6 +29,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pyroscope-io/pyroscope v0.2.2
+	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0

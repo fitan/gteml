@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 	"go-micro.dev/v4/registry"
 	"go.opentelemetry.io/otel/sdk/trace"
@@ -15,6 +16,8 @@ type option struct {
 	Tp *trace.TracerProvider
 	// 记录所有的详细的http info, 否则只记录发生错误时的http info
 	TraceDebug bool
+
+	Core types.ServiceCore
 
 	MicroServiceName string
 	MicroRegistry    registry.Registry
@@ -71,10 +74,17 @@ func NewClient(fs ...Option) *resty.Client {
 
 	if o.Host != "" {
 		client = client.SetHostURL(o.Host)
+
+		if o.Core != nil {
+			client = client.OnAfterResponse(AfterMetrics(o.Host, o.Core))
+		}
 	}
 
 	if o.MicroServiceName != "" {
 		client = client.OnBeforeRequest(BeforeMicroSelect(o.MicroServiceName, o.MicroRegistry))
+		if o.Core != nil {
+			client = client.OnAfterResponse(AfterMetrics(o.MicroServiceName, o.Core))
+		}
 	}
 
 	return client
@@ -103,6 +113,12 @@ func WithMicroHost(serviceName string, r registry.Registry) Option {
 func WithDebug(debug bool) Option {
 	return func(o *option) {
 		o.Debug = debug
+	}
+}
+
+func WithMetrics(core types.ServiceCore) Option {
+	return func(o *option) {
+		o.Core = core
 	}
 }
 

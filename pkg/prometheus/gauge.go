@@ -10,12 +10,14 @@ import (
 type Gauge struct {
 	*RequestBodyGauge
 	*CorePoolGauge
+	*HttpclientGauge
 }
 
 func NewGauge(prom *ginprom.Prometheus) types.Promer {
 	g := &Gauge{
 		RequestBodyGauge: &RequestBodyGauge{},
 		CorePoolGauge:    &CorePoolGauge{},
+		HttpclientGauge:  &HttpclientGauge{},
 	}
 
 	rv := reflect.ValueOf(g)

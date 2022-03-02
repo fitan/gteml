@@ -3,6 +3,7 @@ package httpclient
 import (
 	"context"
 	"encoding/json"
+	"github.com/fitan/magic/pkg/types"
 	"github.com/go-resty/resty/v2"
 	"go-micro.dev/v4/registry"
 	"go-micro.dev/v4/registry/cache"
@@ -13,10 +14,17 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"net/http"
+	"strconv"
 )
 
 func parseCtxValOpenTrace(ctx context.Context) bool {
 	return ctx.Value(_OpenTrace).(bool)
+}
+
+func AfterErrorMetric(domain string, core types.ServiceCore) resty.ErrorHook {
+	return func(request *resty.Request, err error) {
+		core.GetProm().ClientErr(domain)
+	}
 }
 
 func AfterErrorTrace() resty.ErrorHook {
@@ -36,6 +44,13 @@ func AfterErrorTrace() resty.ErrorHook {
 		span.SetStatus(codes.Error, "error_hook")
 		span.End()
 		span = trace.SpanFromContext(request.Context())
+	}
+}
+
+func AfterMetrics(domain string, core types.ServiceCore) resty.ResponseMiddleware {
+	return func(client *resty.Client, response *resty.Response) error {
+		core.GetProm().ClientStatus(domain, strconv.Itoa(response.StatusCode()))
+		return nil
 	}
 }
 

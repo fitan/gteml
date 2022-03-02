@@ -9,7 +9,7 @@ import (
 func NewApi(c types.ServiceCore, client *resty.Client) *Api {
 	return &Api{
 		context: c,
-		client:  httpclient.NewTraceClient(c.GetTrace(), client.SetDebug(true)),
+		client:  httpclient.NewTraceClient(c.GetTrace(), client),
 	}
 }
 

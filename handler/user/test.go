@@ -50,7 +50,7 @@ type SayHelloIn struct {
 }
 
 type JwtKey struct {
-	JwtUserID uint   `ctxkey:"JwtUserIDKey" binding:"required" json:"jwtUserId"`
+	JwtUserID uint   `ctxkey:"JwtUserIDKey" json:"jwtUserId"`
 	TestValue string `json:"testValue"`
 }
 

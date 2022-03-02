@@ -20,21 +20,27 @@ func (h *ApisRegister) getApis(c *types.Core) apiTypes.Apis {
 		h.baiduClient = httpclient.NewClient(
 			httpclient.WithHost(c.GetConfig().Apis.Baidu.Url),
 			httpclient.WithTrace(c.Tracer.Tp(), c.GetConfig().Apis.Baidu.TraceDebug),
-			httpclient.WithDebug(c.GetConfig().Apis.Baidu.RestyDebug))
+			httpclient.WithDebug(c.GetConfig().Apis.Baidu.RestyDebug),
+			httpclient.WithMetrics(c),
+		)
 	}
 
 	if h.taobaoClient == nil {
 		h.taobaoClient = httpclient.NewClient(
 			httpclient.WithHost(c.GetConfig().Apis.Taobao.Url),
 			httpclient.WithTrace(c.Tracer.Tp(), c.GetConfig().Apis.Taobao.TraceDebug),
-			httpclient.WithDebug(c.GetConfig().Apis.Taobao.RestyDebug))
+			httpclient.WithDebug(c.GetConfig().Apis.Taobao.RestyDebug),
+			httpclient.WithMetrics(c),
+		)
 	}
 
 	if h.gtemlClient == nil {
 		h.gtemlClient = httpclient.NewClient(
-			httpclient.WithMicroHost("gteml", micro.EtcdRegistry(c.GetConfig().Consul.Addr)),
+			httpclient.WithMicroHost("gteml", micro.ConsulRegistry(c.GetConfig().Consul.Addr)),
 			httpclient.WithTrace(c.Tracer.Tp(), c.GetConfig().Apis.Taobao.TraceDebug),
-			httpclient.WithDebug(c.GetConfig().Apis.Taobao.RestyDebug))
+			httpclient.WithDebug(c.GetConfig().Apis.Taobao.RestyDebug),
+			httpclient.WithMetrics(c),
+		)
 	}
 
 	return apis.NewApis(c, h.baiduClient, h.taobaoClient, h.gtemlClient)
