@@ -8,6 +8,10 @@ import (
 	"k8s.io/api/core/v1"
 )
 
+//go:generate gowrap.exe gen -p ./ -i K8s -t ../../gowrap/templates/log -o k8s_with_log.go
+//go:generate gowrap.exe gen -p ./ -i K8s -t ../../gowrap/templates/opentracing -o k8s_with_opentracing.go
+//go:generate gowrap.exe gen -p ./ -i K8s -t ../../gowrap/templates/prometheus -o k8s_with_prometheus.go
+//go:generate gowrap.exe gen -p ./ -i K8s -t ../../gowrap/templates/timeout -o k8s_with_timeout.go
 type K8s interface {
 	ApplyWorker(worker *Worker) (err error)
 	CreateApp(request CreateAppRequest) (err error)
